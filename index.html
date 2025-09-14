@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jeu par rapport à l'intero de voc</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #E0E0E0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background-color: #1E1E1E;
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            color: #BB86FC;
+        }
+
+        .success-message {
+            background-color: #00C853;
+            color: #FFFFFF;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            margin-bottom: 30px;
+            text-align: left;
+        }
+
+        .mode-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .mode-selector button {
+            background-color: #BB86FC;
+            color: #1E1E1E;
+        }
+
+        .mode-selector button.active {
+            background-color: #03DAC6;
+            color: #121212;
+            box-shadow: 0 0 15px #03DAC6;
+        }
+        
+        .flashcard-game-container {
+            display: none;
+        }
+
+        .card-container {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            perspective: 1000px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+        }
+
+        .card.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5em;
+            font-weight: 700;
+            padding: 20px;
+            box-sizing: border-box;
+            word-wrap: break-word;
+            text-align: center;
+        }
+
+        .card-front {
+            background-color: #333333;
+            color: #FFFFFF;
+        }
+
+        .card-back {
+            background-color: #BB86FC;
+            color: #1E1E1E;
+            transform: rotateY(180deg);
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            background-color: #03DAC6;
+            color: #121212;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        button:hover {
+            background-color: #018786;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        button:disabled {
+            background-color: #444444;
+            color: #888888;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        #cardCounter {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #BB86FC;
+            background-color: #2C2C2C;
+            padding: 10px 15px;
+            border-radius: 8px;
+        }
+
+        .list-section, .instructions-section {
+            background-color: #2C2C2C;
+            padding: 30px;
+            border-radius: 10px;
+            text-align: left;
+            margin-top: 30px;
+        }
+
+        .list-section h2, .instructions-section h2 {
+            font-size: 1.8em;
+            color: #03DAC6;
+            margin-bottom: 15px;
+        }
+
+        .vocabulary-list {
+            columns: 2;
+            column-gap: 40px;
+            font-size: 1em;
+            line-height: 1.6;
+        }
+        
+        .vocabulary-list li {
+            margin-bottom: 5px;
+        }
+        
+        .feedback-buttons {
+            display: none;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .feedback-buttons button {
+            width: 100%;
+        }
+
+        .feedback-buttons .knew-it-btn {
+            background-color: #4CAF50;
+        }
+
+        .feedback-buttons .knew-it-btn:hover {
+            background-color: #388E3C;
+        }
+
+        .feedback-buttons .didnt-know-it-btn {
+            background-color: #F44336;
+        }
+
+        .feedback-buttons .didnt-know-it-btn:hover {
+            background-color: #D32F2F;
+        }
+
+        .quiz-game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .quiz-question {
+            font-size: 2em;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #E0E0E0;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .quiz-options button {
+            padding: 20px;
+            background-color: #333333;
+            color: #FFFFFF;
+            border-radius: 10px;
+            font-size: 1.2em;
+            font-weight: 500;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .quiz-options button:hover {
+            background-color: #444444;
+            transform: translateY(-2px);
+        }
+
+        .quiz-options button.correct {
+            background-color: #4CAF50;
+        }
+
+        .quiz-options button.incorrect {
+            background-color: #F44336;
+        }
+
+        .quiz-controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .quiz-controls button {
+            background-color: #03DAC6;
+        }
+
+        .quiz-score {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: #BB86FC;
+            background-color: #2C2C2C;
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+            h1 {
+                font-size: 2em;
+            }
+            .card-face {
+                font-size: 1.2em;
+            }
+            .controls {
+                flex-direction: column;
+            }
+            button {
+                width: 100%;
+            }
+            .vocabulary-list {
+                columns: 1;
+            }
+            .quiz-options {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="success-message">
+            <p>Le site est mis à jour pour vous aider à apprendre le vocabulaire que vous avez choisi. Les jeux utilisent tous les mots disponibles. N'hésitez pas à me signaler si vous trouvez des erreurs.</p>
+        </div>
+        <h1>Vocabulaire Anglais</h1>
+
+        <div class="mode-selector">
+            <button id="flashcardModeBtn" class="active">Mode Cartes</button>
+            <button id="quizModeBtn">Mode Quiz</button>
+        </div>
+        
+        <div id="flashcardGameContainer" class="flashcard-game-container" style="display: block;">
+            <div class="card-container">
+                <div id="flashcard" class="card">
+                    <div id="front" class="card-face card-front"></div>
+                    <div id="back" class="card-face card-back"></div>
+                </div>
+            </div>
+            <div class="controls">
+                <button id="prevBtn">&larr; Précédent</button>
+                <span id="cardCounter"></span>
+                <button id="nextBtn">Suivant &rarr;</button>
+            </div>
+
+            <div class="feedback-buttons" id="feedbackButtons">
+                <button class="knew-it-btn" id="knewItBtn">Je l'avais</button>
+                <button class="didnt-know-it-btn" id="didntKnowItBtn">Je ne l'avais pas</button>
+            </div>
+        </div>
+
+        <div id="quizGameContainer" class="quiz-game-container">
+            <div id="quizScore" class="quiz-score">Score: 0 / 0</div>
+            <div id="quizQuestion" class="quiz-question"></div>
+            <div id="quizOptions" class="quiz-options"></div>
+        </div>
+
+        <div class="list-section">
+            <h2>Liste Complète</h2>
+            <ul class="vocabulary-list">
+            </ul>
+        </div>
+
+        <div class="instructions-section">
+            <h2>Comment utiliser</h2>
+            <p>
+                - **Mode Cartes** : Clique sur la carte pour voir la traduction, puis dis si tu l'avais ou non. Les mots non connus reviendront plus souvent.
+                - **Mode Quiz** : Lis le mot anglais et choisis la bonne traduction parmi les options.
+                - La liste complète est disponible en bas de page pour réviser à tout moment.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // DOM elements for Flashcard and Quiz games
+        const flashcard = document.getElementById('flashcard');
+        const frontFace = document.getElementById('front');
+        const backFace = document.getElementById('back');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const cardCounter = document.getElementById('cardCounter');
+        const vocabularyList = document.querySelector('.vocabulary-list');
+        const feedbackButtons = document.getElementById('feedbackButtons');
+        const knewItBtn = document.getElementById('knewItBtn');
+        const didntKnowItBtn = document.getElementById('didntKnowItBtn');
+        
+        const flashcardModeBtn = document.getElementById('flashcardModeBtn');
+        const quizModeBtn = document.getElementById('quizModeBtn');
+        const flashcardGameContainer = document.getElementById('flashcardGameContainer');
+        const quizGameContainer = document.getElementById('quizGameContainer');
+        const quizQuestion = document.getElementById('quizQuestion');
+        const quizOptions = document.getElementById('quizOptions');
+        const quizScore = document.getElementById('quizScore');
+
+        // Vocabulary data
+        let vocab = [
+            ["Damnation", "la condamnation à l'enfer"],
+            ["Dogmes", "les vérités fondamentales, les croyances obligatoires"],
+            ["Ferveur", "l'ardeur, l'enthousiasme religieux"],
+            ["Genèse", "élaboration de quelque chose"],
+            ["Sacerdoce", "une fonction presque religieuse"],
+            ["Tabou", "quelque chose d'interdit"],
+            ["Éden", "sens propre : nom propre du paradis terrestre ; sens figuré : lieu qui apparaît comme un paradis"],
+            ["Apôtre", "sens propre : disciple du Christ envoyé par lui pour prêcher (enseigner) l'Évangile ; sens figuré: personne qui propage ou défend une doctrine"],
+            ["Foi", "sens général : confiance. Sens spécialisé en religion : croyance résultant d'une adhésion profonde du coeur et de l'esprit, certitude intérieure."],
+            ["Rite", "règle(s) d'une cérémonie ou manière de faire invariable."],
+            ["Fortune", "le sort, le hasard, personnifiés sous l'Antiquité par une déesse représentée les yeux bandés."],
+            ["Bible", "Sens propre : ensemble des textes sacrés des religions juives et chrétiennes (étymologiquement : 'les livres') ; sens figuré : ouvrage faisant autorité, auquel on se réfère."],
+            ["Idée", "synonyme de concept, ce qui est élaboré par la pensée."],
+            ["Méditation", "réflexion solitaire et recueillie."],
+            ["Sagesse", "disposition consistant à 'se connaître et à savoir bien mourir et bien vivre', selon Montaigne."],
+            ["Salut", "ce qui permet d'être sauvé, d'échapper à un danger et de trouver un état heureux. Dans le christianisme : fait d'échapper à la damnation éternelle."],
+            ["Relique", "sens propre : reste d'un saint, d'un héros qui est l'objet d'un culte ; sens figuré : objet auquel on attache un grand prix comme témoin du passé."],
+            ["Intégrisme", "position de croyants qui, au nom d'un respect intransigeant de la tradition, se refusent à toute évolution dans l'interprétation des textes."],
+            ["Hérésie", "Sens propre : doctrine ou interprétation contraire aux dogmes d'une religion et condamnée comme telle ; sens figuré : opinion, théorie qui heurte la raison."],
+            ["Doctrine", "Ensemble des croyances ou des opinions qu'on affirme comme vraies et sur lesquelles on s'appuie pour interpréter des faits ou pour agir."],
+            ["Métaphysique", "Recherche rationnelle sur des sujets qui se situent au-delà de la réalité concrète donc sur des abstractions telles que les principes de la connaissance, l'existence de Dieu."],
+            ["Déterminisme", "doctrine ou opinion selon laquelle les phénomènes ou les actions humaines sont conditionnés par des éléments antérieurs ou par d'autres phénomènes ; désigne aussi, au pluriel, l'ensemble des causes concrètes préalable à un phénomène."],
+            ["Fétichisme", "Sens propre : culte d'objets auxquels on attribue un pouvoir surnaturel ; sens figuré : attachement exagéré pour une entité, une personne ou un objet."],
+            ["Holocauste", "Sens propre : dans la religion juive ancienne, sacrifice où la victime (animal) était entièrement brûlée ; sens figuré : sacrifice total. Désigne par analogie l'extermination des Juifs sous le régime nazi, la Shoah."],
+            ["Iconoclaste", "Sens propre : qui interdit le culte des images saintes, notamment les statues ; par extension : qui détruit les oeuvres d'art ; sens figuré : qui se refuse à toute tradition."],
+            ["Parabole", "Récit allégorique destiné à donner un enseignement sous une forme imagée."],
+            ["Prosélytisme", "Sens propre : zèle déployé par une personne récemment convertie à une religion pour faire de nouveaux adeptes ; sens figuré : s'emploie aussi dans le domaine de la politique ou des opinions en général."],
+            ["Âme", "dans le christianisme, principe spirituel immortel qui se sépare du corps à la mort et qui est jugé par Dieu. Plus largement : principe de vie qui anime l'être vivant, part de la pensée, de la sensibilité et de la conscience morale."],
+            ["Ascète", "Personne qui s'impose, par piété et pour faire pénitence, des privations, des sacrifices (sens propre) ; personne qui mène une vie austère en se privant de tous les plaisirs terrestres (sens figuré)."],
+            ["Culte", "Ensemble de pratiques religieuses destinées à rendre hommage à une divinité (sens propre) ; vénération pour une personne ou une entité que l'on aime et que l'on respecte (sens figuré)."],
+            ["Entité", "Concept que l'on considère dans sa totalité et dont on parle comme d'un être réel."],
+            ["Fanatisme", "Passion excessive inspirée notamment par une religion ou une doctrine et qui conduit à la violence."],
+            ["Idéologie", "Système d'idées sur lequel se fonde un groupe social pour juger et agir (sens moderne)."],
+            ["Initiation", "Processus d'introduction à la connaissance de mystères, de savoirs réservés à un petit cercle."],
+            ["Liturgie", "Cérémonial des offices religieux (sens propre). Peut se dire aussi de cérémonials de fêtes ayant une certaine solennité (sens figuré)."],
+            ["Magie", "Art ou pouvoir inexpliqué, merveilleux, occulte, par opposition à un processus logique et rationnel."],
+            ["Oracle", "Dans l'Antiquité, réponse d'une divinité interrogée dans un sanctuaire ; opinion considérée avec beaucoup de respect, en laquelle on a confiance (parfois ironique)."],
+            ["Pardon", "Décision qui consiste à renoncer à éprouver de la rancune ou de l'hostilité à l'égard d'une personne qui vous à fait du mal. Sens religieux : absolution des pêchés."],
+            ["Philosophie", "Réflexion abstraite sur les fondements du monde et les valeurs humaines, qui a pour but d'élaborer une 'sagesse', c'est-à-dire un système de valeurs personnel, un art de vivre."]
+        ];        
+        
+        let shuffledVocab = shuffle([...vocab]);
+        let wordsToReview = [];
+        let currentCardIndex = 0;
+
+        let quizScoreCount = 0;
+        let quizTotalCount = 0;
+        let quizQuestions = [];
+        let currentQuizQuestionIndex = 0;
+
+        // General functions
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex > 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function showMode(mode) {
+            flashcardGameContainer.style.display = 'none';
+            quizGameContainer.style.display = 'none';
+            flashcardModeBtn.classList.remove('active');
+            quizModeBtn.classList.remove('active');
+
+            if (mode === 'flashcard') {
+                flashcardGameContainer.style.display = 'block';
+                flashcardModeBtn.classList.add('active');
+                displayFlashcard();
+            } else if (mode === 'quiz') {
+                quizGameContainer.style.display = 'flex';
+                quizModeBtn.classList.add('active');
+                startQuiz();
+            }
+        }
+
+        // Event listeners for mode buttons
+        flashcardModeBtn.addEventListener('click', () => showMode('flashcard'));
+        quizModeBtn.addEventListener('click', () => showMode('quiz'));
+
+        // Flashcard mode functions
+        function displayFlashcard() {
+            if (shuffledVocab.length === 0 && wordsToReview.length === 0) {
+                frontFace.textContent = "C'est fini pour aujourd'hui !";
+                backFace.textContent = "Réinitialise la page pour recommencer.";
+                prevBtn.disabled = true;
+                nextBtn.disabled = true;
+                return;
+            }
+
+            let card;
+            if (wordsToReview.length > 0 && Math.random() < 0.5) { 
+                const reviewIndex = Math.floor(Math.random() * wordsToReview.length);
+                card = wordsToReview[reviewIndex];
+                wordsToReview.splice(reviewIndex, 1);
+            } else {
+                if (shuffledVocab.length === 0) {
+                     shuffledVocab = shuffle([...vocab]);
+                }
+                card = shuffledVocab[currentCardIndex];
+            }
+
+            frontFace.textContent = card[0];
+            backFace.textContent = card[1];
+            cardCounter.textContent = `${currentCardIndex + 1} / ${vocab.length}`;
+            updateFlashcardButtons();
+        }
+
+        function updateFlashcardButtons() {
+            prevBtn.disabled = currentCardIndex === 0;
+            nextBtn.disabled = currentCardIndex >= shuffledVocab.length -1;
+            prevBtn.style.display = 'block';
+            nextBtn.style.display = 'block';
+            feedbackButtons.style.display = 'none';
+        }
+
+        flashcard.addEventListener('click', () => {
+            flashcard.classList.toggle('flipped');
+            if (flashcard.classList.contains('flipped')) {
+                prevBtn.style.display = 'none';
+                nextBtn.style.display = 'none';
+                feedbackButtons.style.display = 'flex';
+            } else {
+                updateFlashcardButtons();
+            }
+        });
+
+        const handleFeedback = (knewIt) => {
+            if (!knewIt) {
+                wordsToReview.push(shuffledVocab[currentCardIndex]);
+            }
+            
+            currentCardIndex++;
+            if (currentCardIndex >= shuffledVocab.length) {
+                if (wordsToReview.length > 0) {
+                    shuffledVocab = wordsToReview;
+                    wordsToReview = [];
+                    shuffle(shuffledVocab);
+                } else {
+                    shuffledVocab = shuffle([...vocab]);
+                }
+                currentCardIndex = 0;
+            }
+
+            flashcard.classList.remove('flipped');
+            setTimeout(() => {
+                displayFlashcard();
+            }, 300);
+        };
+        
+        knewItBtn.addEventListener('click', () => handleFeedback(true));
+        didntKnowItBtn.addEventListener('click', () => handleFeedback(false));
+
+        nextBtn.addEventListener('click', () => {
+            currentCardIndex++;
+            flashcard.classList.remove('flipped');
+            setTimeout(displayFlashcard, 300);
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (currentCardIndex > 0) {
+                currentCardIndex--;
+                flashcard.classList.remove('flipped');
+                setTimeout(displayFlashcard, 300);
+            }
+        });
+
+        // Quiz mode functions
+        function generateQuizQuestions() {
+            quizQuestions = shuffle([...vocab]);
+            quizScoreCount = 0;
+            quizTotalCount = 0;
+            currentQuizQuestionIndex = 0;
+        }
+
+        function startQuiz() {
+            generateQuizQuestions();
+            displayQuizQuestion();
+            updateQuizScore();
+        }
+
+        function displayQuizQuestion() {
+            if (currentQuizQuestionIndex >= quizQuestions.length) {
+                quizQuestion.textContent = "Quiz terminé !";
+                quizOptions.innerHTML = '';
+                return;
+            }
+
+            const currentQuestion = quizQuestions[currentQuizQuestionIndex];
+            const englishWord = currentQuestion[0];
+            const correctTranslation = currentQuestion[1];
+
+            const incorrectTranslations = vocab
+                .filter(word => word[1] !== correctTranslation)
+                .map(word => word[1]);
+            
+            shuffle(incorrectTranslations);
+            
+            const options = [correctTranslation, ...incorrectTranslations.slice(0, 3)];
+            shuffle(options);
+
+            quizQuestion.textContent = englishWord;
+            quizOptions.innerHTML = '';
+
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.addEventListener('click', () => checkAnswer(button, option, correctTranslation));
+                quizOptions.appendChild(button);
+            });
+        }
+
+        function checkAnswer(button, selectedAnswer, correctAnswer) {
+            const allButtons = quizOptions.querySelectorAll('button');
+            allButtons.forEach(btn => btn.disabled = true);
+            
+            if (selectedAnswer === correctAnswer) {
+                button.classList.add('correct');
+                quizScoreCount++;
+            } else {
+                button.classList.add('incorrect');
+                const correctButton = Array.from(allButtons).find(btn => btn.textContent === correctAnswer);
+                if (correctButton) {
+                    correctButton.classList.add('correct');
+                }
+            }
+
+            quizTotalCount++;
+            updateQuizScore();
+
+            setTimeout(() => {
+                currentQuizQuestionIndex++;
+                displayQuizQuestion();
+            }, 1500);
+        }
+
+        function updateQuizScore() {
+            quizScore.textContent = `Score: ${quizScoreCount} / ${quizTotalCount}`;
+        }
+        
+        // Function to populate the full vocabulary list
+        function generateList() {
+            vocabularyList.innerHTML = '';
+            vocab.forEach(pair => {
+                const li = document.createElement('li');
+                li.textContent = `${pair[0]} - ${pair[1]}`;
+                vocabularyList.appendChild(li);
+            });
+        }
+
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', () => {
+            showMode('flashcard');
+            generateList();
+        });
+    </script>
+</body>
+</html>
