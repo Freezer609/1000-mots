@@ -686,10 +686,14 @@
         }
         
         // Hangman mode functions
+        function removeAccents(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
+
         function startHangman(){
             const hangmanWords = vocab.map(item => item[0].toUpperCase().replace(/\s/g, ''));
             const random = hangmanWords[Math.floor(Math.random()*hangmanWords.length)];
-            chosenWord = random.toUpperCase();
+            chosenWord = random;
             displayWord = chosenWord.split('').map(l => l.match(/[A-ZÀ-ÿ]/) ? '_' : l);
             wrongGuesses = 0;
 
@@ -697,32 +701,43 @@
             hangmanLettersDiv.innerHTML = '';
             hangmanParts.forEach(id=>document.getElementById(id).style.display='none');
 
-            for(let i=65;i<=90;i++){
-                const letter = String.fromCharCode(i);
-                const btn=document.createElement('button');
-                btn.textContent=letter;
-                btn.addEventListener('click',()=>guessLetter(letter,btn));
+            // Créer les boutons pour l'alphabet
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÂÄÈÉÊËÎÏÔÖÙÛÜÇŒ";
+            const uniqueLetters = [...new Set(alphabet.split(''))];
+            
+            uniqueLetters.forEach(letter => {
+                const btn = document.createElement('button');
+                btn.textContent = letter;
+                btn.addEventListener('click', () => guessLetter(letter, btn));
                 hangmanLettersDiv.appendChild(btn);
-            }
+            });
         }
 
-        function guessLetter(letter,btn){
-            btn.disabled=true;
-            if(chosenWord.includes(letter)){
-                chosenWord.split('').forEach((l,idx)=>{
-                    if(l===letter) displayWord[idx]=letter;
-                });
+        function guessLetter(letter, btn) {
+            btn.disabled = true;
+            const normalizedChosenWord = removeAccents(chosenWord);
+            const normalizedLetter = removeAccents(letter);
+            let found = false;
+
+            for (let i = 0; i < chosenWord.length; i++) {
+                if (removeAccents(chosenWord[i]) === normalizedLetter) {
+                    displayWord[i] = chosenWord[i];
+                    found = true;
+                }
+            }
+
+            if (found) {
                 hangmanWordDiv.textContent = displayWord.join(' ');
-                if(!displayWord.includes('_')){
-                    setTimeout(()=>{alert("Bravo ! Tu as trouvé le mot : "+chosenWord);startHangman();},500);
+                if (!displayWord.includes('_')) {
+                    setTimeout(() => { alert("Bravo ! Tu as trouvé le mot : " + chosenWord); startHangman(); }, 500);
                 }
             } else {
                 if (wrongGuesses < hangmanParts.length) {
-                    document.getElementById(hangmanParts[wrongGuesses]).style.display='block';
+                    document.getElementById(hangmanParts[wrongGuesses]).style.display = 'block';
                     wrongGuesses++;
                 }
-                if(wrongGuesses>=hangmanParts.length){
-                    setTimeout(()=>{alert("Perdu ! Le mot était : "+chosenWord);startHangman();},500);
+                if (wrongGuesses >= hangmanParts.length) {
+                    setTimeout(() => { alert("Perdu ! Le mot était : " + chosenWord); startHangman(); }, 500);
                 }
             }
         }
