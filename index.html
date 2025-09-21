@@ -64,7 +64,7 @@
             box-shadow: 0 0 15px #03DAC6;
         }
         
-        .flashcard-game-container {
+        .flashcard-game-container, .quiz-game-container, .hangman-game-container {
             display: none;
         }
 
@@ -152,7 +152,7 @@
             box-shadow: none;
         }
 
-        #cardCounter {
+        #cardCounter, .quiz-score {
             font-size: 1.2em;
             font-weight: 700;
             color: #BB86FC;
@@ -271,15 +271,34 @@
         .quiz-controls button {
             background-color: #03DAC6;
         }
-
-        .quiz-score {
-            font-size: 1.2em;
-            font-weight: 700;
-            color: #BB86FC;
-            background-color: #2C2C2C;
-            padding: 10px 15px;
-            border-radius: 8px;
+        
+        /* Hangman */
+        .hangman-game-container {
+            display: none;
+        }
+        .hangman-word {
+            font-size: 2em;
+            letter-spacing: 10px;
             margin-bottom: 20px;
+        }
+        .hangman-letters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .hangman-letters button {
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            font-size: 1.2em;
+        }
+        .hangman-drawing {
+            margin: 20px auto;
+            max-width: 200px;
+            border: 1px solid #E0E0E0;
+            border-radius: 5px;
         }
 
         @media (max-width: 600px) {
@@ -304,6 +323,11 @@
             .quiz-options {
                 grid-template-columns: 1fr;
             }
+            .hangman-letters button {
+                width: 35px;
+                height: 35px;
+                font-size: 1em;
+            }
         }
     </style>
 </head>
@@ -317,6 +341,7 @@
         <div class="mode-selector">
             <button id="flashcardModeBtn" class="active">Mode Cartes</button>
             <button id="quizModeBtn">Mode Quiz</button>
+            <button id="hangmanModeBtn">Mode Pendu</button>
         </div>
         
         <div id="flashcardGameContainer" class="flashcard-game-container" style="display: block;">
@@ -344,6 +369,23 @@
             <div id="quizOptions" class="quiz-options"></div>
         </div>
 
+        <div id="hangmanGameContainer" class="hangman-game-container">
+            <svg class="hangman-drawing" viewBox="0 0 200 200">
+                <line x1="10" y1="190" x2="150" y2="190" stroke="#fff" stroke-width="4" />
+                <line x1="40" y1="190" x2="40" y2="20" stroke="#fff" stroke-width="4" />
+                <line x1="40" y1="20" x2="120" y2="20" stroke="#fff" stroke-width="4" />
+                <line x1="120" y1="20" x2="120" y2="40" stroke="#fff" stroke-width="4" />
+                <circle id="head" cx="120" cy="55" r="15" stroke="#fff" stroke-width="3" fill="none" style="display:none" />
+                <line id="body" x1="120" y1="70" x2="120" y2="120" stroke="#fff" stroke-width="3" style="display:none" />
+                <line id="arm1" x1="120" y1="80" x2="100" y2="100" stroke="#fff" stroke-width="3" style="display:none" />
+                <line id="arm2" x1="120" y1="80" x2="140" y2="100" stroke="#fff" stroke-width="3" style="display:none" />
+                <line id="leg1" x1="120" y1="120" x2="100" y2="150" stroke="#fff" stroke-width="3" style="display:none" />
+                <line id="leg2" x1="120" y1="120" x2="140" y2="150" stroke="#fff" stroke-width="3" style="display:none" />
+            </svg>
+            <div id="hangmanWord" class="hangman-word"></div>
+            <div id="hangmanLetters" class="hangman-letters"></div>
+        </div>
+
         <div class="list-section">
             <h2>Liste Complète</h2>
             <ul class="vocabulary-list">
@@ -355,13 +397,14 @@
             <p>
                 - **Mode Cartes** : Clique sur la carte pour voir la traduction, puis dis si tu l'avais ou non. Les mots non connus reviendront plus souvent.
                 - **Mode Quiz** : Lis le mot anglais et choisis la bonne traduction parmi les options.
+                - **Mode Pendu** : Devine le mot en anglais en cliquant sur les lettres.
                 - La liste complète est disponible en bas de page pour réviser à tout moment.
             </p>
         </div>
     </div>
 
     <script>
-        // DOM elements for Flashcard and Quiz games
+        // DOM elements for Flashcard, Quiz and Hangman games
         const flashcard = document.getElementById('flashcard');
         const frontFace = document.getElementById('front');
         const backFace = document.getElementById('back');
@@ -375,11 +418,17 @@
         
         const flashcardModeBtn = document.getElementById('flashcardModeBtn');
         const quizModeBtn = document.getElementById('quizModeBtn');
+        const hangmanModeBtn = document.getElementById('hangmanModeBtn');
         const flashcardGameContainer = document.getElementById('flashcardGameContainer');
         const quizGameContainer = document.getElementById('quizGameContainer');
+        const hangmanGameContainer = document.getElementById('hangmanGameContainer');
         const quizQuestion = document.getElementById('quizQuestion');
         const quizOptions = document.getElementById('quizOptions');
         const quizScore = document.getElementById('quizScore');
+
+        const hangmanWordDiv = document.getElementById('hangmanWord');
+        const hangmanLettersDiv = document.getElementById('hangmanLetters');
+        const hangmanParts = ["head","body","arm1","arm2","leg1","leg2"];
 
         // Vocabulary data
         let vocab = [
@@ -433,6 +482,10 @@
         let quizQuestions = [];
         let currentQuizQuestionIndex = 0;
 
+        let chosenWord = "";
+        let displayWord = [];
+        let wrongGuesses = 0;
+
         // General functions
         function shuffle(array) {
             let currentIndex = array.length, randomIndex;
@@ -447,8 +500,10 @@
         function showMode(mode) {
             flashcardGameContainer.style.display = 'none';
             quizGameContainer.style.display = 'none';
+            hangmanGameContainer.style.display = 'none';
             flashcardModeBtn.classList.remove('active');
             quizModeBtn.classList.remove('active');
+            hangmanModeBtn.classList.remove('active');
 
             if (mode === 'flashcard') {
                 flashcardGameContainer.style.display = 'block';
@@ -458,12 +513,17 @@
                 quizGameContainer.style.display = 'flex';
                 quizModeBtn.classList.add('active');
                 startQuiz();
+            } else if (mode === 'hangman') {
+                hangmanGameContainer.style.display = 'block';
+                hangmanModeBtn.classList.add('active');
+                startHangman();
             }
         }
 
         // Event listeners for mode buttons
         flashcardModeBtn.addEventListener('click', () => showMode('flashcard'));
         quizModeBtn.addEventListener('click', () => showMode('quiz'));
+        hangmanModeBtn.addEventListener('click', () => showMode('hangman'));
 
         // Flashcard mode functions
         function displayFlashcard() {
@@ -625,6 +685,48 @@
             quizScore.textContent = `Score: ${quizScoreCount} / ${quizTotalCount}`;
         }
         
+        // Hangman mode functions
+        function startHangman(){
+            const hangmanWords = vocab.map(item => item[0].toUpperCase().replace(/\s/g, ''));
+            const random = hangmanWords[Math.floor(Math.random()*hangmanWords.length)];
+            chosenWord = random.toUpperCase();
+            displayWord = chosenWord.split('').map(l => l.match(/[A-ZÀ-ÿ]/) ? '_' : l);
+            wrongGuesses = 0;
+
+            hangmanWordDiv.textContent = displayWord.join(' ');
+            hangmanLettersDiv.innerHTML = '';
+            hangmanParts.forEach(id=>document.getElementById(id).style.display='none');
+
+            for(let i=65;i<=90;i++){
+                const letter = String.fromCharCode(i);
+                const btn=document.createElement('button');
+                btn.textContent=letter;
+                btn.addEventListener('click',()=>guessLetter(letter,btn));
+                hangmanLettersDiv.appendChild(btn);
+            }
+        }
+
+        function guessLetter(letter,btn){
+            btn.disabled=true;
+            if(chosenWord.includes(letter)){
+                chosenWord.split('').forEach((l,idx)=>{
+                    if(l===letter) displayWord[idx]=letter;
+                });
+                hangmanWordDiv.textContent = displayWord.join(' ');
+                if(!displayWord.includes('_')){
+                    setTimeout(()=>{alert("Bravo ! Tu as trouvé le mot : "+chosenWord);startHangman();},500);
+                }
+            } else {
+                if (wrongGuesses < hangmanParts.length) {
+                    document.getElementById(hangmanParts[wrongGuesses]).style.display='block';
+                    wrongGuesses++;
+                }
+                if(wrongGuesses>=hangmanParts.length){
+                    setTimeout(()=>{alert("Perdu ! Le mot était : "+chosenWord);startHangman();},500);
+                }
+            }
+        }
+
         // Function to populate the full vocabulary list
         function generateList() {
             vocabularyList.innerHTML = '';
@@ -643,5 +745,3 @@
     </script>
 </body>
 </html>
-
-
