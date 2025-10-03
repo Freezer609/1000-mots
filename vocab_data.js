@@ -6,7 +6,11 @@ const ALL_VOCAB_DATA = {
         subcategories: {
             'noms': {
                 name: 'Noms',
-                color: '#FF8C00', 
+                color: '#FF8C00',
+                alert: {
+                    message: "La liste de vocabulaire est toujours à jour mais l'intero s'est déroulé le 22-09-25. Cette liste est donc obsolète pour la prochaine intero.",
+                    color: '#FF8C00' // Orange
+                },
                 data: [
     ["Damnation", "la condamnation à l'enfer"],
     ["Dogmes", "les vérités fondamentales, les croyances obligatoires"],
@@ -52,7 +56,11 @@ const ALL_VOCAB_DATA = {
             'adj_verbes': {
                 name: 'Adjectifs et Verbes',
                 color: '#4CAF50', 
-                data: [ // <-- Corrigé: Un seul crochet ouvrant
+                alert: {
+                    message: "Le voc est à jour ! Vous pouvez étudier et tester vos connaissances sur le site ! Si une erreur survient, prévenez-moi, je me droguerai à nouveau à la caféine :)",
+                    color: '#4CAF50' // Vert
+                },
+                data: [
     ["absurde", "insensée, déraisonnable, contraire à la logique"],
     ["athée", "qui ne croit en aucun dieu"],
     ["augurer", "prévoir"],
@@ -83,7 +91,7 @@ const ALL_VOCAB_DATA = {
 ]
      }
         }
-    }, // <-- VIRGULE AJOUTÉE ICI !
+    }, 
     
     // Exemple d'ajout futur : Chapitre 20
     'chap20': {
@@ -93,6 +101,7 @@ const ALL_VOCAB_DATA = {
             'general': {
                 name: 'Vocabulaire Général',
                 color: '#BB86FC',
+                alert: null, // Pas d'alerte pour ce chapitre
                 data: [
                      // PLACE ICI LES PAIRES MOT/DEFINITION DU CHAPITRE 20
                 ]
