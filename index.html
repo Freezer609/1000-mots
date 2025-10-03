@@ -27,6 +27,13 @@
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             text-align: center;
+            /* Ajout de la transition CSS sur l'opacité */
+            transition: opacity 0.3s ease-in-out; 
+        }
+
+        /* Nouvelle classe pour l'animation de fondu */
+        .container.fade-out {
+            opacity: 0;
         }
 
         h1 {
@@ -485,6 +492,8 @@
     <script src="vocab_data.js"></script>
 
     <script>
+        const container = document.querySelector('.container'); // Ajout de la référence au conteneur principal
+
         const flashcard = document.getElementById('flashcard');
         const frontFace = document.getElementById('front');
         const backFace = document.getElementById('back');
@@ -517,8 +526,8 @@
         const modalButtons = document.getElementById('modalButtons');
         const listTitle = document.getElementById('listTitle');
 
-        const alertMessageDiv = document.getElementById('alertMessage'); // Ajout de la référence à la div d'alerte
-        const alertTextP = document.getElementById('alertText'); // Ajout de la référence au paragraphe de texte
+        const alertMessageDiv = document.getElementById('alertMessage');
+        const alertTextP = document.getElementById('alertText');
 
         let vocab = [];
         let currentChapterKey = null;
@@ -572,7 +581,6 @@
             modalTitle.textContent = `Choisir la catégorie du ${chapter.title}`;
             modalButtons.innerHTML = '';
 
-            // Cache le message d'alerte lorsqu'on ouvre la modale
             hideAlert();
 
             for (const subKey in chapter.subcategories) {
@@ -589,51 +597,57 @@
 
         function changeVocabulary(chapterKey, subKey) {
             categoryModal.style.display = 'none';
-            const chapterData = ALL_VOCAB_DATA[chapterKey];
-            const subcategoryData = chapterData.subcategories[subKey];
             
-            vocab = subcategoryData.data;
-            listTitle.textContent = `${chapterData.title} - ${subcategoryData.name}`;
+            // ÉTAPE 1 : Appliquer l'effet de fondu (fade-out)
+            container.classList.add('fade-out');
+            
+            // Le changement de contenu se fait après le fade-out (300ms)
+            setTimeout(() => {
+                const chapterData = ALL_VOCAB_DATA[chapterKey];
+                const subcategoryData = chapterData.subcategories[subKey];
+                
+                vocab = subcategoryData.data;
+                listTitle.textContent = `${chapterData.title} - ${subcategoryData.name}`;
 
-            document.querySelectorAll('.category-selector button').forEach(btn => btn.classList.remove('active'));
-            const activeChapterBtn = document.getElementById(chapterData.selectorId);
-            if(activeChapterBtn) activeChapterBtn.classList.add('active');
+                document.querySelectorAll('.category-selector button').forEach(btn => btn.classList.remove('active'));
+                const activeChapterBtn = document.getElementById(chapterData.selectorId);
+                if(activeChapterBtn) activeChapterBtn.classList.add('active');
 
-            shuffledVocab = shuffle([...vocab]);
-            wordsToReview = [];
-            currentCardIndex = 0;
-            
-            const activeModeBtn = document.querySelector('.mode-selector button.active');
-            let mode = 'flashcard'; // Par défaut au mode carte
-            if (activeModeBtn) {
-                mode = activeModeBtn.id.replace('ModeBtn', '');
-            }
-            showMode(mode);
-            
-            generateList();
-            
-            // NOUVELLE LOGIQUE POUR LE MESSAGE D'ALERTE
-            updateAlert(subcategoryData.alert);
+                shuffledVocab = shuffle([...vocab]);
+                wordsToReview = [];
+                currentCardIndex = 0;
+                
+                const activeModeBtn = document.querySelector('.mode-selector button.active');
+                let mode = 'flashcard'; 
+                if (activeModeBtn) {
+                    mode = activeModeBtn.id.replace('ModeBtn', '');
+                }
+                showMode(mode);
+                
+                generateList();
+                updateAlert(subcategoryData.alert);
+                
+                // ÉTAPE 2 : Retirer l'effet de fondu (fade-in)
+                container.classList.remove('fade-out');
+
+            }, 300); // 300ms correspond à la durée de la transition CSS
         }
 
         function updateAlert(alertData) {
-            // Retire toutes les classes de couleur existantes
             alertMessageDiv.classList.remove('alert-orange', 'alert-green', 'alert-purple');
             
             if (alertData && alertData.message) {
-                alertTextP.textContent = alertData.message;
+                // CORRECTION : Mettre le texte à jour
+                alertTextP.textContent = alertData.message; 
                 alertMessageDiv.style.display = 'block';
                 
-                // Applique la couleur en fonction du code hexadécimal fourni dans alertData.color
                 if (alertData.color) {
                     alertMessageDiv.style.backgroundColor = alertData.color;
                 } else {
-                    // Couleur par défaut si non spécifiée
                     alertMessageDiv.style.backgroundColor = '#FF8C00'; 
                 }
 
             } else {
-                // Cache l'encadré si aucun message n'est spécifié
                 hideAlert();
             }
         }
@@ -660,7 +674,6 @@
                  nextBtn.disabled = true;
                  feedbackButtons.style.display = 'none';
                  
-                 // Cache l'alerte si aucune catégorie n'est chargée
                  hideAlert();
                  return;
             }
@@ -917,7 +930,6 @@
         // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
             generateChapterButtons(); 
-            // Cache l'alerte par défaut (sera réaffichée par changeVocabulary si besoin)
             hideAlert();
         });
     </script>
