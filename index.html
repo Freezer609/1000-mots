@@ -27,11 +27,9 @@
             border-radius: 15px;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
             text-align: center;
-            /* Ajout de la transition CSS sur l'opacité */
             transition: opacity 0.3s ease-in-out; 
         }
 
-        /* Nouvelle classe pour l'animation de fondu */
         .container.fade-out {
             opacity: 0;
         }
@@ -42,7 +40,7 @@
             margin-bottom: 20px;
             color: #BB86FC;
         }
-        /* Style général pour les messages d'alerte */
+        
         .alert-message {
             color: #FFFFFF;
             padding: 15px;
@@ -50,20 +48,9 @@
             font-weight: 600;
             margin-bottom: 30px;
             text-align: left;
-            display: none; /* Caché par défaut */
+            display: none; 
         }
 
-        /* Classes spécifiques pour les couleurs, si besoin */
-        .alert-orange {
-            background-color: #FF8C00;
-        }
-        .alert-green {
-            background-color: #4CAF50;
-        }
-        .alert-purple {
-            background-color: #BB86FC;
-        }
-        
         .category-selector, .mode-selector {
             display: flex;
             justify-content: center;
@@ -95,7 +82,7 @@
             box-shadow: 0 0 15px #03DAC6;
         }
         
-        .flashcard-game-container, .quiz-game-container, .hangman-game-container {
+        .flashcard-game-container, .quiz-game-container, .hangman-game-container, .scramble-game-container {
             display: none;
         }
 
@@ -293,16 +280,6 @@
             background-color: #F44336;
         }
 
-        .quiz-controls {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-
-        .quiz-controls button {
-            background-color: #03DAC6;
-        }
-        
         .hangman-game-container {
             display: none;
         }
@@ -329,6 +306,49 @@
             max-width: 200px;
             border: 1px solid #E0E0E0;
             border-radius: 5px;
+        }
+
+        .scramble-game-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 30px 0 0 0;
+        }
+
+        #scrambleInput {
+            padding: 15px;
+            width: 80%;
+            max-width: 400px;
+            border: 2px solid #BB86FC;
+            border-radius: 8px;
+            font-size: 1.2em;
+            text-align: center;
+            background-color: #333333;
+            color: #E0E0E0;
+            transition: border-color 0.3s;
+        }
+
+        #scrambleInput:focus {
+            outline: none;
+            border-color: #03DAC6;
+        }
+
+        #scrambleWord {
+            font-size: 2.5em; 
+            letter-spacing: 5px;
+        }
+
+        .scramble-clue {
+            font-size: 1.2em;
+            color: #999999;
+            margin-bottom: 20px;
+        }
+
+        .scramble-feedback {
+            font-weight: 700;
+            margin-top: 10px;
+            min-height: 20px;
         }
 
         .modal {
@@ -417,6 +437,7 @@
             <button id="flashcardModeBtn" class="active">Mode Cartes</button>
             <button id="quizModeBtn">Mode Quiz</button>
             <button id="hangmanModeBtn">Mode Pendu</button>
+            <button id="scrambleModeBtn">Mode Réarrangement</button>
         </div>
         
     
@@ -464,6 +485,15 @@
        
         </div>
 
+        <div id="scrambleGameContainer" class="scramble-game-container">
+            <div id="scrambleWord" class="quiz-question"></div>
+            <div id="scrambleClue" class="scramble-clue"></div>
+            <input type="text" id="scrambleInput" placeholder="Écris le mot ici..." autocomplete="off">
+            <button id="scrambleCheckBtn">Vérifier</button>
+            <div id="scrambleFeedback" class="scramble-feedback"></div>
+            <button id="scrambleNextBtn" style="display:none;">Mot Suivant &rarr;</button>
+        </div>
+
         <div class="list-section">
             <h2 id="listTitle">Liste Complète</h2>
             <ul class="vocabulary-list"></ul>
@@ -476,6 +506,7 @@
                 - **Mode Cartes** : Clique sur la carte pour voir la définition, puis dis si tu l'avais ou non. Les mots non connus reviendront plus souvent.
                 - **Mode Quiz** : Lis le mot et choisis la bonne traduction parmi les options.
                 - **Mode Pendu** : Devine le mot en cliquant sur les lettres.
+                - **Mode Réarrangement** : Un mot est mélangé, retrouve le mot original en t'aidant de l'indice (la définition).
                 - La liste complète est disponible en bas de page pour réviser à tout moment.
             </p>
         </div>
@@ -492,7 +523,7 @@
     <script src="vocab_data.js"></script>
 
     <script>
-        const container = document.querySelector('.container'); // Ajout de la référence au conteneur principal
+        const container = document.querySelector('.container');
 
         const flashcard = document.getElementById('flashcard');
         const frontFace = document.getElementById('front');
@@ -505,13 +536,16 @@
         const knewItBtn = document.getElementById('knewItBtn');
         const didntKnowItBtn = document.getElementById('didntKnowItBtn');
         
-        const mainTitle = document.getElementById('mainTitle');
         const flashcardModeBtn = document.getElementById('flashcardModeBtn');
         const quizModeBtn = document.getElementById('quizModeBtn');
         const hangmanModeBtn = document.getElementById('hangmanModeBtn');
+        const scrambleModeBtn = document.getElementById('scrambleModeBtn');
+
         const flashcardGameContainer = document.getElementById('flashcardGameContainer');
         const quizGameContainer = document.getElementById('quizGameContainer');
         const hangmanGameContainer = document.getElementById('hangmanGameContainer');
+        const scrambleGameContainer = document.getElementById('scrambleGameContainer');
+
         const quizQuestion = document.getElementById('quizQuestion');
         const quizOptions = document.getElementById('quizOptions');
         const quizScore = document.getElementById('quizScore');
@@ -519,6 +553,13 @@
         const hangmanWordDiv = document.getElementById('hangmanWord');
         const hangmanLettersDiv = document.getElementById('hangmanLetters');
         const hangmanParts = ["head", "body", "arm1", "arm2", "leg1", "leg2"];
+
+        const scrambleWordDiv = document.getElementById('scrambleWord');
+        const scrambleClueDiv = document.getElementById('scrambleClue');
+        const scrambleInput = document.getElementById('scrambleInput');
+        const scrambleCheckBtn = document.getElementById('scrambleCheckBtn');
+        const scrambleFeedbackDiv = document.getElementById('scrambleFeedback');
+        const scrambleNextBtn = document.getElementById('scrambleNextBtn');
 
         const chapterSelector = document.getElementById('chapterSelector');
         const categoryModal = document.getElementById('categoryModal');
@@ -530,7 +571,6 @@
         const alertTextP = document.getElementById('alertText');
 
         let vocab = [];
-        let currentChapterKey = null;
         
         let shuffledVocab = [];
         let wordsToReview = [];
@@ -544,6 +584,9 @@
         let chosenWord = "";
         let displayWord = [];
         let wrongGuesses = 0;
+
+        let currentScrambleWord = null;
+        let currentScrambleDefinition = null;
 
         function shuffle(array) {
             let currentIndex = array.length, randomIndex;
@@ -565,7 +608,6 @@
                 btn.setAttribute('data-chapter-key', key);
                 
                 btn.addEventListener('click', () => {
-                    currentChapterKey = key;
                     if (Object.keys(chapter.subcategories).length > 1) {
                         openSubcategoryModal(chapter);
                     } else {
@@ -598,10 +640,8 @@
         function changeVocabulary(chapterKey, subKey) {
             categoryModal.style.display = 'none';
             
-            // ÉTAPE 1 : Appliquer l'effet de fondu (fade-out)
             container.classList.add('fade-out');
             
-            // Le changement de contenu se fait après le fade-out (300ms)
             setTimeout(() => {
                 const chapterData = ALL_VOCAB_DATA[chapterKey];
                 const subcategoryData = chapterData.subcategories[subKey];
@@ -627,17 +667,15 @@
                 generateList();
                 updateAlert(subcategoryData.alert);
                 
-                // ÉTAPE 2 : Retirer l'effet de fondu (fade-in)
                 container.classList.remove('fade-out');
 
-            }, 300); // 300ms correspond à la durée de la transition CSS
+            }, 300);
         }
 
         function updateAlert(alertData) {
             alertMessageDiv.classList.remove('alert-orange', 'alert-green', 'alert-purple');
             
             if (alertData && alertData.message) {
-                // CORRECTION : Mettre le texte à jour
                 alertTextP.textContent = alertData.message; 
                 alertMessageDiv.style.display = 'block';
                 
@@ -661,6 +699,10 @@
                 categoryModal.style.display = 'none';
             }
         });
+
+        function removeAccents(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+        }
         
         function showMode(mode) {
             if (vocab.length === 0) {
@@ -669,6 +711,7 @@
                  flashcardGameContainer.style.display = 'block'; 
                  quizGameContainer.style.display = 'none';
                  hangmanGameContainer.style.display = 'none';
+                 scrambleGameContainer.style.display = 'none';
                  cardCounter.textContent = '0 / 0';
                  prevBtn.disabled = true;
                  nextBtn.disabled = true;
@@ -681,9 +724,12 @@
             flashcardGameContainer.style.display = 'none';
             quizGameContainer.style.display = 'none';
             hangmanGameContainer.style.display = 'none';
+            scrambleGameContainer.style.display = 'none';
+
             flashcardModeBtn.classList.remove('active');
             quizModeBtn.classList.remove('active');
             hangmanModeBtn.classList.remove('active');
+            scrambleModeBtn.classList.remove('active');
 
             if (mode === 'flashcard') {
                 flashcardGameContainer.style.display = 'block';
@@ -700,12 +746,18 @@
                 hangmanGameContainer.style.display = 'block';
                 hangmanModeBtn.classList.add('active');
                 startHangman();
+            } else if (mode === 'scramble') {
+                scrambleGameContainer.style.display = 'flex';
+                scrambleModeBtn.classList.add('active');
+                startScramble();
             }
         }
 
         flashcardModeBtn.addEventListener('click', () => showMode('flashcard'));
         quizModeBtn.addEventListener('click', () => showMode('quiz'));
         hangmanModeBtn.addEventListener('click', () => showMode('hangman'));
+        scrambleModeBtn.addEventListener('click', () => showMode('scramble'));
+
 
         function displayFlashcard() {
             if (shuffledVocab.length === 0 && wordsToReview.length === 0) {
@@ -864,10 +916,6 @@
             quizScore.textContent = `Score: ${quizScoreCount} / ${quizTotalCount}`;
         }
         
-        function removeAccents(str) {
-            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        }
-
         function startHangman(){
             if (vocab.length === 0) return;
             const hangmanWords = vocab.map(item => item[0].toUpperCase().replace(/\s/g, ''));
@@ -918,6 +966,71 @@
             }
         }
 
+        function scrambleWord(word) {
+            let a = word.split("");
+            let n = a.length;
+
+            for(let i = n - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                let tmp = a[i];
+                a[i] = a[j];
+                a[j] = tmp;
+            }
+            return a.join("");
+        }
+
+        function startScramble() {
+            if (vocab.length === 0) return;
+
+            scrambleInput.value = '';
+            scrambleInput.disabled = false;
+            scrambleCheckBtn.style.display = 'block';
+            scrambleNextBtn.style.display = 'none';
+            scrambleFeedbackDiv.textContent = '';
+            
+            const randomPair = vocab[Math.floor(Math.random() * vocab.length)];
+            const originalWord = randomPair[0];
+            const definition = randomPair[1];
+
+            currentScrambleWord = removeAccents(originalWord).toUpperCase();
+            currentScrambleDefinition = definition;
+            
+            let scrambled = scrambleWord(originalWord.toUpperCase());
+            
+            if (scrambled === originalWord.toUpperCase()) {
+                 scrambled = scrambleWord(originalWord.toUpperCase());
+            }
+
+            scrambleWordDiv.textContent = scrambled;
+            scrambleClueDiv.textContent = `Indice : ${currentScrambleDefinition}`;
+        }
+
+        function checkScramble() {
+            const userAnswer = removeAccents(scrambleInput.value).toUpperCase();
+            
+            if (userAnswer === currentScrambleWord) {
+                scrambleFeedbackDiv.textContent = "Bravo ! C'est correct !";
+                scrambleFeedbackDiv.style.color = '#4CAF50'; 
+                scrambleInput.disabled = true;
+                scrambleCheckBtn.style.display = 'none';
+                scrambleNextBtn.style.display = 'block';
+
+            } else {
+                scrambleFeedbackDiv.textContent = "Incorrect. Essaie encore !";
+                scrambleFeedbackDiv.style.color = '#F44336'; 
+                scrambleInput.focus();
+            }
+        }
+
+        scrambleCheckBtn.addEventListener('click', checkScramble);
+        scrambleNextBtn.addEventListener('click', startScramble);
+
+        scrambleInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && scrambleCheckBtn.style.display !== 'none') {
+                checkScramble();
+            }
+        });
+
         function generateList() {
             vocabularyList.innerHTML = '';
             vocab.forEach(pair => {
@@ -927,7 +1040,6 @@
             });
         }
 
-        // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
             generateChapterButtons(); 
             hideAlert();
