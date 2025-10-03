@@ -586,10 +586,11 @@
             currentCardIndex = 0;
             
             const activeModeBtn = document.querySelector('.mode-selector button.active');
+            let mode = 'flashcard'; // Par défaut au mode carte
             if (activeModeBtn) {
-                const mode = activeModeBtn.id.replace('ModeBtn', '');
-                showMode(mode);
+                mode = activeModeBtn.id.replace('ModeBtn', '');
             }
+            showMode(mode);
             
             generateList();
         }
@@ -863,8 +864,9 @@
             });
         }
 
+        // CECI EST L'APPEL FINAL ET CORRECT : il génère les boutons au chargement de la page.
         document.addEventListener('DOMContentLoaded', () => {
-            generateChapterButtons();
+            generateChapterButtons(); 
         });
     </script>
 </body>
