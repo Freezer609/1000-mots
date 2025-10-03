@@ -52,7 +52,7 @@ const ALL_VOCAB_DATA = {
             'adj_verbes': {
                 name: 'Adjectifs et Verbes',
                 color: '#4CAF50', 
-                data: [[
+                data: [ // <-- Corrigé: Un seul crochet ouvrant
     ["absurde", "insensée, déraisonnable, contraire à la logique"],
     ["athée", "qui ne croit en aucun dieu"],
     ["augurer", "prévoir"],
@@ -83,7 +83,7 @@ const ALL_VOCAB_DATA = {
 ]
      }
         }
-    },
+    }, // <-- VIRGULE AJOUTÉE ICI !
     
     // Exemple d'ajout futur : Chapitre 20
     'chap20': {
