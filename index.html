@@ -35,17 +35,28 @@
             margin-bottom: 20px;
             color: #BB86FC;
         }
-
-        .success-message {
-            background-color: #FF8C00;
+        /* Style général pour les messages d'alerte */
+        .alert-message {
             color: #FFFFFF;
             padding: 15px;
             border-radius: 10px;
             font-weight: 600;
             margin-bottom: 30px;
             text-align: left;
+            display: none; /* Caché par défaut */
         }
 
+        /* Classes spécifiques pour les couleurs, si besoin */
+        .alert-orange {
+            background-color: #FF8C00;
+        }
+        .alert-green {
+            background-color: #4CAF50;
+        }
+        .alert-purple {
+            background-color: #BB86FC;
+        }
+        
         .category-selector, .mode-selector {
             display: flex;
             justify-content: center;
@@ -386,9 +397,10 @@
 </head>
 <body>
     <div class="container">
-        <div class="success-message">
-            <p>La liste de vocabulaire est toujours à jour mais l'intero s'est déroulé le 22-09-25. Cette liste est donc obsolète pour la prochaine intero.</p>
+        <div id="alertMessage" class="alert-message">
+            <p id="alertText"></p>
         </div>
+        
         <h1 id="mainTitle">1000 Mots</h1>
 
         <div id="chapterSelector" class="category-selector">
@@ -505,6 +517,9 @@
         const modalButtons = document.getElementById('modalButtons');
         const listTitle = document.getElementById('listTitle');
 
+        const alertMessageDiv = document.getElementById('alertMessage'); // Ajout de la référence à la div d'alerte
+        const alertTextP = document.getElementById('alertText'); // Ajout de la référence au paragraphe de texte
+
         let vocab = [];
         let currentChapterKey = null;
         
@@ -557,6 +572,9 @@
             modalTitle.textContent = `Choisir la catégorie du ${chapter.title}`;
             modalButtons.innerHTML = '';
 
+            // Cache le message d'alerte lorsqu'on ouvre la modale
+            hideAlert();
+
             for (const subKey in chapter.subcategories) {
                 const sub = chapter.subcategories[subKey];
                 const subBtn = document.createElement('button');
@@ -593,6 +611,35 @@
             showMode(mode);
             
             generateList();
+            
+            // NOUVELLE LOGIQUE POUR LE MESSAGE D'ALERTE
+            updateAlert(subcategoryData.alert);
+        }
+
+        function updateAlert(alertData) {
+            // Retire toutes les classes de couleur existantes
+            alertMessageDiv.classList.remove('alert-orange', 'alert-green', 'alert-purple');
+            
+            if (alertData && alertData.message) {
+                alertTextP.textContent = alertData.message;
+                alertMessageDiv.style.display = 'block';
+                
+                // Applique la couleur en fonction du code hexadécimal fourni dans alertData.color
+                if (alertData.color) {
+                    alertMessageDiv.style.backgroundColor = alertData.color;
+                } else {
+                    // Couleur par défaut si non spécifiée
+                    alertMessageDiv.style.backgroundColor = '#FF8C00'; 
+                }
+
+            } else {
+                // Cache l'encadré si aucun message n'est spécifié
+                hideAlert();
+            }
+        }
+
+        function hideAlert() {
+            alertMessageDiv.style.display = 'none';
         }
         
         window.addEventListener('click', (event) => {
@@ -612,6 +659,9 @@
                  prevBtn.disabled = true;
                  nextBtn.disabled = true;
                  feedbackButtons.style.display = 'none';
+                 
+                 // Cache l'alerte si aucune catégorie n'est chargée
+                 hideAlert();
                  return;
             }
 
@@ -864,9 +914,11 @@
             });
         }
 
-        // CECI EST L'APPEL FINAL ET CORRECT : il génère les boutons au chargement de la page.
+        // Initialize the app
         document.addEventListener('DOMContentLoaded', () => {
             generateChapterButtons(); 
+            // Cache l'alerte par défaut (sera réaffichée par changeVocabulary si besoin)
+            hideAlert();
         });
     </script>
 </body>
