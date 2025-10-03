@@ -313,7 +313,6 @@
             border-radius: 5px;
         }
 
-        /* Modal / Pop-up styles */
         .modal {
             display: none;
             position: fixed;
@@ -393,7 +392,7 @@
         <h1 id="mainTitle">1000 Mots</h1>
 
         <div id="chapterSelector" class="category-selector">
-            </div>
+        </div>
         
         <div class="mode-selector">
             <button id="flashcardModeBtn" class="active">Mode Cartes</button>
@@ -467,7 +466,7 @@
         <div class="modal-content">
             <h3 id="modalTitle"></h3>
             <div id="modalButtons" class="modal-buttons">
-                </div>
+            </div>
         </div>
     </div>
 
@@ -506,7 +505,7 @@
         const modalButtons = document.getElementById('modalButtons');
         const listTitle = document.getElementById('listTitle');
 
-        let vocab = []; // Contient la liste de travail actuelle (comme tu l'as demandé)
+        let vocab = [];
         let currentChapterKey = null;
         
         let shuffledVocab = [];
@@ -532,8 +531,6 @@
             return array;
         }
 
-        // --- GESTION DYNAMIQUE DES CHAPITRES ET CATÉGORIES ---
-        
         function generateChapterButtons() {
             chapterSelector.innerHTML = '';
             for (const key in ALL_VOCAB_DATA) {
@@ -548,7 +545,6 @@
                     if (Object.keys(chapter.subcategories).length > 1) {
                         openSubcategoryModal(chapter);
                     } else {
-                        // S'il n'y a qu'une seule sous-catégorie (ex: Chapitre 20), on la sélectionne directement
                         const subKey = Object.keys(chapter.subcategories)[0];
                         changeVocabulary(key, subKey);
                     }
@@ -578,16 +574,13 @@
             const chapterData = ALL_VOCAB_DATA[chapterKey];
             const subcategoryData = chapterData.subcategories[subKey];
             
-            // Mise à jour de la variable de travail
             vocab = subcategoryData.data;
             listTitle.textContent = `${chapterData.title} - ${subcategoryData.name}`;
 
-            // Mise à jour des boutons de chapitre (Chapitre 19 ou Chapitre 20)
             document.querySelectorAll('.category-selector button').forEach(btn => btn.classList.remove('active'));
             const activeChapterBtn = document.getElementById(chapterData.selectorId);
             if(activeChapterBtn) activeChapterBtn.classList.add('active');
 
-            // Réinitialisation du jeu
             shuffledVocab = shuffle([...vocab]);
             wordsToReview = [];
             currentCardIndex = 0;
@@ -607,8 +600,6 @@
             }
         });
         
-        // --- FIN GESTION DYNAMIQUE ---
-
         function showMode(mode) {
             if (vocab.length === 0) {
                  frontFace.textContent = "Choisis une catégorie !";
@@ -874,13 +865,6 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             generateChapterButtons();
-            
-          
-            if (ALL_VOCAB_DATA['chap19']) {
-                changeVocabulary('chap19', 'noms');
-            } else {
-                showMode('flashcard'); 
-            }
         });
     </script>
 </body>
