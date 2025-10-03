@@ -355,19 +355,6 @@
             transition: opacity 0.3s;
         }
 
-        #nomsBtn {
-            background-color: #FF8C00; /* Orange */
-            color: #FFFFFF;
-        }
-        #adjVerbesBtn {
-            background-color: #4CAF50; /* Vert */
-            color: #FFFFFF;
-        }
-
-        #nomsBtn:hover, #adjVerbesBtn:hover {
-            opacity: 0.8;
-        }
-
         @media (max-width: 600px) {
             .container {
                 padding: 20px;
@@ -405,10 +392,8 @@
         </div>
         <h1 id="mainTitle">1000 Mots</h1>
 
-        <div class="category-selector">
-            <button id="chap19SelectBtn" class="active">Chapitre 19</button>
-            <button id="chap20Btn" disabled>Chapitre 20 (À venir)</button>
-        </div>
+        <div id="chapterSelector" class="category-selector">
+            </div>
         
         <div class="mode-selector">
             <button id="flashcardModeBtn" class="active">Mode Cartes</button>
@@ -478,15 +463,15 @@
         </div>
     </div>
 
-    <div id="chap19Modal" class="modal">
+    <div id="categoryModal" class="modal">
         <div class="modal-content">
-            <h3>Choisir la catégorie du Chapitre 19</h3>
-            <div class="modal-buttons">
-                <button id="nomsBtn" data-list="chap19_noms">Noms</button>
-                <button id="adjVerbesBtn" data-list="chap19_adj_verbes">Adjectifs et Verbes</button>
-            </div>
+            <h3 id="modalTitle"></h3>
+            <div id="modalButtons" class="modal-buttons">
+                </div>
         </div>
     </div>
+
+    <script src="vocab_data.js"></script>
 
     <script>
         const flashcard = document.getElementById('flashcard');
@@ -515,166 +500,15 @@
         const hangmanLettersDiv = document.getElementById('hangmanLetters');
         const hangmanParts = ["head", "body", "arm1", "arm2", "leg1", "leg2"];
 
-        const chap19SelectBtn = document.getElementById('chap19SelectBtn');
-        const chap19Modal = document.getElementById('chap19Modal');
-        const nomsBtn = document.getElementById('nomsBtn');
-        const adjVerbesBtn = document.getElementById('adjVerbesBtn');
+        const chapterSelector = document.getElementById('chapterSelector');
+        const categoryModal = document.getElementById('categoryModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalButtons = document.getElementById('modalButtons');
         const listTitle = document.getElementById('listTitle');
 
-        let vocab = [
-    ["Damnation", "la condamnation à l'enfer"],
-    ["Dogmes", "les vérités fondamentales, les croyances obligatoires"],
-    ["Ferveur", "l'ardeur, l'enthousiasme religieux"],
-    ["Genèse", "élaboration de quelque chose"],
-    ["Sacerdoce", "une fonction presque religieuse"],
-    ["Tabou", "quelque chose d'interdit"],
-    ["Éden", "sens propre : nom propre du paradis terrestre ; sens figuré : lieu qui apparaît comme un paradis"],
-    ["Apôtre", "sens propre : disciple du Christ envoyé par lui pour prêcher (enseigner) l'Évangile ; sens figuré: personne qui propage ou défend une doctrine"],
-    ["Foi", "sens général : confiance. Sens spécialisé en religion : croyance résultant d'une adhésion profonde du coeur et de l'esprit, certitude intérieure."],
-    ["Rite", "règle(s) d'une cérémonie ou manière de faire invariable."],
-    ["Fortune", "le sort, le hasard, personnifiés sous l'Antiquité par une déesse représentée les yeux bandés."],
-    ["Bible", "Sens propre : ensemble des textes sacrés des religions juives et chrétiennes (étymologiquement : 'les livres') ; sens figuré : ouvrage faisant autorité, auquel on se réfère."],
-    ["Idée", "synonyme de concept, ce qui est élaboré par la pensée."],
-    ["Méditation", "réflexion solitaire et recueillie."],
-    ["Sagesse", "disposition consistant à se connaître et à savoir bien mourir et bien vivre, selon Montaigne."],
-    ["Salut", "ce qui permet d'être sauvé, d'échapper à un danger et de trouver un état heureux. Dans le christianisme : fait d'échapper à la damnation éternelle."],
-    ["Relique", "sens propre : reste d'un saint, d'un héros qui est l'objet d'un culte ; sens figuré : objet auquel on attache un grand prix comme témoin du passé."],
-    ["Intégrisme", "position de croyants qui, au nom d'un respect intransigeant de la tradition, se refusent à toute évolution dans l'interprétation des textes."],
-    ["Hérésie", "Sens propre : doctrine ou interprétation contraire aux dogmes d'une religion et condamnée comme telle ; sens figuré : opinion, théorie qui heurte la raison."],
-    ["Doctrine", "Ensemble des croyances ou des opinions qu'on affirme comme vraies et sur lesquelles on s'appuie pour interpréter des faits ou pour agir."],
-    ["Métaphysique", "Recherche rationnelle sur des sujets qui se situent au-delà de la réalité concrète donc sur des abstractions telles que les principes de la connaissance, l'existence de Dieu."],
-    ["Déterminisme", "doctrine ou opinion selon laquelle les phénomènes ou les actions humaines sont conditionnés par des éléments antérieurs ou par d'autres phénomènes ; désigne aussi, au pluriel, l'ensemble des causes concrètes préalable à un phénomène."],
-    ["Fétichisme", "Sens propre : culte d'objets auxquels on attribue un pouvoir surnaturel ; sens figuré : attachement exagéré pour une entité, une personne ou un objet."],
-    ["Holocauste", "Sens propre : dans la religion juive ancienne, sacrifice où la victime (animal) était entièrement brûlée ; sens figuré : sacrifice total. Désigne par analogie l'extermination des Juifs sous le régime nazi, la Shoah."],
-    ["Iconoclaste", "Sens propre : qui interdit le culte des images saintes, notamment les statues ; par extension : qui détruit les oeuvres d'art ; sens figuré : qui se refuse à toute tradition."],
-    ["Parabole", "Récit allégorique destiné à donner un enseignement sous une forme imagée."],
-    ["Prosélytisme", "Sens propre : zèle déployé par une personne récemment convertie à une religion pour faire de nouveaux adeptes ; sens figuré : s'emploie aussi dans le domaine de la politique ou des opinions en général."],
-    ["Âme", "dans le christianisme, principe spirituel immortel qui se sépare du corps à la mort et qui est jugé par Dieu. Plus largement : principe de vie qui anime l'être vivant, part de la pensée, de la sensibilité et de la conscience morale."],
-    ["Ascète", "Personne qui s'impose, par piété et pour faire pénitence, des privations, des sacrifices (sens propre) ; personne qui mène une vie austère en se privant de tous les plaisirs terrestres (sens figuré)."],
-    ["Culte", "Ensemble de pratiques religieuses destinées à rendre hommage à une divinité (sens propre) ; vénération pour une personne ou une entité que l'on aime et que l'on respecte (sens figuré)."],
-    ["Entité", "Concept que l'on considère dans sa totalité et dont on parle comme d'un être réel."],
-    ["Fanatisme", "Passion excessive inspirée notamment par une religion ou une doctrine et qui conduit à la violence."],
-    ["Idéologie", "Système d'idées sur lequel se fonde un groupe social pour juger et agir (sens moderne)."],
-    ["Initiation", "Processus d'introduction à la connaissance de mystères, de savoirs réservés à un petit cercle."],
-    ["Liturgie", "Cérémonial des offices religieux (sens propre). Peut se dire aussi de cérémonials de fêtes ayant une certaine solennité (sens figuré)."],
-    ["Magie", "Art ou pouvoir inexpliqué, merveilleux, occulte, par opposition à un processus logique et rationnel."],
-    ["Oracle", "Dans l'Antiquité, réponse d'une divinité interrogée dans un sanctuaire ; opinion considérée avec beaucoup de respect, en laquelle on a confiance (parfois ironique)."],
-    ["Pardon", "Décision qui consiste à renoncer à éprouver de la rancune ou de l'hostilité à l'égard d'une personne qui vous à fait du mal. Sens religieux : absolution des pêchés."],
-    ["Philosophie", "Réflexion abstraite sur les fondements du monde et les valeurs humaines, qui a pour but d'élaborer une 'sagesse', c'est-à-dire un système de valeurs personnel, un art de vivre."],
-    // Nouvelle liste
-    ["absurde", "insensée, déraisonnable, contraire à la logique"],
-    ["athée", "qui ne croit en aucun dieu"],
-    ["augurer", "prévoir"],
-    ["dominicale", "ce que l'on fait le dimanche"],
-    ["immanente", "qui est contenu dans toute chose"],
-    ["manichéen", "qui oppose systématiquement et sans nuances deux points de vue opposés"],
-    ["néophyte", "un nouveau converti à une religion ou une doctrine"],
-    ["pieuse", "pleine de dévotion, de ferveur religieuse"],
-    ["profane", "ne pas s'y connaître, ne pas avoir été initié à un art"],
-    ["vénielle", "peu grave"],
-    ["gratuit", "qui ne se paie pas, qui ne demande pas d'effort pour être obtenu ; par extension : acte accompli sans raison, sans mobile."],
-    ["mystique", "personne qui atteint un état de communication intuitive et immédiate avec la divinité par la force de sa croyance."],
-    ["spirituelle", "se dit de la vie de l'âme ou de la vie morale"],
-    ["puritain(ne)", "qualifie un respect rigoureux des principes moraux par allusion à une secte pratiquant un christianisme très 'pur'"],
-    ["païenne", "qui ne fait pas partie des trois religions révélées. Par extension : qui n'a pas de religion"],
-    ["prophétique", "qui prédit l'avenir"],
-    ["se repentir", "regretter profondément d'avoir accompli une action (connotation religieuse)"],
-    ["profaner", "porter atteinte à un lieu ou un objet sacré"],
-    ["vénérer", "aimer avec un grand respect une personne ou une chose (connotation religieuse)"],
-    ["blasphémer", "dans la langue religieuse : prononcer des paroles sacrilèges qui outragent ce qui est sacré"],
-    ["édifier", "donner un bon exemple moral"],
-    ["absoudre", "donner le sacrement de pénitence, c'est-à-dire pardonner les péchés ou les fautes (langue religieuse)"],
-    ["expier", "payer un crime ou une faute par un châtiment, une peine ou une réparation."],
-    ["immoler", "langue littéraire et religieuse : faire périr une victime en sacrifice à un dieu ; sens figuré : faire périr une personne pour une cause"],
-    ["abjurer", "abandonner solennellement une opinion, une religion"],
-    ["idolâtrer", "adorer quelqu'un, en faire son dieu"],
-    ["impie", "qui n'est pas croyant ou qui offense la religion (vieilli ou religieux)"]
-];        
-        const vocabLists = {
-            'chap19_noms': {
-                name: 'Chapitre 19 - Noms',
-                data: [] 
-            },
-            'chap19_adj_verbes': {
-                name: 'Chapitre 19 - Adjectifs et Verbes',
-                data: []
-            }
-        };
-
-        // Remplissage manuel : c'est ici que tu mettras tes listes !
-        vocabLists['chap19_noms'].data = [
-    ["Damnation", "la condamnation à l'enfer"],
-    ["Dogmes", "les vérités fondamentales, les croyances obligatoires"],
-    ["Ferveur", "l'ardeur, l'enthousiasme religieux"],
-    ["Genèse", "élaboration de quelque chose"],
-    ["Sacerdoce", "une fonction presque religieuse"],
-    ["Tabou", "quelque chose d'interdit"],
-    ["Éden", "sens propre : nom propre du paradis terrestre ; sens figuré : lieu qui apparaît comme un paradis"],
-    ["Apôtre", "sens propre : disciple du Christ envoyé par lui pour prêcher (enseigner) l'Évangile ; sens figuré: personne qui propage ou défend une doctrine"],
-    ["Foi", "sens général : confiance. Sens spécialisé en religion : croyance résultant d'une adhésion profonde du coeur et de l'esprit, certitude intérieure."],
-    ["Rite", "règle(s) d'une cérémonie ou manière de faire invariable."],
-    ["Fortune", "le sort, le hasard, personnifiés sous l'Antiquité par une déesse représentée les yeux bandés."],
-    ["Bible", "Sens propre : ensemble des textes sacrés des religions juives et chrétiennes (étymologiquement : 'les livres') ; sens figuré : ouvrage faisant autorité, auquel on se réfère."],
-    ["Idée", "synonyme de concept, ce qui est élaboré par la pensée."],
-    ["Méditation", "réflexion solitaire et recueillie."],
-    ["Sagesse", "disposition consistant à se connaître et à savoir bien mourir et bien vivre, selon Montaigne."],
-    ["Salut", "ce qui permet d'être sauvé, d'échapper à un danger et de trouver un état heureux. Dans le christianisme : fait d'échapper à la damnation éternelle."],
-    ["Relique", "sens propre : reste d'un saint, d'un héros qui est l'objet d'un culte ; sens figuré : objet auquel on attache un grand prix comme témoin du passé."],
-    ["Intégrisme", "position de croyants qui, au nom d'un respect intransigeant de la tradition, se refusent à toute évolution dans l'interprétation des textes."],
-    ["Hérésie", "Sens propre : doctrine ou interprétation contraire aux dogmes d'une religion et condamnée comme telle ; sens figuré : opinion, théorie qui heurte la raison."],
-    ["Doctrine", "Ensemble des croyances ou des opinions qu'on affirme comme vraies et sur lesquelles on s'appuie pour interpréter des faits ou pour agir."],
-    ["Métaphysique", "Recherche rationnelle sur des sujets qui se situent au-delà de la réalité concrète donc sur des abstractions telles que les principes de la connaissance, l'existence de Dieu."],
-    ["Déterminisme", "doctrine ou opinion selon laquelle les phénomènes ou les actions humaines sont conditionnés par des éléments antérieurs ou par d'autres phénomènes ; désigne aussi, au pluriel, l'ensemble des causes concrètes préalable à un phénomène."],
-    ["Fétichisme", "Sens propre : culte d'objets auxquels on attribue un pouvoir surnaturel ; sens figuré : attachement exagéré pour une entité, une personne ou un objet."],
-    ["Holocauste", "Sens propre : dans la religion juive ancienne, sacrifice où la victime (animal) était entièrement brûlée ; sens figuré : sacrifice total. Désigne par analogie l'extermination des Juifs sous le régime nazi, la Shoah."],
-    ["Iconoclaste", "Sens propre : qui interdit le culte des images saintes, notamment les statues ; par extension : qui détruit les oeuvres d'art ; sens figuré : qui se refuse à toute tradition."],
-    ["Parabole", "Récit allégorique destiné à donner un enseignement sous une forme imagée."],
-    ["Prosélytisme", "Sens propre : zèle déployé par une personne récemment convertie à une religion pour faire de nouveaux adeptes ; sens figuré : s'emploie aussi dans le domaine de la politique ou des opinions en général."],
-    ["Âme", "dans le christianisme, principe spirituel immortel qui se sépare du corps à la mort et qui est jugé par Dieu. Plus largement : principe de vie qui anime l'être vivant, part de la pensée, de la sensibilité et de la conscience morale."],
-    ["Ascète", "Personne qui s'impose, par piété et pour faire pénitence, des privations, des sacrifices (sens propre) ; personne qui mène une vie austère en se privant de tous les plaisirs terrestres (sens figuré)."],
-    ["Culte", "Ensemble de pratiques religieuses destinées à rendre hommage à une divinité (sens propre) ; vénération pour une personne ou une entité que l'on aime et que l'on respecte (sens figuré)."],
-    ["Entité", "Concept que l'on considère dans sa totalité et dont on parle comme d'un être réel."],
-    ["Fanatisme", "Passion excessive inspirée notamment par une religion ou une doctrine et qui conduit à la violence."],
-    ["Idéologie", "Système d'idées sur lequel se fonde un groupe social pour juger et agir (sens moderne)."],
-    ["Initiation", "Processus d'introduction à la connaissance de mystères, de savoirs réservés à un petit cercle."],
-    ["Liturgie", "Cérémonial des offices religieux (sens propre). Peut se dire aussi de cérémonials de fêtes ayant une certaine solennité (sens figuré)."],
-    ["Magie", "Art ou pouvoir inexpliqué, merveilleux, occulte, par opposition à un processus logique et rationnel."],
-    ["Oracle", "Dans l'Antiquité, réponse d'une divinité interrogée dans un sanctuaire ; opinion considérée avec beaucoup de respect, en laquelle on a confiance (parfois ironique)."],
-    ["Pardon", "Décision qui consiste à renoncer à éprouver de la rancune ou de l'hostilité à l'égard d'une personne qui vous à fait du mal. Sens religieux : absolution des pêchés."],
-    ["Philosophie", "Réflexion abstraite sur les fondements du monde et les valeurs humaines, qui a pour but d'élaborer une 'sagesse', c'est-à-dire un système de valeurs personnel, un art de vivre."]
-];
+        let vocab = []; // Contient la liste de travail actuelle (comme tu l'as demandé)
+        let currentChapterKey = null;
         
-        vocabLists['chap19_adj_verbes'].data = [
-    ["absurde", "insensée, déraisonnable, contraire à la logique"],
-    ["athée", "qui ne croit en aucun dieu"],
-    ["augurer", "prévoir"],
-    ["dominicale", "ce que l'on fait le dimanche"],
-    ["immanente", "qui est contenu dans toute chose"],
-    ["manichéen", "qui oppose systématiquement et sans nuances deux points de vue opposés"],
-    ["néophyte", "un nouveau converti à une religion ou une doctrine"],
-    ["pieuse", "pleine de dévotion, de ferveur religieuse"],
-    ["profane", "ne pas s'y connaître, ne pas avoir été initié à un art"],
-    ["vénielle", "peu grave"],
-    ["gratuit", "qui ne se paie pas, qui ne demande pas d'effort pour être obtenu ; par extension : acte accompli sans raison, sans mobile."],
-    ["mystique", "personne qui atteint un état de communication intuitive et immédiate avec la divinité par la force de sa croyance."],
-    ["spirituelle", "se dit de la vie de l'âme ou de la vie morale"],
-    ["puritain(ne)", "qualifie un respect rigoureux des principes moraux par allusion à une secte pratiquant un christianisme très 'pur'"],
-    ["païenne", "qui ne fait pas partie des trois religions révélées. Par extension : qui n'a pas de religion"],
-    ["prophétique", "qui prédit l'avenir"],
-    ["se repentir", "regretter profondément d'avoir accompli une action (connotation religieuse)"],
-    ["profaner", "porter atteinte à un lieu ou un objet sacré"],
-    ["vénérer", "aimer avec un grand respect une personne ou une chose (connotation religieuse)"],
-    ["blasphémer", "dans la langue religieuse : prononcer des paroles sacrilèges qui outragent ce qui est sacré"],
-    ["édifier", "donner un bon exemple moral"],
-    ["absoudre", "donner le sacrement de pénitence, c'est-à-dire pardonner les péchés ou les fautes (langue religieuse)"],
-    ["expier", "payer un crime ou une faute par un châtiment, une peine ou une réparation."],
-    ["immoler", "langue littéraire et religieuse : faire périr une victime en sacrifice à un dieu ; sens figuré : faire périr une personne pour une cause"],
-    ["abjurer", "abandonner solennellement une opinion, une religion"],
-    ["idolâtrer", "adorer quelqu'un, en faire son dieu"],
-    ["impie", "qui n'est pas croyant ou qui offense la religion (vieilli ou religieux)"]
-];
-
-        let currentCategoryKey = 'chap19_noms';
         let shuffledVocab = [];
         let wordsToReview = [];
         let currentCardIndex = 0;
@@ -697,15 +531,63 @@
             }
             return array;
         }
-        
-        function changeVocabulary(categoryKey) {
-            chap19Modal.style.display = 'none';
-            currentCategoryKey = categoryKey;
-            
-            // L'ancienne variable 'vocab' est mise à jour avec la liste choisie
-            vocab = vocabLists[categoryKey].data;
-            listTitle.textContent = 'Liste Complète - ' + vocabLists[categoryKey].name;
 
+        // --- GESTION DYNAMIQUE DES CHAPITRES ET CATÉGORIES ---
+        
+        function generateChapterButtons() {
+            chapterSelector.innerHTML = '';
+            for (const key in ALL_VOCAB_DATA) {
+                const chapter = ALL_VOCAB_DATA[key];
+                const btn = document.createElement('button');
+                btn.textContent = chapter.title;
+                btn.id = chapter.selectorId;
+                btn.setAttribute('data-chapter-key', key);
+                
+                btn.addEventListener('click', () => {
+                    currentChapterKey = key;
+                    if (Object.keys(chapter.subcategories).length > 1) {
+                        openSubcategoryModal(chapter);
+                    } else {
+                        // S'il n'y a qu'une seule sous-catégorie (ex: Chapitre 20), on la sélectionne directement
+                        const subKey = Object.keys(chapter.subcategories)[0];
+                        changeVocabulary(key, subKey);
+                    }
+                });
+                chapterSelector.appendChild(btn);
+            }
+        }
+
+        function openSubcategoryModal(chapter) {
+            modalTitle.textContent = `Choisir la catégorie du ${chapter.title}`;
+            modalButtons.innerHTML = '';
+
+            for (const subKey in chapter.subcategories) {
+                const sub = chapter.subcategories[subKey];
+                const subBtn = document.createElement('button');
+                subBtn.textContent = sub.name;
+                subBtn.style.backgroundColor = sub.color;
+                subBtn.addEventListener('click', () => changeVocabulary(chapter.selectorId.replace('SelectBtn', ''), subKey));
+                modalButtons.appendChild(subBtn);
+            }
+
+            categoryModal.style.display = 'block';
+        }
+
+        function changeVocabulary(chapterKey, subKey) {
+            categoryModal.style.display = 'none';
+            const chapterData = ALL_VOCAB_DATA[chapterKey];
+            const subcategoryData = chapterData.subcategories[subKey];
+            
+            // Mise à jour de la variable de travail
+            vocab = subcategoryData.data;
+            listTitle.textContent = `${chapterData.title} - ${subcategoryData.name}`;
+
+            // Mise à jour des boutons de chapitre (Chapitre 19 ou Chapitre 20)
+            document.querySelectorAll('.category-selector button').forEach(btn => btn.classList.remove('active'));
+            const activeChapterBtn = document.getElementById(chapterData.selectorId);
+            if(activeChapterBtn) activeChapterBtn.classList.add('active');
+
+            // Réinitialisation du jeu
             shuffledVocab = shuffle([...vocab]);
             wordsToReview = [];
             currentCardIndex = 0;
@@ -719,25 +601,19 @@
             generateList();
         }
         
-        chap19SelectBtn.addEventListener('click', () => {
-            chap19Modal.style.display = 'block';
-        });
-
-        nomsBtn.addEventListener('click', () => changeVocabulary('chap19_noms'));
-        adjVerbesBtn.addEventListener('click', () => changeVocabulary('chap19_adj_verbes'));
-        
         window.addEventListener('click', (event) => {
-            if (event.target === chap19Modal) {
-                chap19Modal.style.display = 'none';
+            if (event.target === categoryModal) {
+                categoryModal.style.display = 'none';
             }
         });
+        
+        // --- FIN GESTION DYNAMIQUE ---
 
         function showMode(mode) {
             if (vocab.length === 0) {
-                 // Gérer le cas où aucune liste n'est sélectionnée au départ
-                 frontFace.textContent = "Choisis une catégorie du Chapitre 19 !";
-                 backFace.textContent = "Clique sur le bouton 'Chapitre 19' ci-dessus.";
-                 flashcardGameContainer.style.display = 'block'; // Garder les cartes actives pour le message
+                 frontFace.textContent = "Choisis une catégorie !";
+                 backFace.textContent = "Clique sur un chapitre ci-dessus.";
+                 flashcardGameContainer.style.display = 'block'; 
                  quizGameContainer.style.display = 'none';
                  hangmanGameContainer.style.display = 'none';
                  cardCounter.textContent = '0 / 0';
@@ -997,8 +873,14 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Initialisation avec la première liste pour éviter un tableau vide au démarrage
-            changeVocabulary('chap19_noms'); 
+            generateChapterButtons();
+            
+          
+            if (ALL_VOCAB_DATA['chap19']) {
+                changeVocabulary('chap19', 'noms');
+            } else {
+                showMode('flashcard'); 
+            }
         });
     </script>
 </body>
