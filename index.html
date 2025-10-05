@@ -4,7 +4,556 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1000 Mots - Révision Vocabulaire</title>
-    </head>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/Jp9v0H9S+t5W9qF/0m+y2iN1m2vN0k65B0x1L/K11g+B0+1rA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    
+    <style>
+        :root {
+            --color-background: #121212;
+            --color-card: #1E1E1E;
+            --color-text: #E0E0E0;
+            --color-primary: #BB86FC;
+            --color-secondary: #03DAC6;
+            --color-correct: #4CAF50;
+            --color-incorrect: #F44336;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--color-background);
+            color: var(--color-text);
+            margin: 0;
+            padding: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        header {
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--color-primary);
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .subtitle {
+            margin-top: 0;
+            color: var(--color-text);
+            font-size: 0.9em;
+        }
+
+        main {
+            width: 100%;
+            max-width: 800px;
+            padding: 0 20px;
+            flex-grow: 1;
+        }
+
+        .mode-selection {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            background-color: var(--color-card);
+            color: var(--color-text);
+            border: 1px solid var(--color-primary);
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .mode-btn:hover {
+            background-color: #333;
+        }
+        
+        .mode-btn:active {
+            transform: scale(0.98);
+        }
+
+        .game-container {
+            background-color: var(--color-card);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+            margin-bottom: 20px;
+            min-height: 200px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        
+        #flashcardGameContainer {
+            display: flex;
+        }
+
+        #flashcard {
+            width: 100%;
+            max-width: 400px;
+            height: 200px;
+            background-color: var(--color-background);
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: 1px solid var(--color-secondary);
+            transition: transform 0.3s, background-color 0.3s;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .flashcard-front {
+            background-color: var(--color-background);
+            color: var(--color-text);
+        }
+
+        .flashcard-back {
+            background-color: var(--color-primary);
+            color: var(--color-background);
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-feedback-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .feedback-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            font-weight: 700;
+        }
+
+        .correct-btn {
+            background-color: var(--color-correct);
+            color: white;
+        }
+
+        .incorrect-btn {
+            background-color: var(--color-incorrect);
+            color: white;
+        }
+
+        .navigation-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .nav-btn {
+            background-color: var(--color-secondary);
+            color: var(--color-background);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 700;
+            transition: background-color 0.2s;
+        }
+
+        .nav-btn:hover {
+            background-color: #00A38C;
+        }
+
+        /* Styles Quiz Game */
+        #quiz-question {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+
+        .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .quiz-option-btn {
+            background-color: var(--color-background);
+            color: var(--color-text);
+            border: 1px solid var(--color-primary);
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+            text-align: center;
+        }
+
+        .quiz-option-btn:hover:not(.disabled) {
+            background-color: #333;
+        }
+        
+        .quiz-option-btn.correct {
+            background-color: var(--color-correct);
+            border-color: var(--color-correct);
+            color: white;
+        }
+
+        .quiz-option-btn.incorrect {
+            background-color: var(--color-incorrect);
+            border-color: var(--color-incorrect);
+            color: white;
+        }
+
+        .quiz-option-btn.disabled {
+            cursor: default;
+        }
+        
+        #quizNextBtn {
+            display: none;
+            margin-top: 20px;
+        }
+        
+        /* Styles Hangman Game */
+        #hangman-word {
+            font-size: 2em;
+            letter-spacing: 10px;
+            margin-bottom: 20px;
+        }
+
+        #hangman-guesses {
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: var(--color-primary);
+        }
+
+        .hangman-keyboard {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 5px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .key-btn {
+            background-color: var(--color-card);
+            color: var(--color-text);
+            border: 1px solid var(--color-secondary);
+            padding: 8px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: 700;
+            font-size: 1.1em;
+        }
+
+        .key-btn:hover:not(.disabled) {
+            background-color: #333;
+        }
+
+        .key-btn.disabled {
+            background-color: #555;
+            cursor: default;
+        }
+        
+        #hangman-message {
+            margin-top: 20px;
+            font-weight: 700;
+        }
+        
+        /* Styles Scramble Game */
+        #scramble-hint {
+            font-size: 1em;
+            color: var(--color-secondary);
+            margin-bottom: 15px;
+        }
+
+        #scramble-scrambled {
+            font-size: 1.8em;
+            letter-spacing: 5px;
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            background-color: var(--color-background);
+            border-radius: 8px;
+        }
+        
+        #scramble-input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--color-primary);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            font-size: 1em;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #scramble-check-btn {
+            margin-top: 10px;
+        }
+        
+        #scrambleNextBtn, #scrambleCheckBtn {
+            display: none;
+        }
+        
+        /* Styles Dictation Game */
+        #dictation-definition {
+            font-size: 1.2em;
+            margin-bottom: 20px;
+        }
+        
+        #dictation-input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--color-primary);
+            background-color: var(--color-background);
+            color: var(--color-text);
+            font-size: 1em;
+            width: 80%;
+            max-width: 300px;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        #dictationCheckBtn {
+            margin-top: 10px;
+        }
+        
+        #dictationNextBtn {
+            display: none;
+        }
+        
+        /* Styles Match Game */
+        #match-items {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .match-item {
+            background-color: var(--color-background);
+            color: var(--color-text);
+            border: 1px solid var(--color-secondary);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s, transform 0.1s;
+            flex-basis: calc(50% - 10px);
+            box-sizing: border-box;
+            text-align: center;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .match-item.word {
+            border-color: var(--color-primary);
+        }
+
+        .match-item.def {
+            border-color: var(--color-secondary);
+        }
+
+        .match-item:hover:not(.matched) {
+            background-color: #333;
+        }
+
+        .match-item.selected {
+            border: 2px solid var(--color-primary);
+            background-color: #333;
+        }
+
+        .match-item.matched {
+            background-color: var(--color-correct);
+            color: white;
+            cursor: default;
+        }
+
+        .match-item.error {
+            background-color: var(--color-incorrect);
+            color: white;
+            animation: shake 0.5s;
+        }
+
+        @keyframes shake {
+            0%, 100% {transform: translateX(0);}
+            20%, 60% {transform: translateX(-5px);}
+            40%, 80% {transform: translateX(5px);}
+        }
+        
+        #match-score {
+            margin-bottom: 15px;
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        
+        /* Styles List */
+        #vocabularyListContainer ul {
+            list-style: none;
+            padding: 0;
+            text-align: left;
+        }
+        
+        #vocabularyListContainer li {
+            background-color: var(--color-background);
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            border-left: 5px solid var(--color-secondary);
+        }
+        
+        /* Modal Styles */
+        .modal {
+            display: none; 
+            position: fixed; 
+            z-index: 10; 
+            left: 0;
+            top: 0;
+            width: 100%; 
+            height: 100%; 
+            overflow: auto; 
+            background-color: rgba(0,0,0,0.7); 
+        }
+
+        .modal-content {
+            background-color: var(--color-card);
+            margin: 15% auto; 
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%; 
+            max-width: 400px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .close-btn {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close-btn:hover,
+        .close-btn:focus {
+            color: var(--color-text);
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .subcategory-btn {
+            background-color: var(--color-primary);
+            color: var(--color-background);
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: 700;
+        }
+        
+        .subcategory-btn:hover {
+            background-color: #9A77C8;
+        }
+        
+        /* Alert Banner */
+        #alert-banner {
+            position: fixed;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 600px;
+            padding: 10px;
+            text-align: center;
+            color: white;
+            font-weight: 700;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+            z-index: 5;
+            display: none;
+        }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 600px) {
+            body {
+                padding: 10px 0;
+            }
+
+            main {
+                padding: 0 10px;
+            }
+
+            .mode-btn {
+                width: 100%;
+                justify-content: center;
+            }
+
+            #flashcard {
+                height: 150px;
+            }
+            
+            .quiz-options, .hangman-keyboard {
+                max-width: 100%;
+            }
+
+            .match-item {
+                flex-basis: 100%;
+            }
+        }
+    </style>
+</head>
 <body>
     <header>
         <h1>1000 Mots</h1>
@@ -15,17 +564,17 @@
         <div id="alert-banner"></div>
 
         <div class="mode-selection">
-            <button id="chapterSelectBtn" class="mode-btn">Sélectionner Chapitre</button>
-            <button id="flashcardsBtn" class="mode-btn" data-mode="flashcards">Cartes</button>
-            <button id="quizBtn" class="mode-btn" data-mode="quiz">Quiz</button>
-            <button id="hangmanBtn" class="mode-btn" data-mode="hangman">Pendu</button>
-            <button id="scrambleBtn" class="mode-btn" data-mode="scramble">Mots Mélangés</button>
-            <button id="dictationBtn" class="mode-btn" data-mode="dictation">Dictée</button>
-            <button id="matchBtn" class="mode-btn" data-mode="match">Association</button>
-            <button id="listBtn" class="mode-btn" data-mode="list">Liste</button>
+            <button id="chapterSelectBtn" class="mode-btn"><i class="fas fa-book"></i> Sélectionner Chapitre</button>
+            <button id="flashcardsBtn" class="mode-btn" data-mode="flashcards"><i class="fas fa-sync-alt"></i> Cartes</button>
+            <button id="quizBtn" class="mode-btn" data-mode="quiz"><i class="fas fa-question-circle"></i> Quiz</button>
+            <button id="hangmanBtn" class="mode-btn" data-mode="hangman"><i class="fas fa-gavel"></i> Pendu</button>
+            <button id="scrambleBtn" class="mode-btn" data-mode="scramble"><i class="fas fa-random"></i> Mots Mélangés</button>
+            <button id="dictationBtn" class="mode-btn" data-mode="dictation"><i class="fas fa-microphone"></i> Dictée</button>
+            <button id="matchBtn" class="mode-btn" data-mode="match"><i class="fas fa-link"></i> Association</button>
+            <button id="listBtn" class="mode-btn" data-mode="list"><i class="fas fa-list"></i> Liste</button>
         </div>
 
-        <div id="flashcardGameContainer" class="game-container" style="display: block;">
+        <div id="flashcardGameContainer" class="game-container">
             <h2>Cartes de Révision</h2>
             <p>Clique sur la carte pour voir la définition.</p>
             <div id="flashcard" class="flashcard">
@@ -40,20 +589,76 @@
             </div>
             <div id="flashcardControls" style="display: none;">
                 <div class="flashcard-feedback-btns">
-                    <button class="feedback-btn incorrect-btn" data-feedback="incorrect">Dur</button>
-                    <button class="feedback-btn correct-btn" data-feedback="correct">Facile</button>
+                    <button class="feedback-btn incorrect-btn" data-feedback="incorrect"><i class="fas fa-times"></i> Dur</button>
+                    <button class="feedback-btn correct-btn" data-feedback="correct"><i class="fas fa-check"></i> Facile</button>
                 </div>
                 <div class="navigation-btns">
-                    <button id="flashcardNextBtn" class="nav-btn">Suivant</button>
+                    <button id="flashcardNextBtn" class="nav-btn"><i class="fas fa-arrow-right"></i> Suivant</button>
                 </div>
             </div>
         </div>
         
-        </main>
+        <div id="quizGameContainer" class="game-container">
+            <h2>Quiz à Choix Multiples</h2>
+            <p id="quiz-progress">Question 1 / 10</p>
+            <p id="quiz-score">Score : 0</p>
+            <p id="quiz-question">Chargement de la question...</p>
+            <div class="quiz-options" id="quiz-options">
+            </div>
+            <button id="quizNextBtn" class="nav-btn">Question Suivante</button>
+        </div>
+
+        <div id="hangmanGameContainer" class="game-container">
+            <h2>Le Pendu du Vocabulaire</h2>
+            <p id="hangman-hint">Définition : Chargement...</p>
+            <p id="hangman-guesses">Essais restants : 6</p>
+            <p id="hangman-word">_ _ _ _ _</p>
+            <div class="hangman-keyboard" id="hangman-keyboard">
+            </div>
+            <p id="hangman-message" style="font-size: 1.1em;"></p>
+            <button id="hangmanNextBtn" class="nav-btn" style="display:none;">Mot Suivant</button>
+        </div>
+        
+        <div id="scrambleGameContainer" class="game-container">
+            <h2>Mots Mélangés</h2>
+            <p id="scramble-hint">Définition : Chargement...</p>
+            <p id="scramble-scrambled">T R E S E R T</p>
+            <input type="text" id="scramble-input" placeholder="Écris le mot ici">
+            <p id="scramble-message" style="font-weight: 700;"></p>
+            <button id="scrambleCheckBtn" class="nav-btn">Vérifier</button>
+            <button id="scrambleNextBtn" class="nav-btn">Mot Suivant</button>
+        </div>
+
+        <div id="dictationGameContainer" class="game-container">
+            <h2>Dictée (Orthographe)</h2>
+            <p id="dictation-definition">Définition : Chargement...</p>
+            <input type="text" id="dictation-input" placeholder="Écris le mot ici">
+            <p id="dictation-message" style="font-weight: 700;"></p>
+            <button id="dictationCheckBtn" class="nav-btn">Vérifier</button>
+            <button id="dictationNextBtn" class="nav-btn">Mot Suivant</button>
+        </div>
+        
+        <div id="matchGameContainer" class="game-container">
+            <h2>Jeu d'Association</h2>
+            <p id="match-score">Paires trouvées : 0 / 5</p>
+            <div id="match-items">
+            </div>
+            <p id="match-message" style="font-weight: 700; margin-top: 15px;"></p>
+            <button id="matchNextBtn" class="nav-btn" style="display:none;">Nouvelle Partie</button>
+        </div>
+
+        <div id="vocabularyListContainer" class="game-container">
+            <h2>Liste Complète</h2>
+            <ul id="vocabularyList">
+                <li>Chargement de la liste...</li>
+            </ul>
+        </div>
+        
+    </main>
 
     <div id="chapterModal" class="modal">
       <div class="modal-content">
-        <span class="close-btn" style="cursor: pointer;">&times;</span>
+        <span class="close-btn">&times;</span>
         <h2>Sélectionner un Vocabulaire</h2>
         <div id="chapterButtons">
         </div>
