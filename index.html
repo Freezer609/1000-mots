@@ -82,7 +82,7 @@
             box-shadow: 0 0 15px #03DAC6;
         }
         
-        .flashcard-game-container, .quiz-game-container, .hangman-game-container, .scramble-game-container {
+        .flashcard-game-container, .quiz-game-container, .hangman-game-container, .scramble-game-container, .dictation-game-container {
             display: none;
         }
 
@@ -248,6 +248,11 @@
             justify-content: center;
             text-align: center;
         }
+        
+        .quiz-question.inverted {
+            font-size: 1.5em;
+            font-weight: 400;
+        }
 
         .quiz-options {
             display: grid;
@@ -308,7 +313,7 @@
             border-radius: 5px;
         }
 
-        .scramble-game-container {
+        .scramble-game-container, .dictation-game-container {
             display: none;
             flex-direction: column;
             align-items: center;
@@ -316,7 +321,7 @@
             padding: 30px 0 0 0;
         }
 
-        #scrambleInput {
+        #scrambleInput, #dictationInput {
             padding: 15px;
             width: 80%;
             max-width: 400px;
@@ -329,7 +334,7 @@
             transition: border-color 0.3s;
         }
 
-        #scrambleInput:focus {
+        #scrambleInput:focus, #dictationInput:focus {
             outline: none;
             border-color: #03DAC6;
         }
@@ -339,13 +344,14 @@
             letter-spacing: 5px;
         }
 
-        .scramble-clue {
+        .scramble-clue, .dictation-clue {
             font-size: 1.2em;
             color: #999999;
             margin-bottom: 20px;
+            min-height: 40px;
         }
 
-        .scramble-feedback {
+        .scramble-feedback, .dictation-feedback {
             font-weight: 700;
             margin-top: 10px;
             min-height: 20px;
@@ -438,6 +444,7 @@
             <button id="quizModeBtn">Mode Quiz</button>
             <button id="hangmanModeBtn">Mode Pendu</button>
             <button id="scrambleModeBtn">Mode Réarrangement</button>
+            <button id="dictationModeBtn">Mode Dictée</button>
         </div>
         
     
@@ -494,6 +501,14 @@
             <button id="scrambleNextBtn" style="display:none;">Mot Suivant &rarr;</button>
         </div>
 
+        <div id="dictationGameContainer" class="dictation-game-container">
+            <div id="dictationClue" class="dictation-clue"></div>
+            <input type="text" id="dictationInput" placeholder="Écris le mot exact ici..." autocomplete="off">
+            <button id="dictationCheckBtn">Vérifier</button>
+            <div id="dictationFeedback" class="dictation-feedback"></div>
+            <button id="dictationNextBtn" style="display:none;">Mot Suivant &rarr;</button>
+        </div>
+
         <div class="list-section">
             <h2 id="listTitle">Liste Complète</h2>
             <ul class="vocabulary-list"></ul>
@@ -504,9 +519,10 @@
             <p>
                 - **Sélecteur de Chapitre** : Choisis la catégorie de vocabulaire à réviser au-dessus du sélecteur de mode.
                 - **Mode Cartes** : Clique sur la carte pour voir la définition, puis dis si tu l'avais ou non. Les mots non connus reviendront plus souvent.
-                - **Mode Quiz** : Lis le mot et choisis la bonne traduction parmi les options.
+                - **Mode Quiz** : Lis le mot ou la définition et choisis la bonne réponse parmi les options.
                 - **Mode Pendu** : Devine le mot en cliquant sur les lettres.
                 - **Mode Réarrangement** : Un mot est mélangé, retrouve le mot original en t'aidant de l'indice (la définition).
+                - **Mode Dictée** : Écris le mot exact correspondant à la définition. (Rouge pour faute d'orthographe, Orange pour faute d'accent/ponctuation).
                 - La liste complète est disponible en bas de page pour réviser à tout moment.
             </p>
         </div>
@@ -540,11 +556,13 @@
         const quizModeBtn = document.getElementById('quizModeBtn');
         const hangmanModeBtn = document.getElementById('hangmanModeBtn');
         const scrambleModeBtn = document.getElementById('scrambleModeBtn');
+        const dictationModeBtn = document.getElementById('dictationModeBtn');
 
         const flashcardGameContainer = document.getElementById('flashcardGameContainer');
         const quizGameContainer = document.getElementById('quizGameContainer');
         const hangmanGameContainer = document.getElementById('hangmanGameContainer');
         const scrambleGameContainer = document.getElementById('scrambleGameContainer');
+        const dictationGameContainer = document.getElementById('dictationGameContainer');
 
         const quizQuestion = document.getElementById('quizQuestion');
         const quizOptions = document.getElementById('quizOptions');
@@ -560,6 +578,12 @@
         const scrambleCheckBtn = document.getElementById('scrambleCheckBtn');
         const scrambleFeedbackDiv = document.getElementById('scrambleFeedback');
         const scrambleNextBtn = document.getElementById('scrambleNextBtn');
+
+        const dictationClueDiv = document.getElementById('dictationClue');
+        const dictationInput = document.getElementById('dictationInput');
+        const dictationCheckBtn = document.getElementById('dictationCheckBtn');
+        const dictationFeedbackDiv = document.getElementById('dictationFeedback');
+        const dictationNextBtn = document.getElementById('dictationNextBtn');
 
         const chapterSelector = document.getElementById('chapterSelector');
         const categoryModal = document.getElementById('categoryModal');
@@ -588,6 +612,9 @@
         let currentScrambleWord = null;
         let currentScrambleDefinition = null;
 
+        let currentDictationWord = null;
+        let currentDictationDefinition = null;
+
         function shuffle(array) {
             let currentIndex = array.length, randomIndex;
             while (currentIndex > 0) {
@@ -596,6 +623,10 @@
                 [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
             }
             return array;
+        }
+
+        function removeAccents(str) {
+            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         }
 
         function generateChapterButtons() {
@@ -699,10 +730,6 @@
                 categoryModal.style.display = 'none';
             }
         });
-
-        function removeAccents(str) {
-            return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-        }
         
         function showMode(mode) {
             if (vocab.length === 0) {
@@ -712,6 +739,7 @@
                  quizGameContainer.style.display = 'none';
                  hangmanGameContainer.style.display = 'none';
                  scrambleGameContainer.style.display = 'none';
+                 dictationGameContainer.style.display = 'none';
                  cardCounter.textContent = '0 / 0';
                  prevBtn.disabled = true;
                  nextBtn.disabled = true;
@@ -725,11 +753,13 @@
             quizGameContainer.style.display = 'none';
             hangmanGameContainer.style.display = 'none';
             scrambleGameContainer.style.display = 'none';
+            dictationGameContainer.style.display = 'none';
 
             flashcardModeBtn.classList.remove('active');
             quizModeBtn.classList.remove('active');
             hangmanModeBtn.classList.remove('active');
             scrambleModeBtn.classList.remove('active');
+            dictationModeBtn.classList.remove('active');
 
             if (mode === 'flashcard') {
                 flashcardGameContainer.style.display = 'block';
@@ -750,6 +780,10 @@
                 scrambleGameContainer.style.display = 'flex';
                 scrambleModeBtn.classList.add('active');
                 startScramble();
+            } else if (mode === 'dictation') {
+                dictationGameContainer.style.display = 'flex';
+                dictationModeBtn.classList.add('active');
+                startDictation();
             }
         }
 
@@ -757,6 +791,7 @@
         quizModeBtn.addEventListener('click', () => showMode('quiz'));
         hangmanModeBtn.addEventListener('click', () => showMode('hangman'));
         scrambleModeBtn.addEventListener('click', () => showMode('scramble'));
+        dictationModeBtn.addEventListener('click', () => showMode('dictation'));
 
 
         function displayFlashcard() {
@@ -846,7 +881,14 @@
         });
 
         function generateQuizQuestions() {
-            quizQuestions = shuffle([...vocab]);
+            quizQuestions = shuffle(vocab.map(item => {
+                const isNormal = Math.random() < 0.7; // 70% Mot -> Déf, 30% Déf -> Mot
+                return {
+                    question: isNormal ? item[0] : item[1],
+                    answer: isNormal ? item[1] : item[0],
+                    isNormal: isNormal
+                };
+            }));
             quizScoreCount = 0;
             quizTotalCount = 0;
             currentQuizQuestionIndex = 0;
@@ -867,28 +909,36 @@
             }
 
             const currentQuestion = quizQuestions[currentQuizQuestionIndex];
-            const frenchWord = currentQuestion[0];
-            const correctTranslation = currentQuestion[1];
+            
+            quizQuestion.classList.remove('inverted');
+            if (!currentQuestion.isNormal) {
+                quizQuestion.textContent = `Quel mot correspond à la définition : ${currentQuestion.question}`;
+                quizQuestion.classList.add('inverted');
+            } else {
+                quizQuestion.textContent = currentQuestion.question;
+            }
 
-            const incorrectTranslations = vocab
-                .filter(word => word[1] !== correctTranslation)
-                .map(word => word[1]);
+            const correctAnswer = currentQuestion.answer;
+
+            const vocabAnswers = vocab.map(word => currentQuestion.isNormal ? word[1] : word[0]);
+
+            const incorrectTranslations = vocabAnswers
+                .filter(ans => ans !== correctAnswer);
             shuffle(incorrectTranslations);
             
-            const options = [correctTranslation, ...incorrectTranslations.slice(0, 3)];
+            const options = [correctAnswer, ...incorrectTranslations.slice(0, 3)];
             shuffle(options);
 
-            quizQuestion.textContent = frenchWord;
             quizOptions.innerHTML = '';
             options.forEach(option => {
                 const button = document.createElement('button');
                 button.textContent = option;
-                button.addEventListener('click', () => checkAnswer(button, option, correctTranslation));
+                button.addEventListener('click', () => checkQuizAnswer(button, option, correctAnswer));
                 quizOptions.appendChild(button);
             });
         }
 
-        function checkAnswer(button, selectedAnswer, correctAnswer) {
+        function checkQuizAnswer(button, selectedAnswer, correctAnswer) {
             const allButtons = quizOptions.querySelectorAll('button');
             allButtons.forEach(btn => btn.disabled = true);
             
@@ -1028,6 +1078,56 @@
         scrambleInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter' && scrambleCheckBtn.style.display !== 'none') {
                 checkScramble();
+            }
+        });
+
+        function startDictation() {
+            if (vocab.length === 0) return;
+
+            dictationInput.value = '';
+            dictationInput.disabled = false;
+            dictationCheckBtn.style.display = 'block';
+            dictationNextBtn.style.display = 'none';
+            dictationFeedbackDiv.textContent = '';
+            
+            const randomPair = vocab[Math.floor(Math.random() * vocab.length)];
+            currentDictationWord = randomPair[0];
+            currentDictationDefinition = randomPair[1];
+            
+            dictationClueDiv.textContent = `Définition : ${currentDictationDefinition}`;
+        }
+
+        function checkDictation() {
+            const userAnswer = dictationInput.value.trim();
+            const correctWord = currentDictationWord;
+            const normalizedUser = removeAccents(userAnswer).toUpperCase();
+            const normalizedCorrect = removeAccents(correctWord).toUpperCase();
+            
+            if (userAnswer === correctWord) {
+                dictationFeedbackDiv.textContent = `Bravo ! Le mot était bien : ${correctWord}`;
+                dictationFeedbackDiv.style.color = '#4CAF50'; 
+                dictationInput.disabled = true;
+                dictationCheckBtn.style.display = 'none';
+                dictationNextBtn.style.display = 'block';
+
+            } else if (normalizedUser === normalizedCorrect) {
+                dictationFeedbackDiv.textContent = `Attention ! Erreur d'accent ou de casse. Le mot exact était : ${correctWord}`;
+                dictationFeedbackDiv.style.color = '#FF8C00'; 
+                dictationInput.focus();
+            
+            } else {
+                dictationFeedbackDiv.textContent = `Faux ! Erreur d'orthographe. Le mot exact était : ${correctWord}`;
+                dictationFeedbackDiv.style.color = '#F44336'; 
+                dictationInput.focus();
+            }
+        }
+
+        dictationCheckBtn.addEventListener('click', checkDictation);
+        dictationNextBtn.addEventListener('click', startDictation);
+
+        dictationInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && dictationCheckBtn.style.display !== 'none') {
+                checkDictation();
             }
         });
 
