@@ -254,16 +254,15 @@
             font-weight: 700;
             cursor: pointer;
             transition: background-color 0.3s;
+            color: var(--color-card); 
         }
 
         .feedback-buttons .knew-it-btn {
-            background-color: var(--color-correct);
-            color: var(--color-card);
+            background-color: var(--color-correct); 
         }
 
         .feedback-buttons .didnt-know-it-btn {
-            background-color: var(--color-incorrect);
-            color: var(--color-card);
+            background-color: var(--color-incorrect); 
         }
         
         .quiz-question {
@@ -384,7 +383,7 @@
             font-size: 1.1em;
         }
 
-        .game-container button:not(#scrambleNextBtn, #dictationNextBtn) {
+        .game-container button:not(#scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
             background-color: var(--color-secondary);
             color: var(--color-card);
             border: none;
@@ -398,7 +397,7 @@
             margin-top: 20px;
         }
 
-        .game-container button:hover:not(:disabled) {
+        .game-container button:hover:not(:disabled, #scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
             background-color: #018786;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
@@ -1304,7 +1303,7 @@
             wrongGuesses = 0;
             hangmanWordDiv.textContent = displayWord.join(' ');
             hangmanLettersDiv.innerHTML = '';
-            hangmanParts.forEach(id=>document.getElementById(id).id.style.display='none');
+            hangmanParts.forEach(id=>document.getElementById(id).style.display='none');
 
             const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÂÄÈÉÊËÎÏÔÖÙÛÜÇŒ";
             const uniqueLetters = [...new Set(alphabet.split(''))];
@@ -1511,7 +1510,7 @@
             const item = event.currentTarget;
             const type = item.getAttribute('data-type');
             
-            if (item.classList.contains('matched')) return; 
+            if (item.classList.contains('matched') || item.classList.contains('error')) return; 
 
             if (type === 'word') {
                 if (selectedWordItem) selectedWordItem.classList.remove('selected');
@@ -1543,14 +1542,15 @@
                     selectedWordItem.classList.add('error');
                     selectedDefItem.classList.add('error');
                     
+                    const item1 = selectedWordItem;
+                    const item2 = selectedDefItem;
+
                     setTimeout(() => {
-                        selectedWordItem.classList.remove('error');
-                        selectedDefItem.classList.remove('error');
-                    }, 500);
+                        item1.classList.remove('error', 'selected');
+                        item2.classList.remove('error', 'selected');
+                    }, 1000);
                 }
                 
-                selectedWordItem.classList.remove('selected');
-                selectedDefItem.classList.remove('selected');
                 selectedWordItem = null;
                 selectedDefItem = null;
             }
@@ -1574,13 +1574,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             generateChapterButtons(); 
             hideAlert();
-            // Initialiser avec un chapitre par défaut si aucun n'est sélectionné au chargement
             if (Object.keys(ALL_VOCAB_DATA).length > 0) {
                 const defaultChapterKey = Object.keys(ALL_VOCAB_DATA)[0];
                 const defaultChapter = ALL_VOCAB_DATA[defaultChapterKey];
                 if (Object.keys(defaultChapter.subcategories).length === 1) {
                      const defaultSubKey = Object.keys(defaultChapter.subcategories)[0];
                      changeVocabulary(defaultChapterKey, defaultSubKey);
+                } else {
+                     openSubcategoryModal(defaultChapter);
                 }
             }
         });
