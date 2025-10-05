@@ -1,5 +1,4 @@
 const ALL_VOCAB_DATA = {
-    // Chapitre 19
     'chap19': {
         title: 'Chapitre 19',
         selectorId: 'chap19SelectBtn',
@@ -9,7 +8,7 @@ const ALL_VOCAB_DATA = {
                 color: '#FF8C00',
                 alert: {
                     message: "La liste de vocabulaire est toujours à jour mais l'intero s'est déroulé le 22-09-25. Cette liste est donc obsolète pour la prochaine intero.",
-                    color: '#FF8C00' // Orange
+                    color: '#FF8C00'
                 },
                 data: [
     ["Damnation", "la condamnation à l'enfer"],
@@ -58,7 +57,7 @@ const ALL_VOCAB_DATA = {
                 color: '#4CAF50', 
                 alert: {
                     message: "Le voc est à jour ! Vous pouvez étudier et tester vos connaissances sur le site ! Si une erreur survient, prévenez-moi, je me droguerai à nouveau à la caféine :)",
-                    color: '#4CAF50' // Vert
+                    color: '#4CAF50'
                 },
                 data: [
     ["absurde", "insensée, déraisonnable, contraire à la logique"],
@@ -93,7 +92,6 @@ const ALL_VOCAB_DATA = {
         }
     }, 
     
-    // Exemple d'ajout futur : Chapitre 20
     'chap20': {
         title: 'Chapitre 20',
         selectorId: 'chap20SelectBtn',
@@ -101,9 +99,9 @@ const ALL_VOCAB_DATA = {
             'general': {
                 name: 'Vocabulaire Général',
                 color: '#BB86FC',
-                alert: null, // Pas d'alerte pour ce chapitre
+                alert: null,
                 data: [
-                     // PLACE ICI LES PAIRES MOT/DEFINITION DU CHAPITRE 20
+                     
                 ]
             }
         }
