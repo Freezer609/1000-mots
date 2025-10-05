@@ -12,10 +12,10 @@
             --color-background: #121212;
             --color-card: #1E1E1E;
             --color-text: #E0E0E0;
-            --color-primary: #BB86FC;
-            --color-secondary: #03DAC6;
-            --color-correct: #4CAF50;
-            --color-incorrect: #F44336;
+            --color-primary: #BB86FC; /* Violet */
+            --color-secondary: #03DAC6; /* Cyan */
+            --color-correct: #4CAF50; /* Vert */
+            --color-incorrect: #F44336; /* Rouge */
         }
 
         body {
@@ -260,9 +260,15 @@
         .feedback-buttons .knew-it-btn {
             background-color: var(--color-correct); 
         }
+        .feedback-buttons .knew-it-btn:hover {
+            background-color: #388E3C; /* Darker green for hover */
+        }
 
         .feedback-buttons .didnt-know-it-btn {
             background-color: var(--color-incorrect); 
+        }
+        .feedback-buttons .didnt-know-it-btn:hover {
+            background-color: #D32F2F; /* Darker red for hover */
         }
         
         .quiz-question {
@@ -294,7 +300,7 @@
             font-weight: 500;
         }
         
-        .quiz-options button:hover {
+        .quiz-options button:hover:not(.correct):not(.incorrect) { /* Empêche le hover sur les boutons déjà colorés */
             background-color: #444444;
         }
 
@@ -452,7 +458,7 @@
             border: 2px solid transparent;
         }
 
-        .match-item:hover {
+        .match-item:hover:not(.matched):not(.error) { /* Empêche le hover sur les items déjà colorés */
             background-color: #444444;
         }
 
@@ -467,7 +473,7 @@
             color: var(--color-card);
             cursor: default;
             pointer-events: none;
-            opacity: 0.7;
+            opacity: 1; 
             border-color: transparent;
         }
 
@@ -755,7 +761,7 @@
             <button id="matchModeBtn" title="Mode Match"><i class="fas fa-link"></i> Mode Association</button> 
         </div>
         
-        <div id="flashcardGameContainer" class="game-container" style="display: block;">
+        <div id="flashcardGameContainer" class="game-container" style="display: flex;">
             <div class="card-container">
                 <div id="flashcard" class="card">
                     <div id="front" class="card-face card-front"></div>
@@ -972,6 +978,7 @@
                     if (Object.keys(chapter.subcategories).length > 1) {
                         openSubcategoryModal(chapter);
                     } else {
+                        // Si une seule sous-catégorie, la sélectionner directement
                         const subKey = Object.keys(chapter.subcategories)[0];
                         changeVocabulary(key, subKey);
                     }
@@ -990,6 +997,7 @@
                 const sub = chapter.subcategories[subKey];
                 const subBtn = document.createElement('button');
                 subBtn.textContent = sub.name;
+                // Appliquer la couleur directement
                 subBtn.style.backgroundColor = sub.color;
                 subBtn.addEventListener('click', () => changeVocabulary(chapter.selectorId.replace('SelectBtn', ''), subKey));
                 modalButtons.appendChild(subBtn);
@@ -1062,28 +1070,24 @@
         });
         
         function showMode(mode) {
+            const allContainers = [flashcardGameContainer, quizGameContainer, hangmanGameContainer, scrambleGameContainer, dictationGameContainer, matchGameContainer];
+            const allModeBtns = [flashcardModeBtn, quizModeBtn, hangmanModeBtn, scrambleModeBtn, dictationModeBtn, matchModeBtn];
+
             if (vocab.length === 0) {
                  frontFace.textContent = "Choisis une catégorie !";
                  backFace.textContent = "Clique sur un chapitre ci-dessus.";
-                 flashcardGameContainer.style.display = 'block'; 
-                 quizGameContainer.style.display = 'none';
-                 hangmanGameContainer.style.display = 'none';
-                 scrambleGameContainer.style.display = 'none';
-                 dictationGameContainer.style.display = 'none';
-                 matchGameContainer.style.display = 'none';
+                 flashcardGameContainer.style.display = 'flex'; 
+                 allContainers.filter(c => c !== flashcardGameContainer).forEach(c => c.style.display = 'none');
                  cardCounter.textContent = '0 / 0';
                  prevBtn.disabled = true;
                  nextBtn.disabled = true;
                  feedbackButtons.style.display = 'none';
-                 
                  hideAlert();
                  return;
             }
 
-            document.querySelectorAll('.game-container').forEach(c => c.style.display = 'none');
-
-            document.querySelectorAll('.mode-selector button').forEach(btn => btn.classList.remove('active'));
-
+            allContainers.forEach(c => c.style.display = 'none');
+            allModeBtns.forEach(btn => btn.classList.remove('active'));
 
             if (mode === 'flashcard') {
                 flashcardGameContainer.style.display = 'flex';
@@ -1133,13 +1137,14 @@
             }
 
             let card;
+            // Prioriser les mots à réviser
             if (wordsToReview.length > 0 && Math.random() < 0.5) { 
                 const reviewIndex = Math.floor(Math.random() * wordsToReview.length);
                 card = wordsToReview[reviewIndex];
-                wordsToReview.splice(reviewIndex, 1);
+                wordsToReview.splice(reviewIndex, 1); // Retirer le mot de la liste de révision
             } else {
                 if (shuffledVocab.length === 0) {
-                     shuffledVocab = shuffle([...vocab]);
+                     shuffledVocab = shuffle([...vocab]); // Réinitialiser si toutes les cartes ont été vues
                 }
                 card = shuffledVocab[currentCardIndex];
             }
@@ -1165,17 +1170,25 @@
                 prevBtn.style.display = 'none';
                 nextBtn.style.display = 'none';
                 feedbackButtons.style.display = 'flex';
+              
+                knewItBtn.style.backgroundColor = 'var(--color-correct)';
+                didntKnowBtn.style.backgroundColor = 'var(--color-incorrect)';
             } else {
                 updateFlashcardButtons();
             }
         });
         const handleFeedback = (knewIt) => {
             if (!knewIt) {
-                wordsToReview.push(shuffledVocab[currentCardIndex]);
+                
+                if (!wordsToReview.includes(shuffledVocab[currentCardIndex])) {
+                    wordsToReview.push(shuffledVocab[currentCardIndex]);
+                }
             }
             
             currentCardIndex++;
+            
             if (currentCardIndex >= shuffledVocab.length) {
+             
                 if (wordsToReview.length > 0) {
                     shuffledVocab = wordsToReview;
                     wordsToReview = [];
@@ -1214,7 +1227,7 @@
                 return {
                     question: isNormal ? item[0] : item[1],
                     answer: isNormal ? item[1] : item[0],
-                    isNormal: isNormal
+                    isNormal: isNormal 
                 };
             }));
             quizScoreCount = 0;
@@ -1238,7 +1251,8 @@
 
             const currentQuestion = quizQuestions[currentQuizQuestionIndex];
             
-            quizQuestion.classList.remove('inverted');
+           
+            quizQuestion.classList.remove('inverted'); 
             if (!currentQuestion.isNormal) {
                 quizQuestion.textContent = `Quel mot correspond à la définition : ${currentQuestion.question}`;
                 quizQuestion.classList.add('inverted');
@@ -1248,12 +1262,15 @@
 
             const correctAnswer = currentQuestion.answer;
 
+          
             const vocabAnswers = vocab.map(word => currentQuestion.isNormal ? word[1] : word[0]);
 
+            
             const incorrectTranslations = vocabAnswers
                 .filter(ans => ans !== correctAnswer);
             shuffle(incorrectTranslations);
             
+           
             const options = [correctAnswer, ...incorrectTranslations.slice(0, 3)];
             shuffle(options);
 
@@ -1268,7 +1285,7 @@
 
         function checkQuizAnswer(button, selectedAnswer, correctAnswer) {
             const allButtons = quizOptions.querySelectorAll('button');
-            allButtons.forEach(btn => btn.disabled = true);
+            allButtons.forEach(btn => btn.disabled = true); 
             
             if (selectedAnswer === correctAnswer) {
                 button.classList.add('correct');
@@ -1287,7 +1304,7 @@
             setTimeout(() => {
                 currentQuizQuestionIndex++;
                 displayQuizQuestion();
-            }, 1500);
+            }, 1500); 
         }
 
         function updateQuizScore() {
@@ -1548,7 +1565,7 @@
                     setTimeout(() => {
                         item1.classList.remove('error', 'selected');
                         item2.classList.remove('error', 'selected');
-                    }, 1000);
+                    }, 1000); // Reste en rouge pendant 1s avant de disparaître
                 }
                 
                 selectedWordItem = null;
@@ -1574,15 +1591,14 @@
         document.addEventListener('DOMContentLoaded', () => {
             generateChapterButtons(); 
             hideAlert();
+       
             if (Object.keys(ALL_VOCAB_DATA).length > 0) {
                 const defaultChapterKey = Object.keys(ALL_VOCAB_DATA)[0];
                 const defaultChapter = ALL_VOCAB_DATA[defaultChapterKey];
                 if (Object.keys(defaultChapter.subcategories).length === 1) {
                      const defaultSubKey = Object.keys(defaultChapter.subcategories)[0];
                      changeVocabulary(defaultChapterKey, defaultSubKey);
-                } else {
-                     openSubcategoryModal(defaultChapter);
-                }
+                } 
             }
         });
     </script>
