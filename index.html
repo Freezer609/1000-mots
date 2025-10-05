@@ -12,10 +12,10 @@
             --color-background: #121212;
             --color-card: #1E1E1E;
             --color-text: #E0E0E0;
-            --color-primary: #BB86FC; /* Violet */
-            --color-secondary: #03DAC6; /* Cyan */
-            --color-correct: #4CAF50; /* Vert */
-            --color-incorrect: #F44336; /* Rouge */
+            --color-primary: #BB86FC;
+            --color-secondary: #03DAC6;
+            --color-correct: #4CAF50;
+            --color-incorrect: #F44336;
         }
 
         body {
@@ -208,25 +208,27 @@
         }
         
         .controls button {
-            background-color: #3A3A3A;
-            color: var(--color-text);
+            background-color: transparent; /* Changed to transparent */
+            color: var(--color-secondary); /* Changed to use var color-secondary */
             border: none;
-            padding: 15px 15px;
-            font-size: 1.2em;
+            padding: 0; /* Changed padding */
+            font-size: 2.5em; /* Increased size for visibility */
             font-weight: 700;
             border-radius: 50%;
             width: 50px;
             height: 50px;
             cursor: pointer;
-            transition: background-color 0.3s;
+            transition: color 0.3s; /* Transition for color */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .controls button:hover {
-            background-color: #444444;
+            color: var(--color-primary); /* Hover color for arrows */
         }
         
         .controls button:disabled {
-            background-color: #222222;
             color: #555555;
             cursor: not-allowed;
         }
@@ -261,14 +263,14 @@
             background-color: var(--color-correct); 
         }
         .feedback-buttons .knew-it-btn:hover {
-            background-color: #388E3C; /* Darker green for hover */
+            background-color: #388E3C; 
         }
 
         .feedback-buttons .didnt-know-it-btn {
             background-color: var(--color-incorrect); 
         }
         .feedback-buttons .didnt-know-it-btn:hover {
-            background-color: #D32F2F; /* Darker red for hover */
+            background-color: #D32F2F; 
         }
         
         .quiz-question {
@@ -300,7 +302,7 @@
             font-weight: 500;
         }
         
-        .quiz-options button:hover:not(.correct):not(.incorrect) { /* Empêche le hover sur les boutons déjà colorés */
+        .quiz-options button:hover:not(.correct):not(.incorrect) {
             background-color: #444444;
         }
 
@@ -458,7 +460,7 @@
             border: 2px solid transparent;
         }
 
-        .match-item:hover:not(.matched):not(.error) { /* Empêche le hover sur les items déjà colorés */
+        .match-item:hover:not(.matched):not(.error) {
             background-color: #444444;
         }
 
@@ -659,7 +661,7 @@
             .controls button {
                 width: 40px;
                 height: 40px;
-                font-size: 1em;
+                font-size: 2em;
             }
             
             .feedback-buttons {
@@ -769,9 +771,9 @@
                 </div>
             </div>
             <div class="controls">
-                <button id="prevBtn"><i class="fas fa-arrow-left"></i></button>
+                <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
                 <span id="cardCounter"></span>
-                <button id="nextBtn"><i class="fas fa-arrow-right"></i></button>
+                <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
             </div>
 
             <div class="feedback-buttons" id="feedbackButtons">
@@ -827,8 +829,8 @@
                 <div id="definitionsColumn" class="match-column"></div>
             </div>
             <button id="matchNextBtn" style="display:none; margin-top: 30px;">Prochain Match &rarr;</button>
-        </div>
-        <details>
+        </div
+        ><details>
             <summary id="listTitle">Liste Complète</summary>
             <div class="list-content">
                 <ul class="vocabulary-list"></ul>
@@ -978,7 +980,6 @@
                     if (Object.keys(chapter.subcategories).length > 1) {
                         openSubcategoryModal(chapter);
                     } else {
-                        // Si une seule sous-catégorie, la sélectionner directement
                         const subKey = Object.keys(chapter.subcategories)[0];
                         changeVocabulary(key, subKey);
                     }
@@ -997,7 +998,6 @@
                 const sub = chapter.subcategories[subKey];
                 const subBtn = document.createElement('button');
                 subBtn.textContent = sub.name;
-                // Appliquer la couleur directement
                 subBtn.style.backgroundColor = sub.color;
                 subBtn.addEventListener('click', () => changeVocabulary(chapter.selectorId.replace('SelectBtn', ''), subKey));
                 modalButtons.appendChild(subBtn);
@@ -1137,14 +1137,13 @@
             }
 
             let card;
-            // Prioriser les mots à réviser
             if (wordsToReview.length > 0 && Math.random() < 0.5) { 
                 const reviewIndex = Math.floor(Math.random() * wordsToReview.length);
                 card = wordsToReview[reviewIndex];
-                wordsToReview.splice(reviewIndex, 1); // Retirer le mot de la liste de révision
+                wordsToReview.splice(reviewIndex, 1); 
             } else {
                 if (shuffledVocab.length === 0) {
-                     shuffledVocab = shuffle([...vocab]); // Réinitialiser si toutes les cartes ont été vues
+                     shuffledVocab = shuffle([...vocab]); 
                 }
                 card = shuffledVocab[currentCardIndex];
             }
@@ -1170,7 +1169,6 @@
                 prevBtn.style.display = 'none';
                 nextBtn.style.display = 'none';
                 feedbackButtons.style.display = 'flex';
-              
                 knewItBtn.style.backgroundColor = 'var(--color-correct)';
                 didntKnowBtn.style.backgroundColor = 'var(--color-incorrect)';
             } else {
@@ -1179,16 +1177,13 @@
         });
         const handleFeedback = (knewIt) => {
             if (!knewIt) {
-                
                 if (!wordsToReview.includes(shuffledVocab[currentCardIndex])) {
                     wordsToReview.push(shuffledVocab[currentCardIndex]);
                 }
             }
             
             currentCardIndex++;
-            
             if (currentCardIndex >= shuffledVocab.length) {
-             
                 if (wordsToReview.length > 0) {
                     shuffledVocab = wordsToReview;
                     wordsToReview = [];
@@ -1227,7 +1222,7 @@
                 return {
                     question: isNormal ? item[0] : item[1],
                     answer: isNormal ? item[1] : item[0],
-                    isNormal: isNormal 
+                    isNormal: isNormal
                 };
             }));
             quizScoreCount = 0;
@@ -1251,7 +1246,6 @@
 
             const currentQuestion = quizQuestions[currentQuizQuestionIndex];
             
-           
             quizQuestion.classList.remove('inverted'); 
             if (!currentQuestion.isNormal) {
                 quizQuestion.textContent = `Quel mot correspond à la définition : ${currentQuestion.question}`;
@@ -1262,15 +1256,12 @@
 
             const correctAnswer = currentQuestion.answer;
 
-          
             const vocabAnswers = vocab.map(word => currentQuestion.isNormal ? word[1] : word[0]);
 
-            
             const incorrectTranslations = vocabAnswers
                 .filter(ans => ans !== correctAnswer);
             shuffle(incorrectTranslations);
             
-           
             const options = [correctAnswer, ...incorrectTranslations.slice(0, 3)];
             shuffle(options);
 
@@ -1565,7 +1556,7 @@
                     setTimeout(() => {
                         item1.classList.remove('error', 'selected');
                         item2.classList.remove('error', 'selected');
-                    }, 1000); // Reste en rouge pendant 1s avant de disparaître
+                    }, 1000); 
                 }
                 
                 selectedWordItem = null;
@@ -1591,7 +1582,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             generateChapterButtons(); 
             hideAlert();
-       
+            
             if (Object.keys(ALL_VOCAB_DATA).length > 0) {
                 const defaultChapterKey = Object.keys(ALL_VOCAB_DATA)[0];
                 const defaultChapter = ALL_VOCAB_DATA[defaultChapterKey];
