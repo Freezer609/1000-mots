@@ -157,7 +157,8 @@
             justify-content: center;
             
             opacity: 0;
-            transition: opacity 0.75s ease-in-out; 
+            /* Changé de 0.75s à 0.35s */
+            transition: opacity 0.35s ease-in-out; 
             pointer-events: none;
         }
         
@@ -528,13 +529,16 @@
             text-align: left;
             
             max-height: 0;
-            transition: max-height 3s ease-in-out; 
+            /* Animation pour l'ouverture des détails */
+            transition: max-height 0.4s ease-out, border-top 0.4s; 
+            overflow: hidden; 
             border-top: none;
         }
         
         details[open] .list-content,
         details[open] .instructions-content {
-            max-height: 2000px;
+            /* Fixe une hauteur maximale pour que l'animation fonctionne */
+            max-height: 2000px; 
             border-top: 1px solid #444444; 
         }
 
@@ -961,7 +965,7 @@ le mot ici..." autocomplete="off">
             while (currentIndex > 0) {
                 randomIndex = Math.floor(Math.random() * currentIndex);
                 currentIndex--;
-                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+                [array[currentIndex], array[randomIndex]] = [array[currentIndex], array[randomIndex]];
             }
             return array;
         }
@@ -1100,10 +1104,10 @@ le mot ici..." autocomplete="off">
                     c.style.opacity = '0';
                 }
                 c.classList.remove('active-mode');
-                // Temps de transition actuel : 750ms (0.75s)
+                // Temps de transition actuel : 350ms (0.35s)
                 setTimeout(() => { 
                     c.style.display = 'none';
-                }, 750); 
+                }, 350); 
             });
 
             // Délai pour démarrer l'animation du nouveau mode (doit être >= temps de transition CSS)
@@ -1138,7 +1142,7 @@ le mot ici..." autocomplete="off">
                     matchModeBtn.classList.add('active');
                     startMatchGame();
                 }
-            }, 750); 
+            }, 350); 
         }
 
         flashcardModeBtn.addEventListener('click', () => showMode('flashcard'));
