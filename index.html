@@ -137,6 +137,7 @@
             box-shadow: 0 0 15px rgba(187, 134, 252, 0.5);
         }
         
+        /* DÉBUT DE LA CORRECTION : Animation de 1s pour le changement de mode */
         .game-container {
             display: none;
             padding: 20px;
@@ -147,7 +148,17 @@
             flex-direction: column; 
             align-items: center;
             justify-content: center;
+            
+            /* Nouvelle règle pour l'animation de 1s */
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            pointer-events: none;
         }
+        
+        .game-container.active-mode {
+             pointer-events: auto; /* Réactiver les interactions quand le mode est actif */
+        }
+        /* FIN DE LA CORRECTION */
         
         .card-container {
             position: relative;
@@ -476,7 +487,8 @@
             margin-top: 25px;
             background-color: #2C2C2C;
             border-radius: 10px;
-            overflow: hidden;
+            /* Rendre l'overflow nécessaire pour la transition max-height */
+            overflow: hidden; 
         }
         
         summary {
@@ -507,11 +519,26 @@
             content: '\25B2';
         }
         
+        /* DÉBUT DE LA CORRECTION : Animation de 3s pour le déroulement */
         .list-content, .instructions-content {
             padding: 0 20px 20px 20px;
             text-align: left;
-            border-top: 1px solid #444444;
+            
+            /* Règle essentielle : hauteur 0 par défaut */
+            max-height: 0;
+            /* Nouvelle règle pour l'animation de 3s */
+            transition: max-height 3s ease-in-out;
+            /* La bordure est retirée ici et ajoutée quand c'est ouvert */
+            border-top: none; 
         }
+        
+        details[open] .list-content,
+        details[open] .instructions-content {
+            /* Une valeur très large pour englober tout le contenu */
+            max-height: 2000px; 
+            border-top: 1px solid #444444; /* Réajoute la bordure pour la séparation */
+        }
+        /* FIN DE LA CORRECTION */
 
         .vocabulary-list {
             columns: 2;
@@ -737,7 +764,7 @@
             <button id="matchModeBtn" title="Mode Match"><i class="fas fa-link"></i> Mode Association</button> 
         </div>
         
-        <div id="flashcardGameContainer" class="game-container" style="display: flex;">
+        <div id="flashcardGameContainer" class="game-container">
             <div class="card-container">
                 <div id="flashcard" class="card">
                     <div id="front" class="card-face card-front"></div>
@@ -801,8 +828,9 @@
                 <div id="definitionsColumn" class="match-column"></div>
             </div>
             <button id="matchNextBtn" style="display:none; margin-top: 30px;">Prochain Match &rarr;</button>
-        </div
-        ><details>
+        </div>
+        
+        <details>
             <summary id="listTitle">Liste Complète</summary>
             <div class="list-content">
                 <ul class="vocabulary-list"></ul>
@@ -860,6 +888,8 @@
         const scrambleGameContainer = document.getElementById('scrambleGameContainer');
         const dictationGameContainer = document.getElementById('dictationGameContainer');
         const matchGameContainer = document.getElementById('matchGameContainer');
+        const allContainers = [flashcardGameContainer, quizGameContainer, hangmanGameContainer, scrambleGameContainer, dictationGameContainer, matchGameContainer];
+        const allModeBtns = [flashcardModeBtn, quizModeBtn, hangmanModeBtn, scrambleModeBtn, dictationModeBtn, matchModeBtn];
 
         const quizQuestion = document.getElementById('quizQuestion');
         const quizOptions = document.getElementById('quizOptions');
@@ -996,13 +1026,15 @@
                 wordsToReview = [];
                 currentCardIndex = 0;
                 
+                // On garde la logique de sélection de mode ici pour initialiser
                 const activeModeBtn = document.querySelector('.mode-selector button.active');
                 let mode = 'flashcard'; 
                 if (activeModeBtn) {
                     mode = activeModeBtn.id.replace('ModeBtn', '').replace('match', 'match'); 
                 }
-                showMode(mode);
                 
+                showMode(mode); // Appel à showMode qui gère l'animation
+
                 generateList();
                 updateAlert(subcategoryData.alert);
                 
@@ -1039,52 +1071,84 @@
             }
         });
         
+        /* DÉBUT DE LA CORRECTION : Logique showMode avec animation de 1s */
         function showMode(mode) {
-            const allContainers = [flashcardGameContainer, quizGameContainer, hangmanGameContainer, scrambleGameContainer, dictationGameContainer, matchGameContainer];
-            const allModeBtns = [flashcardModeBtn, quizModeBtn, hangmanModeBtn, scrambleModeBtn, dictationModeBtn, matchModeBtn];
-
             if (vocab.length === 0) {
-                 frontFace.textContent = "Choisis une catégorie !";
-                 backFace.textContent = "Clique sur un chapitre ci-dessus.";
+                 // Logique de repli sans animation
+                 allContainers.forEach(c => c.style.display = 'none');
                  flashcardGameContainer.style.display = 'flex'; 
-                 allContainers.filter(c => c !== flashcardGameContainer).forEach(c => c.style.display = 'none');
+                 flashcardGameContainer.style.opacity = '1'; 
                  cardCounter.textContent = '0 / 0';
                  feedbackButtons.style.display = 'none';
+                 frontFace.textContent = "Choisis une catégorie !";
+                 backFace.textContent = "Clique sur un chapitre ci-dessus.";
                  hideAlert();
                  return;
             }
 
-            allContainers.forEach(c => c.style.display = 'none');
-            allModeBtns.forEach(btn => btn.classList.remove('active'));
+            // 1. Déterminer le conteneur cible
+            let targetContainer;
+            let modeKey; 
 
-            if (mode === 'flashcard') {
-                flashcardGameContainer.style.display = 'flex';
-                flashcardModeBtn.classList.add('active');
-                flashcard.classList.remove('flipped');
-                currentCardIndex = 0;
-                shuffledVocab = shuffle([...vocab]);
-                displayFlashcard();
-            } else if (mode === 'quiz') {
-                quizGameContainer.style.display = 'flex';
-                quizModeBtn.classList.add('active');
-                startQuiz();
-            } else if (mode === 'hangman') {
-                hangmanGameContainer.style.display = 'flex';
-                hangmanModeBtn.classList.add('active');
-                startHangman();
-            } else if (mode === 'scramble') {
-                scrambleGameContainer.style.display = 'flex';
-                scrambleModeBtn.classList.add('active');
-                startScramble();
-            } else if (mode === 'dictation') {
-                dictationGameContainer.style.display = 'flex';
-                dictationModeBtn.classList.add('active');
-                startDictation();
-            } else if (mode === 'match') {
-                matchGameContainer.style.display = 'flex';
-                matchModeBtn.classList.add('active');
-                startMatchGame();
-            }
+            if (mode === 'flashcard') { targetContainer = flashcardGameContainer; modeKey = 'flashcard'; }
+            else if (mode === 'quiz') { targetContainer = quizGameContainer; modeKey = 'quiz'; }
+            else if (mode === 'hangman') { targetContainer = hangmanGameContainer; modeKey = 'hangman'; }
+            else if (mode === 'scramble') { targetContainer = scrambleGameContainer; modeKey = 'scramble'; }
+            else if (mode === 'dictation') { targetContainer = dictationGameContainer; modeKey = 'dictation'; }
+            else if (mode === 'match') { targetContainer = matchGameContainer; modeKey = 'match'; }
+
+            // 2. Lancer le fade-out sur le conteneur actif et le masquer après 1s
+            allContainers.forEach(c => {
+                if (c.style.display !== 'none') {
+                    c.style.opacity = '0'; // Démarre le fade-out
+                }
+                c.classList.remove('active-mode'); 
+                // Masque le conteneur après le temps de transition (1000ms)
+                setTimeout(() => { 
+                    c.style.display = 'none'; 
+                }, 1000); 
+            });
+            
+            // 3. Planifier le fade-in et l'initialisation du nouveau jeu (après 1s)
+            setTimeout(() => {
+                
+                allModeBtns.forEach(btn => btn.classList.remove('active'));
+                
+                // Afficher le conteneur
+                targetContainer.style.display = 'flex';
+                targetContainer.classList.add('active-mode'); 
+                
+                // Forcer le reflow/redessin avant de changer l'opacité
+                void targetContainer.offsetWidth; 
+
+                // Démarrer le fade-in
+                targetContainer.style.opacity = '1';
+
+                // Logique d'initialisation du jeu (légèrement modifiée)
+                if (modeKey === 'flashcard') {
+                    flashcardModeBtn.classList.add('active');
+                    flashcard.classList.remove('flipped');
+                    currentCardIndex = 0;
+                    shuffledVocab = shuffle([...vocab]);
+                    displayFlashcard();
+                } else if (modeKey === 'quiz') {
+                    quizModeBtn.classList.add('active');
+                    startQuiz();
+                } else if (modeKey === 'hangman') {
+                    hangmanModeBtn.classList.add('active');
+                    startHangman();
+                } else if (modeKey === 'scramble') {
+                    scrambleModeBtn.classList.add('active');
+                    startScramble();
+                } else if (modeKey === 'dictation') {
+                    dictationModeBtn.classList.add('active');
+                    startDictation();
+                } else if (modeKey === 'match') {
+                    matchModeBtn.classList.add('active');
+                    startMatchGame();
+                }
+
+            }, 1000); // 1 seconde de délai pour laisser le temps au fade-out de l'ancien mode
         }
 
         flashcardModeBtn.addEventListener('click', () => showMode('flashcard'));
@@ -1093,6 +1157,8 @@
         scrambleModeBtn.addEventListener('click', () => showMode('scramble'));
         dictationModeBtn.addEventListener('click', () => showMode('dictation'));
         matchModeBtn.addEventListener('click', () => showMode('match'));
+        /* FIN DE LA CORRECTION : Logique showMode avec animation de 1s */
+
 
         function displayFlashcard() {
             if (shuffledVocab.length === 0 && wordsToReview.length === 0) {
@@ -1537,6 +1603,7 @@
                 const defaultChapter = ALL_VOCAB_DATA[defaultChapterKey];
                 if (Object.keys(defaultChapter.subcategories).length === 1) {
                      const defaultSubKey = Object.keys(defaultChapter.subcategories)[0];
+                     // Initialiser le premier chapitre et le mode flashcard
                      changeVocabulary(defaultChapterKey, defaultSubKey);
                 } 
             }
