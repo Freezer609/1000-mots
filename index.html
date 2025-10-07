@@ -6,7 +6,7 @@
     <title>1000 Mots - Révision Vocabulaire</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/Jp9v0H9S+t5W9qF/0m+y2iN1m2vN0k65B0x1L/K11g+B0+1rA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/Jp9v0H9S+t5W9qF/0m+y2iN1m2vN0k65B0x1L/K11g+B0+1rA==1" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <style>
         :root {
@@ -246,21 +246,21 @@
             font-weight: 700;
             cursor: pointer;
             transition: background-color 0.3s;
-            color: var(--color-card);
+            color: var(--color-card); 
         }
 
         .feedback-buttons .knew-it-btn {
-            background-color: var(--color-correct);
+            background-color: var(--color-correct); 
         }
         .feedback-buttons .knew-it-btn:hover {
-            background-color: #388E3C;
+            background-color: #388E3C; 
         }
 
         .feedback-buttons .didnt-know-it-btn {
-            background-color: var(--color-incorrect);
+            background-color: var(--color-incorrect); 
         }
         .feedback-buttons .didnt-know-it-btn:hover {
-            background-color: #D32F2F;
+            background-color: #D32F2F; 
         }
         
         .quiz-question {
@@ -385,7 +385,7 @@
         }
 
         .game-container button:not(#scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
-            background-color: var(--color-primary);
+            background-color: var(--color-primary); 
             color: var(--color-card);
             border: none;
             padding: 12px 25px;
@@ -399,13 +399,13 @@
         }
 
         .game-container button:hover:not(:disabled, #scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
-            background-color: #A052EE;
+            background-color: #A052EE; 
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
         }
         
         #scrambleNextBtn, #dictationNextBtn, #matchNextBtn {
-            background-color: var(--color-secondary);
+            background-color: var(--color-secondary); 
             color: var(--color-card);
             border: none;
             padding: 12px 25px;
@@ -419,7 +419,7 @@
         }
 
         #scrambleNextBtn:hover, #dictationNextBtn:hover, #matchNextBtn:hover {
-            background-color: #018786;
+            background-color: #018786; 
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
         }
@@ -480,12 +480,9 @@
         }
 
         @keyframes shake {
-            0%, 100% { transform: translateX(0);
-            }
-            20%, 60% { transform: translateX(-5px);
-            }
-            40%, 80% { transform: translateX(5px);
-            }
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
         }
 
         details {
@@ -528,14 +525,13 @@
             text-align: left;
             
             max-height: 0;
-            /* Correction 2: La transition était trop longue (3s) */
-            transition: max-height 0.5s ease-in-out; 
-            border-top: none;
+            transition: max-height 3s ease-in-out; 
+            border-top: none; 
         }
         
         details[open] .list-content,
         details[open] .instructions-content {
-            max-height: 2000px;
+            max-height: 2000px; 
             border-top: 1px solid #444444; 
         }
 
@@ -653,7 +649,7 @@
             }
             
             .card-face {
-                font-size: 1.5em;
+                font-size: 1.5em; 
             }
             
             .card-back {
@@ -666,7 +662,7 @@
             
             .feedback-buttons {
                  flex-direction: column;
-                gap: 10px;
+                 gap: 10px;
             }
             
             .feedback-buttons button {
@@ -707,7 +703,7 @@
             }
             
             #matchGrid {
-                grid-template-columns: 1fr;
+                grid-template-columns: 1fr; 
                 gap: 15px;
             }
             .match-item {
@@ -754,14 +750,12 @@
             <p id="alertText"></p>
         </div>
         
-      
         <div class="mode-selector">
             <button id="flashcardModeBtn" class="active" title="Mode Cartes"><i class="fas fa-redo-alt"></i> Mode Cartes</button>
             <button id="quizModeBtn" title="Mode Quiz"><i class="fas fa-question-circle"></i> Mode Quiz</button>
             <button id="hangmanModeBtn" title="Mode Pendu"><i class="fas fa-user-slash"></i> Mode Pendu</button>
             <button id="scrambleModeBtn" title="Mode Réarrangement"><i class="fas fa-random"></i> Mots Mélangés</button>
             <button id="dictationModeBtn" title="Mode Dictée"><i class="fas fa-keyboard"></i> Mode Dictée</button>
- 
             <button id="matchModeBtn" title="Mode Match"><i class="fas fa-link"></i> Mode Association</button> 
         </div>
         
@@ -769,7 +763,6 @@
             <div class="card-container">
                 <div id="flashcard" class="card">
                     <div id="front" class="card-face card-front"></div>
- 
                     <div id="back" class="card-face card-back"></div>
                 </div>
             </div>
@@ -777,7 +770,6 @@
                 <span id="cardCounter"></span>
             </div>
 
-        
             <div class="feedback-buttons" id="feedbackButtons">
                 <button class="knew-it-btn" id="knewItBtn">Je l'avais</button>
                 <button class="didnt-know-it-btn" id="didntKnowBtn">Je ne l'avais pas</button>
@@ -786,7 +778,6 @@
 
         <div id="quizGameContainer" class="game-container">
             <div id="quizScore" class="quiz-score">Score: 0 / 0</div>
-       
             <div id="quizQuestion" class="quiz-question"></div>
             <div id="quizOptions" class="quiz-options"></div>
         </div>
@@ -794,18 +785,15 @@
         <div id="hangmanGameContainer" class="game-container">
             <svg class="hangman-drawing" viewBox="0 0 200 200">
                 <line x1="10" y1="190" x2="150" y2="190" stroke="#fff" stroke-width="4" />
-                <line x1="40" y1="190" x2="40" y2="20" 
-                stroke="#fff" stroke-width="4" />
+                <line x1="40" y1="190" x2="40" y2="20" stroke="#fff" stroke-width="4" />
                 <line x1="40" y1="20" x2="120" y2="20" stroke="#fff" stroke-width="4" />
                 <line x1="120" y1="20" x2="120" y2="40" stroke="#fff" stroke-width="4" />
                 <circle id="head" cx="120" cy="55" r="15" stroke="#fff" stroke-width="3" fill="none" style="display:none" />
                 <line id="body" x1="120" y1="70" x2="120" y2="120" stroke="#fff" stroke-width="3" style="display:none" />
-  
                 <line id="arm1" x1="120" y1="80" x2="100" y2="100" stroke="#fff" stroke-width="3" style="display:none" />
                 <line id="arm2" x1="120" y1="80" x2="140" y2="100" stroke="#fff" stroke-width="3" style="display:none" />
                 <line id="leg1" x1="120" y1="120" x2="100" y2="150" stroke="#fff" stroke-width="3" style="display:none" />
                 <line id="leg2" x1="120" y1="120" x2="140" y2="150" stroke="#fff" stroke-width="3" style="display:none" />
-  
             </svg>
             <div id="hangmanWord" class="hangman-word"></div>
             <div id="hangmanLetters" class="hangman-letters"></div>
@@ -814,8 +802,7 @@
         <div id="scrambleGameContainer" class="game-container">
             <div id="scrambleWord" class="quiz-question"></div>
             <div id="scrambleClue" class="scramble-clue"></div>
-            <input type="text" id="scrambleInput" placeholder="Écris 
-            le mot ici..." autocomplete="off">
+            <input type="text" id="scrambleInput" placeholder="Écris le mot ici..." autocomplete="off">
             <button id="scrambleCheckBtn">Vérifier</button>
             <div id="scrambleFeedback" class="scramble-feedback"></div>
             <button id="scrambleNextBtn" style="display:none;">Mot Suivant &rarr;</button>
@@ -824,7 +811,6 @@
         <div id="dictationGameContainer" class="game-container">
             <div id="dictationClue" class="dictation-clue"></div>
             <input type="text" id="dictationInput" placeholder="Écris le mot exact ici..." autocomplete="off">
-  
             <button id="dictationCheckBtn">Vérifier</button>
             <div id="dictationFeedback" class="dictation-feedback"></div>
             <button id="dictationNextBtn" style="display:none;">Mot Suivant &rarr;</button>
@@ -833,12 +819,10 @@
         <div id="matchGameContainer" class="game-container">
             <div id="matchScore">Paires trouvées : 0 / 6</div>
             <div id="matchGrid">
-          
                 <div id="wordsColumn" class="match-column"></div>
                 <div id="definitionsColumn" class="match-column"></div>
             </div>
-            <button id="matchNextBtn" style="display:none;
-            margin-top: 30px;">Prochain Match &rarr;</button>
+            <button id="matchNextBtn" style="display:none; margin-top: 30px;">Prochain Match &rarr;</button>
         </div>
         
         <details>
@@ -849,7 +833,6 @@
         </details>
 
         <details>
- 
             <summary>Comment Utiliser</summary>
             <div class="instructions-content">
                 <p>
@@ -874,8 +857,10 @@
     </div>
 
     <script src="vocab_data.js"></script>
+
     <script>
         const container = document.querySelector('.container');
+
         const flashcard = document.getElementById('flashcard');
         const frontFace = document.getElementById('front');
         const backFace = document.getElementById('back');
@@ -884,12 +869,14 @@
         const feedbackButtons = document.getElementById('feedbackButtons');
         const knewItBtn = document.getElementById('knewItBtn');
         const didntKnowBtn = document.getElementById('didntKnowBtn');
+        
         const flashcardModeBtn = document.getElementById('flashcardModeBtn');
         const quizModeBtn = document.getElementById('quizModeBtn');
         const hangmanModeBtn = document.getElementById('hangmanModeBtn');
         const scrambleModeBtn = document.getElementById('scrambleModeBtn');
         const dictationModeBtn = document.getElementById('dictationModeBtn');
-        const matchModeBtn = document.getElementById('matchModeBtn');
+        const matchModeBtn = document.getElementById('matchModeBtn'); 
+
         const flashcardGameContainer = document.getElementById('flashcardGameContainer');
         const quizGameContainer = document.getElementById('quizGameContainer');
         const hangmanGameContainer = document.getElementById('hangmanGameContainer');
@@ -898,65 +885,76 @@
         const matchGameContainer = document.getElementById('matchGameContainer');
         const allContainers = [flashcardGameContainer, quizGameContainer, hangmanGameContainer, scrambleGameContainer, dictationGameContainer, matchGameContainer];
         const allModeBtns = [flashcardModeBtn, quizModeBtn, hangmanModeBtn, scrambleModeBtn, dictationModeBtn, matchModeBtn];
+
         const quizQuestion = document.getElementById('quizQuestion');
         const quizOptions = document.getElementById('quizOptions');
         const quizScore = document.getElementById('quizScore');
+
         const hangmanWordDiv = document.getElementById('hangmanWord');
         const hangmanLettersDiv = document.getElementById('hangmanLetters');
         const hangmanParts = ["head", "body", "arm1", "arm2", "leg1", "leg2"];
+
         const scrambleWordDiv = document.getElementById('scrambleWord');
         const scrambleClueDiv = document.getElementById('scrambleClue');
         const scrambleInput = document.getElementById('scrambleInput');
         const scrambleCheckBtn = document.getElementById('scrambleCheckBtn');
         const scrambleFeedbackDiv = document.getElementById('scrambleFeedback');
         const scrambleNextBtn = document.getElementById('scrambleNextBtn');
+
         const dictationClueDiv = document.getElementById('dictationClue');
         const dictationInput = document.getElementById('dictationInput');
         const dictationCheckBtn = document.getElementById('dictationCheckBtn');
         const dictationFeedbackDiv = document.getElementById('dictationFeedback');
         const dictationNextBtn = document.getElementById('dictationNextBtn');
+
         const wordsColumn = document.getElementById('wordsColumn');
         const definitionsColumn = document.getElementById('definitionsColumn');
         const matchScoreSpan = document.getElementById('matchScore');
         const matchNextBtn = document.getElementById('matchNextBtn');
+        
         const chapterSelector = document.getElementById('chapterSelector');
         const categoryModal = document.getElementById('categoryModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalButtons = document.getElementById('modalButtons');
         const listTitle = document.getElementById('listTitle');
+
         const alertMessageDiv = document.getElementById('alertMessage');
         const alertTextP = document.getElementById('alertText');
 
         let vocab = [];
+        
         let shuffledVocab = [];
         let wordsToReview = [];
         let currentCardIndex = 0;
+
         let quizScoreCount = 0;
         let quizTotalCount = 0;
         let quizQuestions = [];
         let currentQuizQuestionIndex = 0;
+
         let chosenWord = "";
         let displayWord = [];
         let wrongGuesses = 0;
+
         let currentScrambleWord = null;
         let currentScrambleDefinition = null;
+
         let currentDictationWord = null;
         let currentDictationDefinition = null;
+
         let selectedWordItem = null;
         let selectedDefItem = null;
         let matchedPairsCount = 0;
         const MATCH_COUNT = 6;
 
+
         function shuffle(array) {
             let currentIndex = array.length, randomIndex;
-
             while (currentIndex > 0) {
                 randomIndex = Math.floor(Math.random() * currentIndex);
                 currentIndex--;
-
                 [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
             }
-
             return array;
         }
 
@@ -972,6 +970,7 @@
                 btn.textContent = chapter.title;
                 btn.id = chapter.selectorId;
                 btn.setAttribute('data-chapter-key', key);
+                
                 btn.addEventListener('click', () => {
                     if (Object.keys(chapter.subcategories).length > 1) {
                         openSubcategoryModal(chapter);
@@ -987,6 +986,7 @@
         function openSubcategoryModal(chapter) {
             modalTitle.textContent = `Choisir la catégorie du ${chapter.title}`;
             modalButtons.innerHTML = '';
+
             hideAlert();
 
             for (const subKey in chapter.subcategories) {
@@ -997,15 +997,19 @@
                 subBtn.addEventListener('click', () => changeVocabulary(chapter.selectorId.replace('SelectBtn', ''), subKey));
                 modalButtons.appendChild(subBtn);
             }
+
             categoryModal.style.display = 'flex';
         }
 
         function changeVocabulary(chapterKey, subKey) {
             categoryModal.style.display = 'none';
+            
             container.classList.add('fade-out');
+            
             setTimeout(() => {
                 const chapterData = ALL_VOCAB_DATA[chapterKey];
                 const subcategoryData = chapterData.subcategories[subKey];
+                
                 vocab = subcategoryData.data;
                 listTitle.textContent = `${chapterData.title} - ${subcategoryData.name}`;
 
@@ -1016,29 +1020,36 @@
                 shuffledVocab = shuffle([...vocab]);
                 wordsToReview = [];
                 currentCardIndex = 0;
-
+                
                 const activeModeBtn = document.querySelector('.mode-selector button.active');
-                let mode = 'flashcard';
+                let mode = 'flashcard'; 
                 if (activeModeBtn) {
-                    mode = activeModeBtn.id.replace('ModeBtn', '').replace('match', 'match');
+                    mode = activeModeBtn.id.replace('ModeBtn', '').replace('match', 'match'); 
                 }
+                
                 showMode(mode);
+
                 generateList();
                 updateAlert(subcategoryData.alert);
+                
                 container.classList.remove('fade-out');
+
             }, 300);
         }
 
         function updateAlert(alertData) {
             alertMessageDiv.classList.remove('alert-orange', 'alert-green', 'alert-purple');
+            
             if (alertData && alertData.message) {
-                alertTextP.textContent = alertData.message;
+                alertTextP.textContent = alertData.message; 
                 alertMessageDiv.style.display = 'block';
+                
                 if (alertData.color) {
                     alertMessageDiv.style.backgroundColor = alertData.color;
                 } else {
-                    alertMessageDiv.style.backgroundColor = '#FF8C00';
+                    alertMessageDiv.style.backgroundColor = '#FF8C00'; 
                 }
+
             } else {
                 hideAlert();
             }
@@ -1047,68 +1058,56 @@
         function hideAlert() {
             alertMessageDiv.style.display = 'none';
         }
-
+        
         window.addEventListener('click', (event) => {
             if (event.target === categoryModal) {
                 categoryModal.style.display = 'none';
             }
         });
-
+        
         function showMode(mode) {
             if (vocab.length === 0) {
-                allContainers.forEach(c => c.style.display = 'none');
-                flashcardGameContainer.style.display = 'flex';
-                flashcardGameContainer.style.opacity = '1';
-                cardCounter.textContent = '0 / 0';
-                feedbackButtons.style.display = 'none';
-                frontFace.textContent = "Choisis une catégorie !";
-                backFace.textContent = "Clique sur un chapitre ci-dessus.";
-                hideAlert();
-                return;
+                 allContainers.forEach(c => c.style.display = 'none');
+                 flashcardGameContainer.style.display = 'flex'; 
+                 flashcardGameContainer.style.opacity = '1'; 
+                 cardCounter.textContent = '0 / 0';
+                 feedbackButtons.style.display = 'none';
+                 frontFace.textContent = "Choisis une catégorie !";
+                 backFace.textContent = "Clique sur un chapitre ci-dessus.";
+                 hideAlert();
+                 return;
             }
 
             let targetContainer;
-            let modeKey;
+            let modeKey; 
 
-            if (mode === 'flashcard') {
-                targetContainer = flashcardGameContainer;
-                modeKey = 'flashcard';
-            } else if (mode === 'quiz') {
-                targetContainer = quizGameContainer;
-                modeKey = 'quiz';
-            } else if (mode === 'hangman') {
-                targetContainer = hangmanGameContainer;
-                modeKey = 'hangman';
-            } else if (mode === 'scramble') {
-                targetContainer = scrambleGameContainer;
-                modeKey = 'scramble';
-            } else if (mode === 'dictation') {
-                targetContainer = dictationGameContainer;
-                modeKey = 'dictation';
-            } else if (mode === 'match') {
-                targetContainer = matchGameContainer;
-                modeKey = 'match';
-            }
+            if (mode === 'flashcard') { targetContainer = flashcardGameContainer; modeKey = 'flashcard'; }
+            else if (mode === 'quiz') { targetContainer = quizGameContainer; modeKey = 'quiz'; }
+            else if (mode === 'hangman') { targetContainer = hangmanGameContainer; modeKey = 'hangman'; }
+            else if (mode === 'scramble') { targetContainer = scrambleGameContainer; modeKey = 'scramble'; }
+            else if (mode === 'dictation') { targetContainer = dictationGameContainer; modeKey = 'dictation'; }
+            else if (mode === 'match') { targetContainer = matchGameContainer; modeKey = 'match'; }
 
-            // Hide all containers with fade-out
             allContainers.forEach(c => {
                 if (c.style.display !== 'none') {
-                    c.style.opacity = '0';
+                    c.style.opacity = '0'; 
                 }
-                c.classList.remove('active-mode');
-                setTimeout(() => { c.style.display = 'none'; }, 750);
+                c.classList.remove('active-mode'); 
+                
+                setTimeout(() => { 
+                    c.style.display = 'none'; 
+                }, 750); 
             });
-
-            // Show target container with fade-in after fade-out completes
+            
             setTimeout(() => {
+                
                 allModeBtns.forEach(btn => btn.classList.remove('active'));
                 
                 targetContainer.style.display = 'flex';
-                targetContainer.classList.add('active-mode');
+                targetContainer.classList.add('active-mode'); 
                 
-                // Force reflow/repaint to apply initial opacity: 0 before transition
                 void targetContainer.offsetWidth; 
-                
+
                 targetContainer.style.opacity = '1';
 
                 if (modeKey === 'flashcard') {
@@ -1133,425 +1132,443 @@
                     matchModeBtn.classList.add('active');
                     startMatchGame();
                 }
-            }, 750);
+
+            }, 750); 
         }
 
-        allModeBtns.forEach(btn => {
-            btn.addEventListener('click', (event) => {
-                const mode = event.currentTarget.id.replace('ModeBtn', '').replace('match', 'match');
-                showMode(mode);
-            });
-        });
-
-
-        // --- FLASHCARD MODE LOGIC ---
+        flashcardModeBtn.addEventListener('click', () => showMode('flashcard'));
+        quizModeBtn.addEventListener('click', () => showMode('quiz'));
+        hangmanModeBtn.addEventListener('click', () => showMode('hangman'));
+        scrambleModeBtn.addEventListener('click', () => showMode('scramble'));
+        dictationModeBtn.addEventListener('click', () => showMode('dictation'));
+        matchModeBtn.addEventListener('click', () => showMode('match'));
 
         function displayFlashcard() {
-            if (shuffledVocab.length === 0) {
-                // If all words have been seen, decide what to do (e.g., reset, review, show message)
-                if (wordsToReview.length > 0) {
-                    shuffledVocab = shuffle(wordsToReview);
-                    wordsToReview = [];
-                    currentCardIndex = 0;
-                } else {
-                    frontFace.textContent = "Fini ! Reviens plus tard !";
-                    backFace.textContent = "Tu connais tout. Félicitations !";
-                    cardCounter.textContent = `${vocab.length} / ${vocab.length}`;
-                    feedbackButtons.style.display = 'none';
-                    return;
-                }
+            if (shuffledVocab.length === 0 && wordsToReview.length === 0) {
+                frontFace.textContent = "C'est fini pour cette catégorie !";
+                backFace.textContent = "Réinitialise le jeu ou change de liste.";
+                cardCounter.textContent = '0 / 0';
+                feedbackButtons.style.display = 'none';
+                return;
             }
-            
-            flashcard.classList.remove('flipped');
-            feedbackButtons.style.display = 'none';
-            
-            const [word, definition] = shuffledVocab[currentCardIndex];
-            frontFace.textContent = word;
-            backFace.innerHTML = definition;
 
-            cardCounter.textContent = `${currentCardIndex + 1} / ${shuffledVocab.length}`;
+            let card;
+            if (wordsToReview.length > 0 && Math.random() < 0.5) { 
+                const reviewIndex = Math.floor(Math.random() * wordsToReview.length);
+                card = wordsToReview[reviewIndex];
+                wordsToReview.splice(reviewIndex, 1); 
+            } else {
+                if (shuffledVocab.length === 0) {
+                     shuffledVocab = shuffle([...vocab]); 
+                }
+                card = shuffledVocab[currentCardIndex];
+            }
+
+            frontFace.textContent = card[0];
+            backFace.textContent = card[1];
+            cardCounter.textContent = `${currentCardIndex + 1} / ${vocab.length}`;
+            updateFlashcardButtons();
+        }
+
+        function updateFlashcardButtons() {
+            feedbackButtons.style.display = 'none';
         }
 
         flashcard.addEventListener('click', () => {
+            if (vocab.length === 0) return;
             flashcard.classList.toggle('flipped');
             if (flashcard.classList.contains('flipped')) {
-                 feedbackButtons.style.display = 'flex';
+                feedbackButtons.style.display = 'flex';
+                knewItBtn.style.backgroundColor = 'var(--color-correct)';
+                didntKnowBtn.style.backgroundColor = 'var(--color-incorrect)';
             } else {
-                 feedbackButtons.style.display = 'none';
+                updateFlashcardButtons();
             }
         });
-
-        knewItBtn.addEventListener('click', () => {
-            moveToNextCard(true);
-        });
-
-        didntKnowBtn.addEventListener('click', () => {
-            moveToNextCard(false);
-        });
-
-        function moveToNextCard(knewIt) {
+        const handleFeedback = (knewIt) => {
             if (!knewIt) {
-                 // Add the current word to the review list if the user didn't know it
-                wordsToReview.push(shuffledVocab[currentCardIndex]);
+                if (!wordsToReview.includes(shuffledVocab[currentCardIndex])) {
+                    wordsToReview.push(shuffledVocab[currentCardIndex]);
+                }
             }
             
             currentCardIndex++;
-
             if (currentCardIndex >= shuffledVocab.length) {
-                // If we ran out of cards, shuffle the review list and continue
-                shuffledVocab = shuffle(wordsToReview);
-                wordsToReview = [];
+                if (wordsToReview.length > 0) {
+                    shuffledVocab = wordsToReview;
+                    wordsToReview = [];
+                    shuffle(shuffledVocab);
+                } else {
+                    shuffledVocab = shuffle([...vocab]);
+                }
                 currentCardIndex = 0;
             }
 
-            displayFlashcard();
-        }
+            flashcard.classList.remove('flipped');
+            setTimeout(() => {
+                displayFlashcard();
+            }, 300);
+        };
+        
+        knewItBtn.addEventListener('click', () => handleFeedback(true));
+        didntKnowBtn.addEventListener('click', () => handleFeedback(false));
 
-        // --- QUIZ MODE LOGIC ---
-
-        function startQuiz() {
+        function generateQuizQuestions() {
+            quizQuestions = shuffle(vocab.map(item => {
+                const isNormal = Math.random() < 0.7; 
+                return {
+                    question: isNormal ? item[0] : item[1],
+                    answer: isNormal ? item[1] : item[0],
+                    isNormal: isNormal
+                };
+            }));
             quizScoreCount = 0;
             quizTotalCount = 0;
-            quizQuestions = generateQuizQuestions(shuffle([...vocab]));
             currentQuizQuestionIndex = 0;
-            updateQuizScore();
-            displayQuizQuestion();
         }
 
-        function generateQuizQuestions(data) {
-            return data.map(pair => {
-                const [correctWord, definition] = pair;
-                const options = [correctWord];
-
-                // Generate 3 incorrect options
-                let attempts = 0;
-                while (options.length < 4 && attempts < 100) {
-                    const randomPair = data[Math.floor(Math.random() * data.length)];
-                    const incorrectWord = randomPair[0];
-                    if (!options.includes(incorrectWord)) {
-                        options.push(incorrectWord);
-                    }
-                    attempts++;
-                }
-
-                return {
-                    question: definition,
-                    correctAnswer: correctWord,
-                    options: shuffle(options.slice(0, 4)) // Ensure only 4 options
-                };
-            }).filter(q => q.options.length === 4); // Filter out questions that couldn't generate 4 unique options
+        function startQuiz() {
+            if (vocab.length === 0) return;
+            generateQuizQuestions();
+            displayQuizQuestion();
+            updateQuizScore();
         }
 
         function displayQuizQuestion() {
             if (currentQuizQuestionIndex >= quizQuestions.length) {
-                quizQuestion.textContent = `Quiz terminé ! Ton score final est de ${quizScoreCount} / ${quizTotalCount}.`;
+                quizQuestion.textContent = "Quiz terminé !";
                 quizOptions.innerHTML = '';
                 return;
             }
 
             const currentQuestion = quizQuestions[currentQuizQuestionIndex];
-            quizQuestion.textContent = currentQuestion.question;
-            quizOptions.innerHTML = '';
+            
+            quizQuestion.classList.remove('inverted'); 
+            if (!currentQuestion.isNormal) {
+                quizQuestion.textContent = `Quel mot correspond à la définition : ${currentQuestion.question}`;
+                quizQuestion.classList.add('inverted');
+            } else {
+                quizQuestion.textContent = currentQuestion.question;
+            }
 
-            currentQuestion.options.forEach(option => {
-                const btn = document.createElement('button');
-                btn.textContent = option;
-                btn.setAttribute('data-answer', option);
-                btn.addEventListener('click', handleQuizAnswer);
-                quizOptions.appendChild(btn);
+            const correctAnswer = currentQuestion.answer;
+
+            const vocabAnswers = vocab.map(word => currentQuestion.isNormal ? word[1] : word[0]);
+
+            const incorrectTranslations = vocabAnswers
+                .filter(ans => ans !== correctAnswer);
+            shuffle(incorrectTranslations);
+            
+            const options = [correctAnswer, ...incorrectTranslations.slice(0, 3)];
+            shuffle(options);
+
+            quizOptions.innerHTML = '';
+            options.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.addEventListener('click', () => checkQuizAnswer(button, option, correctAnswer));
+                quizOptions.appendChild(button);
             });
         }
 
-        function handleQuizAnswer(event) {
-            const selectedOption = event.target;
-            const userAnswer = selectedOption.getAttribute('data-answer');
-            const currentQuestion = quizQuestions[currentQuizQuestionIndex];
-            const isCorrect = (userAnswer === currentQuestion.correctAnswer);
+        function checkQuizAnswer(button, selectedAnswer, correctAnswer) {
+            const allButtons = quizOptions.querySelectorAll('button');
+            allButtons.forEach(btn => btn.disabled = true); 
+            
+            if (selectedAnswer === correctAnswer) {
+                button.classList.add('correct');
+                quizScoreCount++;
+            } else {
+                button.classList.add('incorrect');
+                const correctButton = Array.from(allButtons).find(btn => btn.textContent === correctAnswer);
+                if (correctButton) {
+                    correctButton.classList.add('correct');
+                }
+            }
 
             quizTotalCount++;
-            
-            // Disable all buttons
-            quizOptions.querySelectorAll('button').forEach(btn => btn.disabled = true);
-
-            // Highlight answers
-            quizOptions.querySelectorAll('button').forEach(btn => {
-                if (btn.getAttribute('data-answer') === currentQuestion.correctAnswer) {
-                    btn.classList.add('correct');
-                } else if (btn === selectedOption) {
-                    btn.classList.add('incorrect');
-                }
-            });
-
-            if (isCorrect) {
-                quizScoreCount++;
-            }
             updateQuizScore();
 
-            // Move to next question after a delay
             setTimeout(() => {
                 currentQuizQuestionIndex++;
                 displayQuizQuestion();
-            }, 1000);
+            }, 1500); 
         }
 
         function updateQuizScore() {
             quizScore.textContent = `Score: ${quizScoreCount} / ${quizTotalCount}`;
         }
-
-        // --- HANGMAN MODE LOGIC ---
-
-        function startHangman() {
+        
+        function startHangman(){
             if (vocab.length === 0) return;
-            
+            const hangmanWords = vocab.map(item => item[0].toUpperCase().replace(/\s/g, ''));
+            const random = hangmanWords[Math.floor(Math.random()*hangmanWords.length)];
+            chosenWord = random;
+            displayWord = chosenWord.split('').map(l => l.match(/[A-ZÀ-ÿ]/) ? '_' : l);
             wrongGuesses = 0;
-            hangmanParts.forEach(part => {
-                const el = document.getElementById(part);
-                if (el) el.style.display = 'none';
-            });
-            
-            // Choose a random word
-            const randomIndex = Math.floor(Math.random() * vocab.length);
-            chosenWord = removeAccents(vocab[randomIndex][0].toUpperCase());
-            displayWord = Array(chosenWord.length).fill('_');
-
-            hangmanLettersDiv.innerHTML = '';
             hangmanWordDiv.textContent = displayWord.join(' ');
+            hangmanLettersDiv.innerHTML = '';
+            hangmanParts.forEach(id=>document.getElementById(id).style.display='none');
 
-            generateLetterButtons();
-        }
-
-        function generateLetterButtons() {
-            for (let i = 65; i <= 90; i++) {
-                const letter = String.fromCharCode(i);
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÂÄÈÉÊËÎÏÔÖÙÛÜÇŒ";
+            const uniqueLetters = [...new Set(alphabet.split(''))];
+            
+            uniqueLetters.forEach(letter => {
                 const btn = document.createElement('button');
                 btn.textContent = letter;
-                btn.addEventListener('click', () => handleGuess(letter, btn));
+                btn.addEventListener('click', () => guessLetter(letter, btn));
                 hangmanLettersDiv.appendChild(btn);
-            }
+            });
         }
 
-        function handleGuess(letter, button) {
-            button.disabled = true;
-            let correctGuess = false;
-
+        function guessLetter(letter, btn) {
+            btn.disabled = true;
+            const normalizedChosenWord = removeAccents(chosenWord);
+            const normalizedLetter = removeAccents(letter);
+            let found = false;
             for (let i = 0; i < chosenWord.length; i++) {
-                if (chosenWord[i] === letter) {
-                    displayWord[i] = letter;
-                    correctGuess = true;
+                if (removeAccents(chosenWord[i]) === normalizedLetter) {
+                    displayWord[i] = chosenWord[i];
+                    found = true;
                 }
             }
 
-            hangmanWordDiv.textContent = displayWord.join(' ');
-
-            if (!correctGuess) {
-                wrongGuesses++;
-                if (wrongGuesses < hangmanParts.length) {
-                    const partToDisplay = document.getElementById(hangmanParts[wrongGuesses - 1]);
-                    if (partToDisplay) partToDisplay.style.display = 'block';
+            if (found) {
+                hangmanWordDiv.textContent = displayWord.join(' ');
+                if (!displayWord.includes('_')) {
+                    setTimeout(() => { 
+                        alertMessageDiv.style.backgroundColor = '#4CAF50';
+                        alertTextP.textContent = "Bravo ! Tu as trouvé le mot : " + chosenWord;
+                        alertMessageDiv.style.display = 'block'; 
+                        setTimeout(() => { 
+                            hideAlert();
+                            startHangman(); 
+                        }, 2500);
+                    }, 500);
                 }
-            }
-            
-            checkHangmanGameStatus();
-        }
-
-        function checkHangmanGameStatus() {
-            if (!displayWord.includes('_')) {
-                hangmanWordDiv.textContent = chosenWord;
-                hangmanWordDiv.style.color = varToColor('correct');
-                disableAllLetterButtons();
-                setTimeout(startHangman, 2000);
-            } else if (wrongGuesses >= hangmanParts.length) {
-                hangmanWordDiv.textContent = chosenWord;
-                hangmanWordDiv.style.color = varToColor('incorrect');
-                disableAllLetterButtons();
-                setTimeout(startHangman, 2000);
             } else {
-                hangmanWordDiv.style.color = varToColor('text');
+                if (wrongGuesses < hangmanParts.length) {
+                    document.getElementById(hangmanParts[wrongGuesses]).style.display = 'block';
+                    wrongGuesses++;
+                }
+                if (wrongGuesses >= hangmanParts.length) {
+                    setTimeout(() => { 
+                        alertMessageDiv.style.backgroundColor = '#F44336';
+                        alertTextP.textContent = "Perdu ! Le mot était : " + chosenWord;
+                        alertMessageDiv.style.display = 'block'; 
+                        setTimeout(() => { 
+                            hideAlert();
+                            startHangman(); 
+                        }, 2500);
+                    }, 500);
+                }
             }
         }
 
-        function disableAllLetterButtons() {
-            hangmanLettersDiv.querySelectorAll('button').forEach(btn => btn.disabled = true);
+        function scrambleWord(word) {
+            let a = word.split("");
+            let n = a.length;
+
+            for(let i = n - 1; i > 0; i--) {
+                let j = Math.floor(Math.random() * (i + 1));
+                let tmp = a[i];
+                a[i] = a[j];
+                a[j] = tmp;
+            }
+            return a.join("");
         }
 
-        function varToColor(varName) {
-            return getComputedStyle(document.documentElement).getPropertyValue(`--color-${varName}`).trim();
-        }
-        
-        // --- SCRAMBLE MODE LOGIC ---
-        
         function startScramble() {
             if (vocab.length === 0) return;
-            
-            const randomIndex = Math.floor(Math.random() * vocab.length);
-            currentScrambleWord = removeAccents(vocab[randomIndex][0]);
-            currentScrambleDefinition = vocab[randomIndex][1];
-            
-            const scrambled = scrambleWord(currentScrambleWord);
-            
-            scrambleWordDiv.textContent = scrambled.toUpperCase();
-            scrambleClueDiv.textContent = currentScrambleDefinition;
+
             scrambleInput.value = '';
             scrambleInput.disabled = false;
             scrambleCheckBtn.style.display = 'block';
             scrambleNextBtn.style.display = 'none';
             scrambleFeedbackDiv.textContent = '';
-        }
-
-        function scrambleWord(word) {
-            const characters = word.toLowerCase().split('');
-            for (let i = characters.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [characters[i], characters[j]] = [characters[j], characters[i]];
-            }
-            return characters.join('');
-        }
-
-        function checkScrambleAnswer() {
-            const userAnswer = removeAccents(scrambleInput.value.trim().toLowerCase());
-            const correct = currentScrambleWord.toLowerCase();
+            hideAlert();
             
-            if (userAnswer === correct) {
-                scrambleFeedbackDiv.textContent = "Correct !";
-                scrambleFeedbackDiv.style.color = varToColor('correct');
+            const randomPair = vocab[Math.floor(Math.random() * vocab.length)];
+            const originalWord = randomPair[0];
+            const definition = randomPair[1];
+
+            currentScrambleWord = removeAccents(originalWord).toUpperCase();
+            currentScrambleDefinition = definition;
+            
+            let scrambled = scrambleWord(originalWord.toUpperCase());
+            
+            if (scrambled === originalWord.toUpperCase()) {
+                 scrambled = scrambleWord(originalWord.toUpperCase());
+            }
+
+            scrambleWordDiv.textContent = scrambled;
+            scrambleClueDiv.textContent = `Indice : ${currentScrambleDefinition}`;
+        }
+
+        function checkScramble() {
+            const userAnswer = removeAccents(scrambleInput.value).toUpperCase();
+            
+            if (userAnswer === currentScrambleWord) {
+                scrambleFeedbackDiv.textContent = "Bravo ! C'est correct !";
+                scrambleFeedbackDiv.style.color = '#4CAF50'; 
                 scrambleInput.disabled = true;
                 scrambleCheckBtn.style.display = 'none';
                 scrambleNextBtn.style.display = 'block';
+
             } else {
-                scrambleFeedbackDiv.textContent = `Incorrect. La bonne réponse était : ${currentScrambleWord}`;
-                scrambleFeedbackDiv.style.color = varToColor('incorrect');
+                scrambleFeedbackDiv.textContent = "Incorrect. Essaie encore !";
+                scrambleFeedbackDiv.style.color = '#F44336'; 
+                scrambleInput.focus();
             }
         }
 
-        scrambleCheckBtn.addEventListener('click', checkScrambleAnswer);
+        scrambleCheckBtn.addEventListener('click', checkScramble);
         scrambleNextBtn.addEventListener('click', startScramble);
-        
-        // --- DICTATION MODE LOGIC ---
-        
+
+        scrambleInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && scrambleCheckBtn.style.display !== 'none') {
+                checkScramble();
+            }
+        });
+
         function startDictation() {
             if (vocab.length === 0) return;
-            
-            const randomIndex = Math.floor(Math.random() * vocab.length);
-            currentDictationWord = vocab[randomIndex][0];
-            currentDictationDefinition = vocab[randomIndex][1];
-            
-            dictationClueDiv.textContent = currentDictationDefinition;
+
             dictationInput.value = '';
             dictationInput.disabled = false;
             dictationCheckBtn.style.display = 'block';
             dictationNextBtn.style.display = 'none';
             dictationFeedbackDiv.textContent = '';
-        }
-        
-        function checkDictationAnswer() {
-            const userAnswer = dictationInput.value.trim();
-            const correct = currentDictationWord;
+            hideAlert();
             
-            if (userAnswer === correct) {
-                dictationFeedbackDiv.textContent = "Correct !";
-                dictationFeedbackDiv.style.color = varToColor('correct');
+            const randomPair = vocab[Math.floor(Math.random() * vocab.length)];
+            currentDictationWord = randomPair[0];
+            currentDictationDefinition = randomPair[1];
+            
+            dictationClueDiv.textContent = `Définition : ${currentDictationDefinition}`;
+        }
+
+        function checkDictation() {
+            const userAnswer = dictationInput.value.trim();
+            const correctWord = currentDictationWord;
+            const normalizedUser = removeAccents(userAnswer).toUpperCase();
+            const normalizedCorrect = removeAccents(correctWord).toUpperCase();
+            
+            if (userAnswer === correctWord) {
+                dictationFeedbackDiv.textContent = `Bravo ! Le mot était bien : ${correctWord}`;
+                dictationFeedbackDiv.style.color = '#4CAF50'; 
                 dictationInput.disabled = true;
                 dictationCheckBtn.style.display = 'none';
                 dictationNextBtn.style.display = 'block';
+
+            } else if (normalizedUser === normalizedCorrect) {
+                dictationFeedbackDiv.textContent = `Attention ! Erreur d'accent ou de casse. Le mot exact était : ${correctWord}`;
+                dictationFeedbackDiv.style.color = '#FF8C00'; 
+                dictationInput.focus();
+            
             } else {
-                dictationFeedbackDiv.textContent = `Incorrect. La bonne réponse était : ${correct}`;
-                dictationFeedbackDiv.style.color = varToColor('incorrect');
+                dictationFeedbackDiv.textContent = `Faux ! Erreur d'orthographe. Le mot exact était : ${correctWord}`;
+                dictationFeedbackDiv.style.color = '#F44336'; 
+                dictationInput.focus();
             }
         }
 
-        dictationCheckBtn.addEventListener('click', checkDictationAnswer);
+        dictationCheckBtn.addEventListener('click', checkDictation);
         dictationNextBtn.addEventListener('click', startDictation);
 
-        // --- MATCH MODE LOGIC ---
+        dictationInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && dictationCheckBtn.style.display !== 'none') {
+                checkDictation();
+            }
+        });
 
         function startMatchGame() {
             if (vocab.length < MATCH_COUNT) {
-                 matchScoreSpan.textContent = "Besoin d'au moins 6 mots pour ce mode.";
+                 matchScoreSpan.textContent = `Il faut au moins ${MATCH_COUNT} mots pour ce mode !`;
                  wordsColumn.innerHTML = '';
                  definitionsColumn.innerHTML = '';
                  matchNextBtn.style.display = 'none';
                  return;
             }
-
-            matchedPairsCount = 0;
-            updateMatchScore();
+            
             wordsColumn.innerHTML = '';
             definitionsColumn.innerHTML = '';
             matchNextBtn.style.display = 'none';
             selectedWordItem = null;
             selectedDefItem = null;
+            matchedPairsCount = 0;
+            updateMatchScore();
+            hideAlert();
 
-            const shuffledVocab = shuffle([...vocab]);
-            const selectedPairs = shuffledVocab.slice(0, MATCH_COUNT);
-            
-            const words = shuffle(selectedPairs.map(p => ({ text: p[0], pairId: p[0] })));
-            const definitions = shuffle(selectedPairs.map(p => ({ text: p[1], pairId: p[0] }))); // Use word as ID
+            const pairs = shuffle([...vocab]);
+            const selectedPairs = pairs.slice(0, MATCH_COUNT);
 
-            words.forEach(item => {
-                wordsColumn.appendChild(createMatchItem(item.text, 'word', item.pairId));
+            const words = selectedPairs.map(p => ({ text: p[0], id: p[0] }));
+            const definitions = selectedPairs.map(p => ({ text: p[1], id: p[0] }));
+
+            const shuffledWords = shuffle(words);
+            const shuffledDefs = shuffle(definitions);
+
+            shuffledWords.forEach(w => {
+                const item = createMatchItem(w.text, 'word', w.id);
+                wordsColumn.appendChild(item);
             });
 
-            definitions.forEach(item => {
-                definitionsColumn.appendChild(createMatchItem(item.text, 'definition', item.pairId));
+            shuffledDefs.forEach(d => {
+                const item = createMatchItem(d.text, 'definition', d.id);
+                definitionsColumn.appendChild(item);
             });
         }
 
-        function createMatchItem(text, type, pairId) {
+        function createMatchItem(text, type, matchId) {
             const item = document.createElement('div');
-            item.className = 'match-item';
+            item.classList.add('match-item');
             item.textContent = text;
             item.setAttribute('data-type', type);
-            item.setAttribute('data-pair-id', pairId);
+            item.setAttribute('data-match-id', matchId); 
             item.addEventListener('click', handleMatchClick);
             return item;
         }
 
         function handleMatchClick(event) {
-            const item = event.target;
-            
-            if (item.classList.contains('matched') || item.classList.contains('error')) return;
-
+            const item = event.currentTarget;
             const type = item.getAttribute('data-type');
             
+            if (item.classList.contains('matched') || item.classList.contains('error')) return; 
+
             if (type === 'word') {
                 if (selectedWordItem) selectedWordItem.classList.remove('selected');
                 selectedWordItem = item;
+                selectedWordItem.classList.add('selected');
             } else if (type === 'definition') {
                 if (selectedDefItem) selectedDefItem.classList.remove('selected');
                 selectedDefItem = item;
+                selectedDefItem.classList.add('selected');
             }
 
-            item.classList.add('selected');
-
             if (selectedWordItem && selectedDefItem) {
-                // Check if they match
-                const id1 = selectedWordItem.getAttribute('data-pair-id');
-                const id2 = selectedDefItem.getAttribute('data-pair-id');
-
-                const item1 = selectedWordItem;
-                const item2 = selectedDefItem;
-
-                selectedWordItem.classList.remove('selected');
-                selectedDefItem.classList.remove('selected');
-
-                if (id1 === id2) {
-                    // Match!
-                    item1.classList.add('matched');
-                    item2.classList.add('matched');
-                    item1.removeEventListener('click', handleMatchClick);
-                    item2.removeEventListener('click', handleMatchClick);
+                const wordId = selectedWordItem.getAttribute('data-match-id');
+                const defId = selectedDefItem.getAttribute('data-match-id');
+                
+                if (wordId === defId) {
+                    selectedWordItem.classList.add('matched');
+                    selectedDefItem.classList.add('matched');
                     matchedPairsCount++;
                     updateMatchScore();
-
-                    if (matchedPairsCount === MATCH_COUNT) {
-                        matchNextBtn.style.display = 'block';
-                    }
-
-                } else {
-                    // Mismatch - brief error animation
-                    item1.classList.add('error');
-                    item2.classList.add('error');
                     
+                    if (matchedPairsCount === MATCH_COUNT) {
+                        setTimeout(() => {
+                            matchScoreSpan.textContent = "🥳 Bravo ! Tu as trouvé toutes les paires !";
+                            matchNextBtn.style.display = 'block';
+                        }, 500);
+                    }
+                } else {
+                    selectedWordItem.classList.add('error');
+                    selectedDefItem.classList.add('error');
+                    
+                    const item1 = selectedWordItem;
+                    const item2 = selectedDefItem;
+
                     setTimeout(() => {
                         item1.classList.remove('error', 'selected');
                         item2.classList.remove('error', 'selected');
@@ -1582,7 +1599,6 @@
             generateChapterButtons(); 
             hideAlert();
             
-            // Auto-load default category if available and is a single subcategory
             if (Object.keys(ALL_VOCAB_DATA).length > 0) {
                 const defaultChapterKey = Object.keys(ALL_VOCAB_DATA)[0];
                 const defaultChapter = ALL_VOCAB_DATA[defaultChapterKey];
