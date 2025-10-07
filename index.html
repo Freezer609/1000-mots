@@ -245,8 +245,8 @@
             border: none;
             font-weight: 700;
             cursor: pointer;
-            color: var(--color-card);
             transition: background-color 0.3s;
+            color: var(--color-card);
         }
 
         .feedback-buttons .knew-it-btn {
@@ -611,8 +611,8 @@
             border: none;
             border-radius: 8px;
             cursor: pointer;
-            color: var(--color-card);
             transition: background-color 0.3s, transform 0.2s;
+            color: var(--color-card);
         }
 
         .modal-buttons button:hover {
@@ -739,92 +739,7 @@
                 font-size: 1em;
                 padding: 12px;
             }
-            
-             /* Fix du bouton admin sur mobile */
-            #adminButton {
-                 bottom: 10px;
-                 right: 10px;
-            }
-
-            #adminPanel {
-                 width: 90%;
-                 max-width: unset;
-                 right: 5%;
-                 left: 5%;
-                 bottom: 60px;
-            }
         }
-        
-        /* --- NOUVEAU CSS ADMIN --- */
-        #adminButton {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background-color: var(--color-primary);
-            color: var(--color-card);
-            border: none;
-            padding: 10px 15px;
-            font-size: 0.9em;
-            font-weight: 700;
-            border-radius: 5px;
-            cursor: pointer;
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-            z-index: 50; 
-        }
-
-        #adminButton.unlocked {
-            background-color: var(--color-secondary); 
-        }
-
-        #adminPanel {
-            display: none;
-            position: fixed;
-            bottom: 70px;
-            right: 20px;
-            width: 300px;
-            background-color: #2C2C2C;
-            border-radius: 8px;
-            padding: 15px;
-            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
-            z-index: 50;
-            text-align: left;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
-        #adminPanel h3 {
-            color: var(--color-secondary);
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-
-        #adminPanel button {
-            width: 100%;
-            background-color: #3A3A3A;
-            color: var(--color-text);
-            padding: 10px;
-            border: 1px solid #444444;
-            border-radius: 5px;
-            margin-bottom: 8px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        #adminPanel button:hover {
-            background-color: #444444;
-        }
-
-        #adminKeyInput {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border-radius: 5px;
-            border: 1px solid var(--color-primary);
-            background-color: #1E1E1E;
-            color: var(--color-text);
-            box-sizing: border-box; /* Assure que le padding est inclus dans la width */
-        }
-        /* --- FIN NOUVEAU CSS ADMIN --- */
     </style>
 </head>
 <body>
@@ -940,26 +855,6 @@
             </div>
         </div>
     </div>
-    
-    <button id="adminButton">Admin</button>
-
-    <div id="adminPanel">
-        <h3 id="panelTitle">Accès Admin (Verrouillé)</h3>
-        <input type="password" id="adminKeyInput" placeholder="Entrez la clé secrète">
-        <button id="adminUnlockBtn">Déverrouiller</button>
-
-        <div id="adminContent" style="display: none; margin-top: 15px;">
-            <p style="color: var(--color-primary); font-weight: bold; margin-bottom: 15px;">Le bridge est actif !</p>
-            
-            <button id="showCurrentVocabBtn">Afficher le Vocabulaire Actif (Console)</button>
-            <button id="restartGameBtn">Relancer le Jeu de A à Z</button>
-            
-            <hr style="margin: 10px 0; border-top: 1px solid #444;">
-            
-            <button id="logAllDataBtn">Voir TOUTES les Données (ALL_VOCAB_DATA)</button>
-            
-        </div>
-    </div>
 
     <script src="vocab_data.js"></script>
     <script>
@@ -1023,26 +918,13 @@
         const categoryModal = document.getElementById('categoryModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalButtons = document.getElementById('modalButtons');
-        
-        // --- NOUVEAUX ÉLÉMENTS ADMIN ---
-        const adminButton = document.getElementById('adminButton');
-        const adminPanel = document.getElementById('adminPanel');
-        const adminUnlockBtn = document.getElementById('adminUnlockBtn');
-        const adminKeyInput = document.getElementById('adminKeyInput');
-        const adminContent = document.getElementById('adminContent');
-        const panelTitle = document.getElementById('panelTitle');
-        const showCurrentVocabBtn = document.getElementById('showCurrentVocabBtn');
-        const restartGameBtn = document.getElementById('restartGameBtn');
-        const logAllDataBtn = document.getElementById('logAllDataBtn');
-        // -------------------------------
 
         const varCss = {
             colorCorrect: getComputedStyle(document.documentElement).getPropertyValue('--color-correct').trim(),
             colorIncorrect: getComputedStyle(document.documentElement).getPropertyValue('--color-incorrect').trim(),
             colorPrimary: getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim(),
             colorCard: getComputedStyle(document.documentElement).getPropertyValue('--color-card').trim(),
-            colorText: getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim(),
-            colorSecondary: getComputedStyle(document.documentElement).getPropertyValue('--color-secondary').trim()
+            colorText: getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim()
         };
 
         let vocab = [];
@@ -1312,7 +1194,7 @@
             hideAlert();
             if (currentQuizQuestionIndex >= quizQuestions.length) {
                 quizQuestion.textContent = `Quiz terminé! Ton score final : ${score.correct} / ${score.total}`;
-                quizOptions.innerHTML = `<button onclick="startQuizGame()" style="background-color: ${varCss.colorSecondary}; color: ${varCss.colorCard}; border: none;">Recommencer le Quiz</button>`;
+                quizOptions.innerHTML = `<button onclick="startQuizGame()" style="background-color: var(--color-secondary); color: var(--color-card); border: none;">Recommencer le Quiz</button>`;
                 return;
             }
 
@@ -1497,7 +1379,6 @@
 
             scrambleWordDiv.textContent = scrambled.split('').join(' ');
             scrambleClueDiv.textContent = definition;
-            scrambleInput.focus();
         }
 
         function checkScrambleAnswer() {
@@ -1663,7 +1544,7 @@
 
         matchNextBtn.addEventListener('click', startMatchGame);
 
-        // --- Event Listeners Généraux ---
+        // --- Event Listeners ---
 
         flashcardModeBtn.addEventListener('click', startFlashcardGame);
         quizModeBtn.addEventListener('click', startQuizGame);
@@ -1676,90 +1557,25 @@
             generateChapterButtons(); 
             hideAlert();
             
-            // Initialisation de la carte pour afficher le message d'attente
+            
             frontFace.textContent = "Sélectionnez un chapitre ci-dessus";
             backFace.textContent = "Puis une section pour commencer à jouer.";
         });
         
-        // --- Pont Admin Sécurisé (Accès Console & Panel) ---
+    
         const ADMIN_SECRET_KEY = '4dm1nK3y';
 
-        // Ouvre/ferme le panneau admin
-        adminButton.addEventListener('click', () => {
-            if (adminPanel.style.display === 'block') {
-                adminPanel.style.display = 'none';
-            } else {
-                adminPanel.style.display = 'block';
-                adminKeyInput.focus();
-            }
-        });
-
-        // Fonction de déverrouillage
         window.unlockAdminBridge = function(key) {
             if (key === ADMIN_SECRET_KEY) {
-                console.log("%c🔑 Clé Administrateur acceptée. Le pont admin est actif.", "color: " + varCss.colorSecondary + "; font-weight: bold;");
+                console.log("%c🔑 Clé Administrateur acceptée. Le pont admin est prêt. Les données sont exposées sur window.adminData.", "color: #03DAC6; font-weight: bold;");
                 
-                // 1. Expose les données à la console pour manipulation directe
+                // Expose les données de vocabulaire pour les manipuler ou les déboguer
                 window.adminData = ALL_VOCAB_DATA;
                 
-                // 2. Met à jour l'interface
-                adminKeyInput.style.display = 'none';
-                adminUnlockBtn.style.display = 'none';
-                adminContent.style.display = 'block';
-                panelTitle.textContent = "Panel Admin (Déverrouillé)";
-                adminButton.classList.add('unlocked');
-                adminKeyInput.value = '';
-                
-                return true;
             } else {
                 console.error("Clé secrète incorrecte.");
-                adminKeyInput.value = ''; // Efface le mot de passe
-                displayAlert("Clé admin incorrecte. Essayez à nouveau.", varCss.colorIncorrect);
-                return false;
             }
         };
-
-        // Événement pour le bouton "Déverrouiller" du panel
-        adminUnlockBtn.addEventListener('click', () => {
-            unlockAdminBridge(adminKeyInput.value.trim());
-        });
-        
-        // --- Fonctions d'exploitation du panel ---
-        
-        // 1. Affiche le vocabulaire actif
-        showCurrentVocabBtn.addEventListener('click', () => {
-             console.log("%c--- Vocabulaire ACTUELLEMENT ACTIF dans le jeu ---", "color: " + varCss.colorPrimary + "; font-weight: bold;");
-             if (vocab.length > 0) {
-                 console.log(vocab);
-                 displayAlert(`Vocabulaire actif logué dans la console (${vocab.length} paires).`, varCss.colorPrimary);
-             } else {
-                 console.log("Aucun vocabulaire actif. Veuillez sélectionner un chapitre.");
-                 displayAlert("Aucun vocabulaire actif. Veuillez sélectionner un chapitre.", varCss.colorIncorrect);
-             }
-        });
-        
-        // 2. Relance le jeu (réinitialise l'état)
-        restartGameBtn.addEventListener('click', () => {
-            if (currentChapterKey && currentSubcategoryKey) {
-                // Relance le jeu avec le chapitre déjà sélectionné
-                changeVocabulary(currentChapterKey, currentSubcategoryKey);
-                displayAlert(`Jeu redémarré avec le chapitre : ${ALL_VOCAB_DATA[currentChapterKey].title}`, varCss.colorSecondary);
-                adminPanel.style.display = 'none';
-            } else {
-                // Si rien n'est sélectionné, lance juste le mode par défaut
-                startFlashcardGame(); 
-                displayAlert("Interface de jeu redémarrée (choisir un chapitre).", varCss.colorSecondary);
-                adminPanel.style.display = 'none';
-            }
-        });
-
-        // 3. Voir toutes les données
-        logAllDataBtn.addEventListener('click', () => {
-            console.log("%c--- TOUTES les Données de ALL_VOCAB_DATA ---", "color: " + varCss.colorSecondary + "; font-weight: bold;");
-            console.log(window.adminData);
-            displayAlert("TOUTES les données du fichier vocab_data.js ont été loguées dans la console.", varCss.colorPrimary);
-        });
-
         // -------------------------------------------
     </script>
 </body>
