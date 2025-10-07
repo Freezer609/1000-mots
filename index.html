@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1000 Mots - Révision Vocabulaire</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/Jp9v0H9S+t5W9qF/0m+y2iN1m2vN0k65B0x1L/K11g+B0+1rA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/Jp9v0H9S+t5W9qF/0m+y2iN1m2vN0k65B0x1L/K11g+B0+1rA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <style>
         :root {
             --color-background: #121212;
             --color-card: #1E1E1E;
             --color-text: #E0E0E0;
-            --color-primary: #BB86FC; /* Le magenta/violet */
+            --color-primary: #BB86FC;
             --color-secondary: #03DAC6;
-            --color-correct: #4CAF50; /* Vert */
-            --color-incorrect: #F44336; /* Rouge */
+            --color-correct: #4CAF50;
+            --color-incorrect: #F44336;
         }
 
         body {
@@ -137,7 +137,6 @@
             box-shadow: 0 0 15px rgba(187, 134, 252, 0.5);
         }
         
-        /* DÉBUT DE LA CORRECTION : Animation de 1s pour le changement de mode */
         .game-container {
             display: none;
             padding: 20px;
@@ -149,16 +148,14 @@
             align-items: center;
             justify-content: center;
             
-            /* Nouvelle règle pour l'animation de 1s */
             opacity: 0;
-            transition: opacity 1s ease-in-out;
+            transition: opacity 1.5s ease-in-out; /* Changé à 1.5s */
             pointer-events: none;
         }
         
         .game-container.active-mode {
-             pointer-events: auto; /* Réactiver les interactions quand le mode est actif */
+             pointer-events: auto;
         }
-        /* FIN DE LA CORRECTION */
         
         .card-container {
             position: relative;
@@ -275,36 +272,34 @@
             gap: 15px;
         }
 
-        /* CORRECTION POUR LE MODE QUIZ : Augmentation de la spécificité avec #quizGameContainer */
         #quizGameContainer .quiz-options button {
             padding: 15px;
-            background-color: transparent; /* Fond transparent initialement */
+            background-color: transparent;
             color: var(--color-text);
             font-size: 1em;
             border-radius: 8px;
             transition: background-color 0.2s, border-color 0.2s; 
-            border: 2px solid #555555; /* Bordure grise pour la visibilité */
+            border: 2px solid #555555;
             cursor: pointer;
             font-weight: 500;
         }
         
         #quizGameContainer .quiz-options button:hover:not(.correct):not(.incorrect) {
-            background-color: #444444; /* Fond un peu plus foncé au survol */
-            border-color: var(--color-primary); /* Bordure violette au survol */
+            background-color: #444444;
+            border-color: var(--color-primary);
         }
 
         #quizGameContainer .quiz-options button.correct {
             background-color: var(--color-correct);
             color: var(--color-card);
-            border-color: var(--color-correct); /* Bordure verte pour l'option correcte */
+            border-color: var(--color-correct);
         }
 
         #quizGameContainer .quiz-options button.incorrect {
             background-color: var(--color-incorrect);
             color: var(--color-card);
-            border-color: var(--color-incorrect); /* Bordure rouge pour l'option incorrecte */
+            border-color: var(--color-incorrect);
         }
-        /* FIN DE CORRECTION */
 
         .hangman-drawing {
             margin: 20px auto;
@@ -381,7 +376,6 @@
             font-size: 1.1em;
         }
 
-        /* Boutons d'action dans les jeux (Check) */
         .game-container button:not(#scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
             background-color: var(--color-primary); 
             color: var(--color-card);
@@ -487,7 +481,6 @@
             margin-top: 25px;
             background-color: #2C2C2C;
             border-radius: 10px;
-            /* Rendre l'overflow nécessaire pour la transition max-height */
             overflow: hidden; 
         }
         
@@ -519,26 +512,20 @@
             content: '\25B2';
         }
         
-        /* DÉBUT DE LA CORRECTION : Animation de 3s pour le déroulement */
         .list-content, .instructions-content {
             padding: 0 20px 20px 20px;
             text-align: left;
             
-            /* Règle essentielle : hauteur 0 par défaut */
             max-height: 0;
-            /* Nouvelle règle pour l'animation de 3s */
-            transition: max-height 3s ease-in-out;
-            /* La bordure est retirée ici et ajoutée quand c'est ouvert */
+            transition: max-height 3s ease-in-out; 
             border-top: none; 
         }
         
         details[open] .list-content,
         details[open] .instructions-content {
-            /* Une valeur très large pour englober tout le contenu */
             max-height: 2000px; 
-            border-top: 1px solid #444444; /* Réajoute la bordure pour la séparation */
+            border-top: 1px solid #444444; 
         }
-        /* FIN DE LA CORRECTION */
 
         .vocabulary-list {
             columns: 2;
@@ -1026,14 +1013,13 @@
                 wordsToReview = [];
                 currentCardIndex = 0;
                 
-                // On garde la logique de sélection de mode ici pour initialiser
                 const activeModeBtn = document.querySelector('.mode-selector button.active');
                 let mode = 'flashcard'; 
                 if (activeModeBtn) {
                     mode = activeModeBtn.id.replace('ModeBtn', '').replace('match', 'match'); 
                 }
                 
-                showMode(mode); // Appel à showMode qui gère l'animation
+                showMode(mode);
 
                 generateList();
                 updateAlert(subcategoryData.alert);
@@ -1071,10 +1057,8 @@
             }
         });
         
-        /* DÉBUT DE LA CORRECTION : Logique showMode avec animation de 1s */
         function showMode(mode) {
             if (vocab.length === 0) {
-                 // Logique de repli sans animation
                  allContainers.forEach(c => c.style.display = 'none');
                  flashcardGameContainer.style.display = 'flex'; 
                  flashcardGameContainer.style.opacity = '1'; 
@@ -1086,7 +1070,6 @@
                  return;
             }
 
-            // 1. Déterminer le conteneur cible
             let targetContainer;
             let modeKey; 
 
@@ -1097,34 +1080,28 @@
             else if (mode === 'dictation') { targetContainer = dictationGameContainer; modeKey = 'dictation'; }
             else if (mode === 'match') { targetContainer = matchGameContainer; modeKey = 'match'; }
 
-            // 2. Lancer le fade-out sur le conteneur actif et le masquer après 1s
             allContainers.forEach(c => {
                 if (c.style.display !== 'none') {
-                    c.style.opacity = '0'; // Démarre le fade-out
+                    c.style.opacity = '0'; 
                 }
                 c.classList.remove('active-mode'); 
-                // Masque le conteneur après le temps de transition (1000ms)
+                
                 setTimeout(() => { 
                     c.style.display = 'none'; 
-                }, 1000); 
+                }, 1500); // Délai de 1.5s
             });
             
-            // 3. Planifier le fade-in et l'initialisation du nouveau jeu (après 1s)
             setTimeout(() => {
                 
                 allModeBtns.forEach(btn => btn.classList.remove('active'));
                 
-                // Afficher le conteneur
                 targetContainer.style.display = 'flex';
                 targetContainer.classList.add('active-mode'); 
                 
-                // Forcer le reflow/redessin avant de changer l'opacité
                 void targetContainer.offsetWidth; 
 
-                // Démarrer le fade-in
                 targetContainer.style.opacity = '1';
 
-                // Logique d'initialisation du jeu (légèrement modifiée)
                 if (modeKey === 'flashcard') {
                     flashcardModeBtn.classList.add('active');
                     flashcard.classList.remove('flipped');
@@ -1148,7 +1125,7 @@
                     startMatchGame();
                 }
 
-            }, 1000); // 1 seconde de délai pour laisser le temps au fade-out de l'ancien mode
+            }, 1500); // 1.5 seconde de délai
         }
 
         flashcardModeBtn.addEventListener('click', () => showMode('flashcard'));
@@ -1157,8 +1134,6 @@
         scrambleModeBtn.addEventListener('click', () => showMode('scramble'));
         dictationModeBtn.addEventListener('click', () => showMode('dictation'));
         matchModeBtn.addEventListener('click', () => showMode('match'));
-        /* FIN DE LA CORRECTION : Logique showMode avec animation de 1s */
-
 
         function displayFlashcard() {
             if (shuffledVocab.length === 0 && wordsToReview.length === 0) {
@@ -1188,7 +1163,6 @@
         }
 
         function updateFlashcardButtons() {
-            // Seuls les boutons feedback sont gérés ici
             feedbackButtons.style.display = 'none';
         }
 
@@ -1603,7 +1577,6 @@
                 const defaultChapter = ALL_VOCAB_DATA[defaultChapterKey];
                 if (Object.keys(defaultChapter.subcategories).length === 1) {
                      const defaultSubKey = Object.keys(defaultChapter.subcategories)[0];
-                     // Initialiser le premier chapitre et le mode flashcard
                      changeVocabulary(defaultChapterKey, defaultSubKey);
                 } 
             }
