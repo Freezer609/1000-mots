@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1000 Mots - Révision Vocabulaire</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/Jp9v0H9S+t5W9qF/0m+y2iN1m2vN0k65B0x1L/K11g+B0+1rA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <style>
@@ -12,7 +13,7 @@
             --color-background: #121212;
             --color-card: #1E1E1E;
             --color-text: #E0E0E0;
-            --color-primary: #BB86FC;
+            --color-primary: #BB86FC; 
             --color-secondary: #03DAC6;
             --color-correct: #4CAF50;
             --color-incorrect: #F44336;
@@ -39,7 +40,7 @@
             border-radius: 15px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
             text-align: center;
-            transition: opacity 0.15s ease-in-out; 
+            transition: opacity 0.3s ease-in-out; 
             min-height: 90vh;
         }
 
@@ -120,11 +121,6 @@
             line-height: 1.3;
         }
 
-        .mode-selector button i {
-            font-size: 2em;
-            margin-bottom: 5px;
-        }
-
         .mode-selector button:hover {
             border-color: var(--color-primary);
             transform: translateY(-2px);
@@ -137,6 +133,18 @@
             box-shadow: 0 0 15px rgba(187, 134, 252, 0.5);
         }
         
+        .mode-selector button i {
+            font-size: 1.5em;
+            margin-bottom: 5px;
+        }
+        
+        .mode-selector button.active i {
+             color: var(--color-card);
+        }
+        .mode-selector button:not(.active) i {
+             color: var(--color-primary);
+        }
+        
         .game-container {
             display: none;
             padding: 20px;
@@ -147,6 +155,14 @@
             flex-direction: column; 
             align-items: center;
             justify-content: center;
+            
+            opacity: 0;
+            transition: opacity 0.75s ease-in-out; 
+            pointer-events: none;
+        }
+        
+        .game-container.active-mode {
+             pointer-events: auto;
         }
         
         .card-container {
@@ -161,7 +177,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            transition: transform 0.3s;
+            transition: transform 0.6s;
             transform-style: preserve-3d;
             cursor: pointer;
         }
@@ -207,32 +223,6 @@
             margin-bottom: 20px;
         }
         
-        .controls button {
-            background-color: transparent; /* Changed to transparent */
-            color: var(--color-secondary); /* Changed to use var color-secondary */
-            border: none;
-            padding: 0; /* Changed padding */
-            font-size: 2.5em; /* Increased size for visibility */
-            font-weight: 700;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            transition: color 0.3s; /* Transition for color */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .controls button:hover {
-            color: var(--color-primary); /* Hover color for arrows */
-        }
-        
-        .controls button:disabled {
-            color: #555555;
-            cursor: not-allowed;
-        }
-
         #cardCounter, .quiz-score, #matchScore {
             font-size: 1.2em;
             font-weight: 700;
@@ -256,21 +246,21 @@
             font-weight: 700;
             cursor: pointer;
             transition: background-color 0.3s;
-            color: var(--color-card); 
+            color: var(--color-card);
         }
 
         .feedback-buttons .knew-it-btn {
-            background-color: var(--color-correct); 
+            background-color: var(--color-correct);
         }
         .feedback-buttons .knew-it-btn:hover {
-            background-color: #388E3C; 
+            background-color: #388E3C;
         }
 
         .feedback-buttons .didnt-know-it-btn {
-            background-color: var(--color-incorrect); 
+            background-color: var(--color-incorrect);
         }
         .feedback-buttons .didnt-know-it-btn:hover {
-            background-color: #D32F2F; 
+            background-color: #D32F2F;
         }
         
         .quiz-question {
@@ -290,30 +280,33 @@
             gap: 15px;
         }
 
-        .quiz-options button {
+        #quizGameContainer .quiz-options button {
             padding: 15px;
-            background-color: #3A3A3A;
+            background-color: transparent;
             color: var(--color-text);
             font-size: 1em;
             border-radius: 8px;
-            transition: background-color 0.2s;
-            border: none;
+            transition: background-color 0.2s, border-color 0.2s; 
+            border: 2px solid #555555;
             cursor: pointer;
             font-weight: 500;
         }
         
-        .quiz-options button:hover:not(.correct):not(.incorrect) {
+        #quizGameContainer .quiz-options button:hover:not(.correct):not(.incorrect) {
             background-color: #444444;
+            border-color: var(--color-primary);
         }
 
-        .quiz-options button.correct {
+        #quizGameContainer .quiz-options button.correct {
             background-color: var(--color-correct);
             color: var(--color-card);
+            border-color: var(--color-correct);
         }
 
-        .quiz-options button.incorrect {
+        #quizGameContainer .quiz-options button.incorrect {
             background-color: var(--color-incorrect);
             color: var(--color-card);
+            border-color: var(--color-incorrect);
         }
 
         .hangman-drawing {
@@ -392,26 +385,6 @@
         }
 
         .game-container button:not(#scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
-            background-color: var(--color-secondary);
-            color: var(--color-card);
-            border: none;
-            padding: 12px 25px;
-            font-size: 1em;
-            font-weight: 700;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
-            margin-top: 20px;
-        }
-
-        .game-container button:hover:not(:disabled, #scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
-            background-color: #018786;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
-        }
-        
-        #scrambleNextBtn, #dictationNextBtn, #matchNextBtn {
             background-color: var(--color-primary);
             color: var(--color-card);
             border: none;
@@ -425,8 +398,28 @@
             margin-top: 20px;
         }
 
-        #scrambleNextBtn:hover, #dictationNextBtn:hover, #matchNextBtn:hover {
+        .game-container button:hover:not(:disabled, #scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
             background-color: #A052EE;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+        
+        #scrambleNextBtn, #dictationNextBtn, #matchNextBtn {
+            background-color: var(--color-secondary);
+            color: var(--color-card);
+            border: none;
+            padding: 12px 25px;
+            font-size: 1em;
+            font-weight: 700;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            margin-top: 20px;
+        }
+
+        #scrambleNextBtn:hover, #dictationNextBtn:hover, #matchNextBtn:hover {
+            background-color: #018786;
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
         }
@@ -482,21 +475,24 @@
         .match-item.error {
             background-color: var(--color-incorrect);
             color: var(--color-card);
-            animation: shake 0.3s;
+            animation: shake 0.5s;
             border-color: transparent;
         }
 
         @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-3px); }
-            40%, 80% { transform: translateX(3px); }
+            0%, 100% { transform: translateX(0);
+            }
+            20%, 60% { transform: translateX(-5px);
+            }
+            40%, 80% { transform: translateX(5px);
+            }
         }
 
         details {
             margin-top: 25px;
             background-color: #2C2C2C;
             border-radius: 10px;
-            overflow: hidden;
+            overflow: hidden; 
         }
         
         summary {
@@ -530,7 +526,17 @@
         .list-content, .instructions-content {
             padding: 0 20px 20px 20px;
             text-align: left;
-            border-top: 1px solid #444444;
+            
+            max-height: 0;
+            /* Correction 2: La transition était trop longue (3s) */
+            transition: max-height 0.5s ease-in-out; 
+            border-top: none;
+        }
+        
+        details[open] .list-content,
+        details[open] .instructions-content {
+            max-height: 2000px;
+            border-top: 1px solid #444444; 
         }
 
         .vocabulary-list {
@@ -647,7 +653,7 @@
             }
             
             .card-face {
-                font-size: 1.5em; 
+                font-size: 1.5em;
             }
             
             .card-back {
@@ -658,15 +664,9 @@
                 gap: 10px;
             }
             
-            .controls button {
-                width: 40px;
-                height: 40px;
-                font-size: 2em;
-            }
-            
             .feedback-buttons {
                  flex-direction: column;
-                 gap: 10px;
+                gap: 10px;
             }
             
             .feedback-buttons button {
@@ -707,7 +707,7 @@
             }
             
             #matchGrid {
-                grid-template-columns: 1fr; 
+                grid-template-columns: 1fr;
                 gap: 15px;
             }
             .match-item {
@@ -754,28 +754,30 @@
             <p id="alertText"></p>
         </div>
         
+      
         <div class="mode-selector">
-            <button id="flashcardModeBtn" class="active" title="Mode Cartes"><i class="fas fa-book-open"></i> Mode Cartes</button>
+            <button id="flashcardModeBtn" class="active" title="Mode Cartes"><i class="fas fa-redo-alt"></i> Mode Cartes</button>
             <button id="quizModeBtn" title="Mode Quiz"><i class="fas fa-question-circle"></i> Mode Quiz</button>
-            <button id="hangmanModeBtn" title="Mode Pendu"><i class="fas fa-gavel"></i> Mode Pendu</button>
-            <button id="scrambleModeBtn" title="Mode Réarrangement"><i class="fas fa-random"></i> Mode Mots Mélangés</button>
+            <button id="hangmanModeBtn" title="Mode Pendu"><i class="fas fa-user-slash"></i> Mode Pendu</button>
+            <button id="scrambleModeBtn" title="Mode Réarrangement"><i class="fas fa-random"></i> Mots Mélangés</button>
             <button id="dictationModeBtn" title="Mode Dictée"><i class="fas fa-keyboard"></i> Mode Dictée</button>
+ 
             <button id="matchModeBtn" title="Mode Match"><i class="fas fa-link"></i> Mode Association</button> 
         </div>
         
-        <div id="flashcardGameContainer" class="game-container" style="display: flex;">
+        <div id="flashcardGameContainer" class="game-container">
             <div class="card-container">
                 <div id="flashcard" class="card">
                     <div id="front" class="card-face card-front"></div>
+ 
                     <div id="back" class="card-face card-back"></div>
                 </div>
             </div>
             <div class="controls">
-                <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
                 <span id="cardCounter"></span>
-                <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
             </div>
 
+        
             <div class="feedback-buttons" id="feedbackButtons">
                 <button class="knew-it-btn" id="knewItBtn">Je l'avais</button>
                 <button class="didnt-know-it-btn" id="didntKnowBtn">Je ne l'avais pas</button>
@@ -784,6 +786,7 @@
 
         <div id="quizGameContainer" class="game-container">
             <div id="quizScore" class="quiz-score">Score: 0 / 0</div>
+       
             <div id="quizQuestion" class="quiz-question"></div>
             <div id="quizOptions" class="quiz-options"></div>
         </div>
@@ -791,15 +794,18 @@
         <div id="hangmanGameContainer" class="game-container">
             <svg class="hangman-drawing" viewBox="0 0 200 200">
                 <line x1="10" y1="190" x2="150" y2="190" stroke="#fff" stroke-width="4" />
-                <line x1="40" y1="190" x2="40" y2="20" stroke="#fff" stroke-width="4" />
+                <line x1="40" y1="190" x2="40" y2="20" 
+                stroke="#fff" stroke-width="4" />
                 <line x1="40" y1="20" x2="120" y2="20" stroke="#fff" stroke-width="4" />
                 <line x1="120" y1="20" x2="120" y2="40" stroke="#fff" stroke-width="4" />
                 <circle id="head" cx="120" cy="55" r="15" stroke="#fff" stroke-width="3" fill="none" style="display:none" />
                 <line id="body" x1="120" y1="70" x2="120" y2="120" stroke="#fff" stroke-width="3" style="display:none" />
+  
                 <line id="arm1" x1="120" y1="80" x2="100" y2="100" stroke="#fff" stroke-width="3" style="display:none" />
                 <line id="arm2" x1="120" y1="80" x2="140" y2="100" stroke="#fff" stroke-width="3" style="display:none" />
                 <line id="leg1" x1="120" y1="120" x2="100" y2="150" stroke="#fff" stroke-width="3" style="display:none" />
                 <line id="leg2" x1="120" y1="120" x2="140" y2="150" stroke="#fff" stroke-width="3" style="display:none" />
+  
             </svg>
             <div id="hangmanWord" class="hangman-word"></div>
             <div id="hangmanLetters" class="hangman-letters"></div>
@@ -808,7 +814,8 @@
         <div id="scrambleGameContainer" class="game-container">
             <div id="scrambleWord" class="quiz-question"></div>
             <div id="scrambleClue" class="scramble-clue"></div>
-            <input type="text" id="scrambleInput" placeholder="Écris le mot ici..." autocomplete="off">
+            <input type="text" id="scrambleInput" placeholder="Écris 
+            le mot ici..." autocomplete="off">
             <button id="scrambleCheckBtn">Vérifier</button>
             <div id="scrambleFeedback" class="scramble-feedback"></div>
             <button id="scrambleNextBtn" style="display:none;">Mot Suivant &rarr;</button>
@@ -817,6 +824,7 @@
         <div id="dictationGameContainer" class="game-container">
             <div id="dictationClue" class="dictation-clue"></div>
             <input type="text" id="dictationInput" placeholder="Écris le mot exact ici..." autocomplete="off">
+  
             <button id="dictationCheckBtn">Vérifier</button>
             <div id="dictationFeedback" class="dictation-feedback"></div>
             <button id="dictationNextBtn" style="display:none;">Mot Suivant &rarr;</button>
@@ -825,12 +833,15 @@
         <div id="matchGameContainer" class="game-container">
             <div id="matchScore">Paires trouvées : 0 / 6</div>
             <div id="matchGrid">
+          
                 <div id="wordsColumn" class="match-column"></div>
                 <div id="definitionsColumn" class="match-column"></div>
             </div>
-            <button id="matchNextBtn" style="display:none; margin-top: 30px;">Prochain Match &rarr;</button>
-        </div
-        ><details>
+            <button id="matchNextBtn" style="display:none;
+            margin-top: 30px;">Prochain Match &rarr;</button>
+        </div>
+        
+        <details>
             <summary id="listTitle">Liste Complète</summary>
             <div class="list-content">
                 <ul class="vocabulary-list"></ul>
@@ -838,6 +849,7 @@
         </details>
 
         <details>
+ 
             <summary>Comment Utiliser</summary>
             <div class="instructions-content">
                 <p>
@@ -845,7 +857,7 @@
                     - **Mode Cartes** : Clique sur la carte pour voir la définition, puis dis si tu l'avais ou non. Les mots non connus reviendront plus souvent.
                     - **Mode Quiz** : Lis le mot ou la définition et choisis la bonne réponse.
                     - **Mode Pendu** : Devine le mot en cliquant sur les lettres.
-                    - **Mode Mots Mélangés** : Un mot est mélangé, retrouve le mot original avec l'aide de sa définition.
+                    - **Mots Mélangés** : Un mot est mélangé, retrouve le mot original avec l'aide de sa définition.
                     - **Mode Dictée** : Écris le mot exact correspondant à la définition. (Attention aux accents et à l'orthographe exacte).
                     - **Mode Association** : Associe les mots à leur définition en cliquant sur une paire.
                 </p>
@@ -862,104 +874,89 @@
     </div>
 
     <script src="vocab_data.js"></script>
-
     <script>
         const container = document.querySelector('.container');
-
         const flashcard = document.getElementById('flashcard');
         const frontFace = document.getElementById('front');
         const backFace = document.getElementById('back');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
         const cardCounter = document.getElementById('cardCounter');
         const vocabularyList = document.querySelector('.vocabulary-list');
         const feedbackButtons = document.getElementById('feedbackButtons');
         const knewItBtn = document.getElementById('knewItBtn');
         const didntKnowBtn = document.getElementById('didntKnowBtn');
-        
         const flashcardModeBtn = document.getElementById('flashcardModeBtn');
         const quizModeBtn = document.getElementById('quizModeBtn');
         const hangmanModeBtn = document.getElementById('hangmanModeBtn');
         const scrambleModeBtn = document.getElementById('scrambleModeBtn');
         const dictationModeBtn = document.getElementById('dictationModeBtn');
-        const matchModeBtn = document.getElementById('matchModeBtn'); 
-
+        const matchModeBtn = document.getElementById('matchModeBtn');
         const flashcardGameContainer = document.getElementById('flashcardGameContainer');
         const quizGameContainer = document.getElementById('quizGameContainer');
         const hangmanGameContainer = document.getElementById('hangmanGameContainer');
         const scrambleGameContainer = document.getElementById('scrambleGameContainer');
         const dictationGameContainer = document.getElementById('dictationGameContainer');
         const matchGameContainer = document.getElementById('matchGameContainer');
-
+        const allContainers = [flashcardGameContainer, quizGameContainer, hangmanGameContainer, scrambleGameContainer, dictationGameContainer, matchGameContainer];
+        const allModeBtns = [flashcardModeBtn, quizModeBtn, hangmanModeBtn, scrambleModeBtn, dictationModeBtn, matchModeBtn];
         const quizQuestion = document.getElementById('quizQuestion');
         const quizOptions = document.getElementById('quizOptions');
         const quizScore = document.getElementById('quizScore');
-
         const hangmanWordDiv = document.getElementById('hangmanWord');
         const hangmanLettersDiv = document.getElementById('hangmanLetters');
         const hangmanParts = ["head", "body", "arm1", "arm2", "leg1", "leg2"];
-
         const scrambleWordDiv = document.getElementById('scrambleWord');
         const scrambleClueDiv = document.getElementById('scrambleClue');
         const scrambleInput = document.getElementById('scrambleInput');
         const scrambleCheckBtn = document.getElementById('scrambleCheckBtn');
         const scrambleFeedbackDiv = document.getElementById('scrambleFeedback');
         const scrambleNextBtn = document.getElementById('scrambleNextBtn');
-
         const dictationClueDiv = document.getElementById('dictationClue');
         const dictationInput = document.getElementById('dictationInput');
         const dictationCheckBtn = document.getElementById('dictationCheckBtn');
         const dictationFeedbackDiv = document.getElementById('dictationFeedback');
         const dictationNextBtn = document.getElementById('dictationNextBtn');
-
         const wordsColumn = document.getElementById('wordsColumn');
         const definitionsColumn = document.getElementById('definitionsColumn');
         const matchScoreSpan = document.getElementById('matchScore');
         const matchNextBtn = document.getElementById('matchNextBtn');
-        
         const chapterSelector = document.getElementById('chapterSelector');
         const categoryModal = document.getElementById('categoryModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalButtons = document.getElementById('modalButtons');
         const listTitle = document.getElementById('listTitle');
-
         const alertMessageDiv = document.getElementById('alertMessage');
         const alertTextP = document.getElementById('alertText');
 
         let vocab = [];
-        
         let shuffledVocab = [];
         let wordsToReview = [];
         let currentCardIndex = 0;
-
         let quizScoreCount = 0;
         let quizTotalCount = 0;
         let quizQuestions = [];
         let currentQuizQuestionIndex = 0;
-
         let chosenWord = "";
         let displayWord = [];
         let wrongGuesses = 0;
-
         let currentScrambleWord = null;
         let currentScrambleDefinition = null;
-
         let currentDictationWord = null;
         let currentDictationDefinition = null;
-
         let selectedWordItem = null;
         let selectedDefItem = null;
         let matchedPairsCount = 0;
         const MATCH_COUNT = 6;
 
-
         function shuffle(array) {
             let currentIndex = array.length, randomIndex;
+
             while (currentIndex > 0) {
                 randomIndex = Math.floor(Math.random() * currentIndex);
                 currentIndex--;
+
                 [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
             }
+
             return array;
         }
 
@@ -975,7 +972,6 @@
                 btn.textContent = chapter.title;
                 btn.id = chapter.selectorId;
                 btn.setAttribute('data-chapter-key', key);
-                
                 btn.addEventListener('click', () => {
                     if (Object.keys(chapter.subcategories).length > 1) {
                         openSubcategoryModal(chapter);
@@ -991,7 +987,6 @@
         function openSubcategoryModal(chapter) {
             modalTitle.textContent = `Choisir la catégorie du ${chapter.title}`;
             modalButtons.innerHTML = '';
-
             hideAlert();
 
             for (const subKey in chapter.subcategories) {
@@ -1002,19 +997,15 @@
                 subBtn.addEventListener('click', () => changeVocabulary(chapter.selectorId.replace('SelectBtn', ''), subKey));
                 modalButtons.appendChild(subBtn);
             }
-
             categoryModal.style.display = 'flex';
         }
 
         function changeVocabulary(chapterKey, subKey) {
             categoryModal.style.display = 'none';
-            
             container.classList.add('fade-out');
-            
             setTimeout(() => {
                 const chapterData = ALL_VOCAB_DATA[chapterKey];
                 const subcategoryData = chapterData.subcategories[subKey];
-                
                 vocab = subcategoryData.data;
                 listTitle.textContent = `${chapterData.title} - ${subcategoryData.name}`;
 
@@ -1025,35 +1016,29 @@
                 shuffledVocab = shuffle([...vocab]);
                 wordsToReview = [];
                 currentCardIndex = 0;
-                
+
                 const activeModeBtn = document.querySelector('.mode-selector button.active');
-                let mode = 'flashcard'; 
+                let mode = 'flashcard';
                 if (activeModeBtn) {
-                    mode = activeModeBtn.id.replace('ModeBtn', '').replace('match', 'match'); 
+                    mode = activeModeBtn.id.replace('ModeBtn', '').replace('match', 'match');
                 }
                 showMode(mode);
-                
                 generateList();
                 updateAlert(subcategoryData.alert);
-                
                 container.classList.remove('fade-out');
-
-            }, 150);
+            }, 300);
         }
 
         function updateAlert(alertData) {
             alertMessageDiv.classList.remove('alert-orange', 'alert-green', 'alert-purple');
-            
             if (alertData && alertData.message) {
-                alertTextP.textContent = alertData.message; 
+                alertTextP.textContent = alertData.message;
                 alertMessageDiv.style.display = 'block';
-                
                 if (alertData.color) {
                     alertMessageDiv.style.backgroundColor = alertData.color;
                 } else {
-                    alertMessageDiv.style.backgroundColor = '#FF8C00'; 
+                    alertMessageDiv.style.backgroundColor = '#FF8C00';
                 }
-
             } else {
                 hideAlert();
             }
@@ -1062,501 +1047,515 @@
         function hideAlert() {
             alertMessageDiv.style.display = 'none';
         }
-        
+
         window.addEventListener('click', (event) => {
             if (event.target === categoryModal) {
                 categoryModal.style.display = 'none';
             }
         });
-        
+
         function showMode(mode) {
-            const allContainers = [flashcardGameContainer, quizGameContainer, hangmanGameContainer, scrambleGameContainer, dictationGameContainer, matchGameContainer];
-            const allModeBtns = [flashcardModeBtn, quizModeBtn, hangmanModeBtn, scrambleModeBtn, dictationModeBtn, matchModeBtn];
-
             if (vocab.length === 0) {
-                 frontFace.textContent = "Choisis une catégorie !";
-                 backFace.textContent = "Clique sur un chapitre ci-dessus.";
-                 flashcardGameContainer.style.display = 'flex'; 
-                 allContainers.filter(c => c !== flashcardGameContainer).forEach(c => c.style.display = 'none');
-                 cardCounter.textContent = '0 / 0';
-                 prevBtn.disabled = true;
-                 nextBtn.disabled = true;
-                 feedbackButtons.style.display = 'none';
-                 hideAlert();
-                 return;
-            }
-
-            allContainers.forEach(c => c.style.display = 'none');
-            allModeBtns.forEach(btn => btn.classList.remove('active'));
-
-            if (mode === 'flashcard') {
+                allContainers.forEach(c => c.style.display = 'none');
                 flashcardGameContainer.style.display = 'flex';
-                flashcardModeBtn.classList.add('active');
-                flashcard.classList.remove('flipped');
-                currentCardIndex = 0;
-                shuffledVocab = shuffle([...vocab]);
-                displayFlashcard();
-            } else if (mode === 'quiz') {
-                quizGameContainer.style.display = 'flex';
-                quizModeBtn.classList.add('active');
-                startQuiz();
-            } else if (mode === 'hangman') {
-                hangmanGameContainer.style.display = 'flex';
-                hangmanModeBtn.classList.add('active');
-                startHangman();
-            } else if (mode === 'scramble') {
-                scrambleGameContainer.style.display = 'flex';
-                scrambleModeBtn.classList.add('active');
-                startScramble();
-            } else if (mode === 'dictation') {
-                dictationGameContainer.style.display = 'flex';
-                dictationModeBtn.classList.add('active');
-                startDictation();
-            } else if (mode === 'match') {
-                matchGameContainer.style.display = 'flex';
-                matchModeBtn.classList.add('active');
-                startMatchGame();
-            }
-        }
-
-        flashcardModeBtn.addEventListener('click', () => showMode('flashcard'));
-        quizModeBtn.addEventListener('click', () => showMode('quiz'));
-        hangmanModeBtn.addEventListener('click', () => showMode('hangman'));
-        scrambleModeBtn.addEventListener('click', () => showMode('scramble'));
-        dictationModeBtn.addEventListener('click', () => showMode('dictation'));
-        matchModeBtn.addEventListener('click', () => showMode('match'));
-
-        function displayFlashcard() {
-            if (shuffledVocab.length === 0 && wordsToReview.length === 0) {
-                frontFace.textContent = "C'est fini pour cette catégorie !";
-                backFace.textContent = "Réinitialise le jeu ou change de liste.";
-                prevBtn.disabled = true;
-                nextBtn.disabled = true;
+                flashcardGameContainer.style.opacity = '1';
+                cardCounter.textContent = '0 / 0';
                 feedbackButtons.style.display = 'none';
+                frontFace.textContent = "Choisis une catégorie !";
+                backFace.textContent = "Clique sur un chapitre ci-dessus.";
+                hideAlert();
                 return;
             }
 
-            let card;
-            if (wordsToReview.length > 0 && Math.random() < 0.5) { 
-                const reviewIndex = Math.floor(Math.random() * wordsToReview.length);
-                card = wordsToReview[reviewIndex];
-                wordsToReview.splice(reviewIndex, 1); 
-            } else {
-                if (shuffledVocab.length === 0) {
-                     shuffledVocab = shuffle([...vocab]); 
+            let targetContainer;
+            let modeKey;
+
+            if (mode === 'flashcard') {
+                targetContainer = flashcardGameContainer;
+                modeKey = 'flashcard';
+            } else if (mode === 'quiz') {
+                targetContainer = quizGameContainer;
+                modeKey = 'quiz';
+            } else if (mode === 'hangman') {
+                targetContainer = hangmanGameContainer;
+                modeKey = 'hangman';
+            } else if (mode === 'scramble') {
+                targetContainer = scrambleGameContainer;
+                modeKey = 'scramble';
+            } else if (mode === 'dictation') {
+                targetContainer = dictationGameContainer;
+                modeKey = 'dictation';
+            } else if (mode === 'match') {
+                targetContainer = matchGameContainer;
+                modeKey = 'match';
+            }
+
+            // Hide all containers with fade-out
+            allContainers.forEach(c => {
+                if (c.style.display !== 'none') {
+                    c.style.opacity = '0';
                 }
-                card = shuffledVocab[currentCardIndex];
-            }
+                c.classList.remove('active-mode');
+                setTimeout(() => { c.style.display = 'none'; }, 750);
+            });
 
-            frontFace.textContent = card[0];
-            backFace.textContent = card[1];
-            cardCounter.textContent = `${currentCardIndex + 1} / ${vocab.length}`;
-            updateFlashcardButtons();
+            // Show target container with fade-in after fade-out completes
+            setTimeout(() => {
+                allModeBtns.forEach(btn => btn.classList.remove('active'));
+                
+                targetContainer.style.display = 'flex';
+                targetContainer.classList.add('active-mode');
+                
+                // Force reflow/repaint to apply initial opacity: 0 before transition
+                void targetContainer.offsetWidth; 
+                
+                targetContainer.style.opacity = '1';
+
+                if (modeKey === 'flashcard') {
+                    flashcardModeBtn.classList.add('active');
+                    flashcard.classList.remove('flipped');
+                    currentCardIndex = 0;
+                    shuffledVocab = shuffle([...vocab]);
+                    displayFlashcard();
+                } else if (modeKey === 'quiz') {
+                    quizModeBtn.classList.add('active');
+                    startQuiz();
+                } else if (modeKey === 'hangman') {
+                    hangmanModeBtn.classList.add('active');
+                    startHangman();
+                } else if (modeKey === 'scramble') {
+                    scrambleModeBtn.classList.add('active');
+                    startScramble();
+                } else if (modeKey === 'dictation') {
+                    dictationModeBtn.classList.add('active');
+                    startDictation();
+                } else if (modeKey === 'match') {
+                    matchModeBtn.classList.add('active');
+                    startMatchGame();
+                }
+            }, 750);
         }
 
-        function updateFlashcardButtons() {
-            prevBtn.disabled = currentCardIndex === 0;
-            nextBtn.disabled = currentCardIndex >= shuffledVocab.length -1;
-            prevBtn.style.display = 'block';
-            nextBtn.style.display = 'block';
-            feedbackButtons.style.display = 'none';
-        }
-
-        flashcard.addEventListener('click', () => {
-            if (vocab.length === 0) return;
-            flashcard.classList.toggle('flipped');
-            if (flashcard.classList.contains('flipped')) {
-                prevBtn.style.display = 'none';
-                nextBtn.style.display = 'none';
-                feedbackButtons.style.display = 'flex';
-                knewItBtn.style.backgroundColor = 'var(--color-correct)';
-                didntKnowBtn.style.backgroundColor = 'var(--color-incorrect)';
-            } else {
-                updateFlashcardButtons();
-            }
+        allModeBtns.forEach(btn => {
+            btn.addEventListener('click', (event) => {
+                const mode = event.currentTarget.id.replace('ModeBtn', '').replace('match', 'match');
+                showMode(mode);
+            });
         });
-        const handleFeedback = (knewIt) => {
-            if (!knewIt) {
-                if (!wordsToReview.includes(shuffledVocab[currentCardIndex])) {
-                    wordsToReview.push(shuffledVocab[currentCardIndex]);
+
+
+        // --- FLASHCARD MODE LOGIC ---
+
+        function displayFlashcard() {
+            if (shuffledVocab.length === 0) {
+                // If all words have been seen, decide what to do (e.g., reset, review, show message)
+                if (wordsToReview.length > 0) {
+                    shuffledVocab = shuffle(wordsToReview);
+                    wordsToReview = [];
+                    currentCardIndex = 0;
+                } else {
+                    frontFace.textContent = "Fini ! Reviens plus tard !";
+                    backFace.textContent = "Tu connais tout. Félicitations !";
+                    cardCounter.textContent = `${vocab.length} / ${vocab.length}`;
+                    feedbackButtons.style.display = 'none';
+                    return;
                 }
             }
             
+            flashcard.classList.remove('flipped');
+            feedbackButtons.style.display = 'none';
+            
+            const [word, definition] = shuffledVocab[currentCardIndex];
+            frontFace.textContent = word;
+            backFace.innerHTML = definition;
+
+            cardCounter.textContent = `${currentCardIndex + 1} / ${shuffledVocab.length}`;
+        }
+
+        flashcard.addEventListener('click', () => {
+            flashcard.classList.toggle('flipped');
+            if (flashcard.classList.contains('flipped')) {
+                 feedbackButtons.style.display = 'flex';
+            } else {
+                 feedbackButtons.style.display = 'none';
+            }
+        });
+
+        knewItBtn.addEventListener('click', () => {
+            moveToNextCard(true);
+        });
+
+        didntKnowBtn.addEventListener('click', () => {
+            moveToNextCard(false);
+        });
+
+        function moveToNextCard(knewIt) {
+            if (!knewIt) {
+                 // Add the current word to the review list if the user didn't know it
+                wordsToReview.push(shuffledVocab[currentCardIndex]);
+            }
+            
             currentCardIndex++;
+
             if (currentCardIndex >= shuffledVocab.length) {
-                if (wordsToReview.length > 0) {
-                    shuffledVocab = wordsToReview;
-                    wordsToReview = [];
-                    shuffle(shuffledVocab);
-                } else {
-                    shuffledVocab = shuffle([...vocab]);
-                }
+                // If we ran out of cards, shuffle the review list and continue
+                shuffledVocab = shuffle(wordsToReview);
+                wordsToReview = [];
                 currentCardIndex = 0;
             }
 
-            flashcard.classList.remove('flipped');
-            setTimeout(() => {
-                displayFlashcard();
-            }, 150);
-        };
-        
-        knewItBtn.addEventListener('click', () => handleFeedback(true));
-        didntKnowBtn.addEventListener('click', () => handleFeedback(false));
-
-        nextBtn.addEventListener('click', () => {
-            currentCardIndex++;
-            flashcard.classList.remove('flipped');
-            setTimeout(displayFlashcard, 300);
-        });
-        prevBtn.addEventListener('click', () => {
-            if (currentCardIndex > 0) {
-                currentCardIndex--;
-                flashcard.classList.remove('flipped');
-                setTimeout(displayFlashcard, 300);
-            }
-        });
-
-        function generateQuizQuestions() {
-            quizQuestions = shuffle(vocab.map(item => {
-                const isNormal = Math.random() < 0.7; 
-                return {
-                    question: isNormal ? item[0] : item[1],
-                    answer: isNormal ? item[1] : item[0],
-                    isNormal: isNormal
-                };
-            }));
-            quizScoreCount = 0;
-            quizTotalCount = 0;
-            currentQuizQuestionIndex = 0;
+            displayFlashcard();
         }
 
+        // --- QUIZ MODE LOGIC ---
+
         function startQuiz() {
-            if (vocab.length === 0) return;
-            generateQuizQuestions();
-            displayQuizQuestion();
+            quizScoreCount = 0;
+            quizTotalCount = 0;
+            quizQuestions = generateQuizQuestions(shuffle([...vocab]));
+            currentQuizQuestionIndex = 0;
             updateQuizScore();
+            displayQuizQuestion();
+        }
+
+        function generateQuizQuestions(data) {
+            return data.map(pair => {
+                const [correctWord, definition] = pair;
+                const options = [correctWord];
+
+                // Generate 3 incorrect options
+                let attempts = 0;
+                while (options.length < 4 && attempts < 100) {
+                    const randomPair = data[Math.floor(Math.random() * data.length)];
+                    const incorrectWord = randomPair[0];
+                    if (!options.includes(incorrectWord)) {
+                        options.push(incorrectWord);
+                    }
+                    attempts++;
+                }
+
+                return {
+                    question: definition,
+                    correctAnswer: correctWord,
+                    options: shuffle(options.slice(0, 4)) // Ensure only 4 options
+                };
+            }).filter(q => q.options.length === 4); // Filter out questions that couldn't generate 4 unique options
         }
 
         function displayQuizQuestion() {
             if (currentQuizQuestionIndex >= quizQuestions.length) {
-                quizQuestion.textContent = "Quiz terminé !";
+                quizQuestion.textContent = `Quiz terminé ! Ton score final est de ${quizScoreCount} / ${quizTotalCount}.`;
                 quizOptions.innerHTML = '';
                 return;
             }
 
             const currentQuestion = quizQuestions[currentQuizQuestionIndex];
-            
-            quizQuestion.classList.remove('inverted'); 
-            if (!currentQuestion.isNormal) {
-                quizQuestion.textContent = `Quel mot correspond à la définition : ${currentQuestion.question}`;
-                quizQuestion.classList.add('inverted');
-            } else {
-                quizQuestion.textContent = currentQuestion.question;
-            }
-
-            const correctAnswer = currentQuestion.answer;
-
-            const vocabAnswers = vocab.map(word => currentQuestion.isNormal ? word[1] : word[0]);
-
-            const incorrectTranslations = vocabAnswers
-                .filter(ans => ans !== correctAnswer);
-            shuffle(incorrectTranslations);
-            
-            const options = [correctAnswer, ...incorrectTranslations.slice(0, 3)];
-            shuffle(options);
-
+            quizQuestion.textContent = currentQuestion.question;
             quizOptions.innerHTML = '';
-            options.forEach(option => {
-                const button = document.createElement('button');
-                button.textContent = option;
-                button.addEventListener('click', () => checkQuizAnswer(button, option, correctAnswer));
-                quizOptions.appendChild(button);
+
+            currentQuestion.options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.textContent = option;
+                btn.setAttribute('data-answer', option);
+                btn.addEventListener('click', handleQuizAnswer);
+                quizOptions.appendChild(btn);
             });
         }
 
-        function checkQuizAnswer(button, selectedAnswer, correctAnswer) {
-            const allButtons = quizOptions.querySelectorAll('button');
-            allButtons.forEach(btn => btn.disabled = true); 
-            
-            if (selectedAnswer === correctAnswer) {
-                button.classList.add('correct');
-                quizScoreCount++;
-            } else {
-                button.classList.add('incorrect');
-                const correctButton = Array.from(allButtons).find(btn => btn.textContent === correctAnswer);
-                if (correctButton) {
-                    correctButton.classList.add('correct');
-                }
-            }
+        function handleQuizAnswer(event) {
+            const selectedOption = event.target;
+            const userAnswer = selectedOption.getAttribute('data-answer');
+            const currentQuestion = quizQuestions[currentQuizQuestionIndex];
+            const isCorrect = (userAnswer === currentQuestion.correctAnswer);
 
             quizTotalCount++;
+            
+            // Disable all buttons
+            quizOptions.querySelectorAll('button').forEach(btn => btn.disabled = true);
+
+            // Highlight answers
+            quizOptions.querySelectorAll('button').forEach(btn => {
+                if (btn.getAttribute('data-answer') === currentQuestion.correctAnswer) {
+                    btn.classList.add('correct');
+                } else if (btn === selectedOption) {
+                    btn.classList.add('incorrect');
+                }
+            });
+
+            if (isCorrect) {
+                quizScoreCount++;
+            }
             updateQuizScore();
 
+            // Move to next question after a delay
             setTimeout(() => {
                 currentQuizQuestionIndex++;
                 displayQuizQuestion();
-            }, 750); 
+            }, 1000);
         }
 
         function updateQuizScore() {
             quizScore.textContent = `Score: ${quizScoreCount} / ${quizTotalCount}`;
         }
-        
-        function startHangman(){
-            if (vocab.length === 0) return;
-            const hangmanWords = vocab.map(item => item[0].toUpperCase().replace(/\s/g, ''));
-            const random = hangmanWords[Math.floor(Math.random()*hangmanWords.length)];
-            chosenWord = random;
-            displayWord = chosenWord.split('').map(l => l.match(/[A-ZÀ-ÿ]/) ? '_' : l);
-            wrongGuesses = 0;
-            hangmanWordDiv.textContent = displayWord.join(' ');
-            hangmanLettersDiv.innerHTML = '';
-            hangmanParts.forEach(id=>document.getElementById(id).style.display='none');
 
-            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZÀÂÄÈÉÊËÎÏÔÖÙÛÜÇŒ";
-            const uniqueLetters = [...new Set(alphabet.split(''))];
+        // --- HANGMAN MODE LOGIC ---
+
+        function startHangman() {
+            if (vocab.length === 0) return;
             
-            uniqueLetters.forEach(letter => {
+            wrongGuesses = 0;
+            hangmanParts.forEach(part => {
+                const el = document.getElementById(part);
+                if (el) el.style.display = 'none';
+            });
+            
+            // Choose a random word
+            const randomIndex = Math.floor(Math.random() * vocab.length);
+            chosenWord = removeAccents(vocab[randomIndex][0].toUpperCase());
+            displayWord = Array(chosenWord.length).fill('_');
+
+            hangmanLettersDiv.innerHTML = '';
+            hangmanWordDiv.textContent = displayWord.join(' ');
+
+            generateLetterButtons();
+        }
+
+        function generateLetterButtons() {
+            for (let i = 65; i <= 90; i++) {
+                const letter = String.fromCharCode(i);
                 const btn = document.createElement('button');
                 btn.textContent = letter;
-                btn.addEventListener('click', () => guessLetter(letter, btn));
+                btn.addEventListener('click', () => handleGuess(letter, btn));
                 hangmanLettersDiv.appendChild(btn);
-            });
+            }
         }
 
-        function guessLetter(letter, btn) {
-            btn.disabled = true;
-            const normalizedChosenWord = removeAccents(chosenWord);
-            const normalizedLetter = removeAccents(letter);
-            let found = false;
+        function handleGuess(letter, button) {
+            button.disabled = true;
+            let correctGuess = false;
+
             for (let i = 0; i < chosenWord.length; i++) {
-                if (removeAccents(chosenWord[i]) === normalizedLetter) {
-                    displayWord[i] = chosenWord[i];
-                    found = true;
+                if (chosenWord[i] === letter) {
+                    displayWord[i] = letter;
+                    correctGuess = true;
                 }
             }
 
-            if (found) {
-                hangmanWordDiv.textContent = displayWord.join(' ');
-                if (!displayWord.includes('_')) {
-                    setTimeout(() => { alert("Bravo ! Tu as trouvé le mot : " + chosenWord); startHangman(); }, 250);
-                }
-            } else {
+            hangmanWordDiv.textContent = displayWord.join(' ');
+
+            if (!correctGuess) {
+                wrongGuesses++;
                 if (wrongGuesses < hangmanParts.length) {
-                    document.getElementById(hangmanParts[wrongGuesses]).style.display = 'block';
-                    wrongGuesses++;
+                    const partToDisplay = document.getElementById(hangmanParts[wrongGuesses - 1]);
+                    if (partToDisplay) partToDisplay.style.display = 'block';
                 }
-                if (wrongGuesses >= hangmanParts.length) {
-                    setTimeout(() => { alert("Perdu ! Le mot était : " + chosenWord); startHangman(); }, 250);
-                }
+            }
+            
+            checkHangmanGameStatus();
+        }
+
+        function checkHangmanGameStatus() {
+            if (!displayWord.includes('_')) {
+                hangmanWordDiv.textContent = chosenWord;
+                hangmanWordDiv.style.color = varToColor('correct');
+                disableAllLetterButtons();
+                setTimeout(startHangman, 2000);
+            } else if (wrongGuesses >= hangmanParts.length) {
+                hangmanWordDiv.textContent = chosenWord;
+                hangmanWordDiv.style.color = varToColor('incorrect');
+                disableAllLetterButtons();
+                setTimeout(startHangman, 2000);
+            } else {
+                hangmanWordDiv.style.color = varToColor('text');
             }
         }
 
-        function scrambleWord(word) {
-            let a = word.split("");
-            let n = a.length;
-
-            for(let i = n - 1; i > 0; i--) {
-                let j = Math.floor(Math.random() * (i + 1));
-                let tmp = a[i];
-                a[i] = a[j];
-                a[j] = tmp;
-            }
-            return a.join("");
+        function disableAllLetterButtons() {
+            hangmanLettersDiv.querySelectorAll('button').forEach(btn => btn.disabled = true);
         }
 
+        function varToColor(varName) {
+            return getComputedStyle(document.documentElement).getPropertyValue(`--color-${varName}`).trim();
+        }
+        
+        // --- SCRAMBLE MODE LOGIC ---
+        
         function startScramble() {
             if (vocab.length === 0) return;
-
+            
+            const randomIndex = Math.floor(Math.random() * vocab.length);
+            currentScrambleWord = removeAccents(vocab[randomIndex][0]);
+            currentScrambleDefinition = vocab[randomIndex][1];
+            
+            const scrambled = scrambleWord(currentScrambleWord);
+            
+            scrambleWordDiv.textContent = scrambled.toUpperCase();
+            scrambleClueDiv.textContent = currentScrambleDefinition;
             scrambleInput.value = '';
             scrambleInput.disabled = false;
             scrambleCheckBtn.style.display = 'block';
             scrambleNextBtn.style.display = 'none';
             scrambleFeedbackDiv.textContent = '';
-            
-            const randomPair = vocab[Math.floor(Math.random() * vocab.length)];
-            const originalWord = randomPair[0];
-            const definition = randomPair[1];
-
-            currentScrambleWord = removeAccents(originalWord).toUpperCase();
-            currentScrambleDefinition = definition;
-            
-            let scrambled = scrambleWord(originalWord.toUpperCase());
-            
-            if (scrambled === originalWord.toUpperCase()) {
-                 scrambled = scrambleWord(originalWord.toUpperCase());
-            }
-
-            scrambleWordDiv.textContent = scrambled;
-            scrambleClueDiv.textContent = `Indice : ${currentScrambleDefinition}`;
         }
 
-        function checkScramble() {
-            const userAnswer = removeAccents(scrambleInput.value).toUpperCase();
+        function scrambleWord(word) {
+            const characters = word.toLowerCase().split('');
+            for (let i = characters.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [characters[i], characters[j]] = [characters[j], characters[i]];
+            }
+            return characters.join('');
+        }
+
+        function checkScrambleAnswer() {
+            const userAnswer = removeAccents(scrambleInput.value.trim().toLowerCase());
+            const correct = currentScrambleWord.toLowerCase();
             
-            if (userAnswer === currentScrambleWord) {
-                scrambleFeedbackDiv.textContent = "Bravo ! C'est correct !";
-                scrambleFeedbackDiv.style.color = '#4CAF50'; 
+            if (userAnswer === correct) {
+                scrambleFeedbackDiv.textContent = "Correct !";
+                scrambleFeedbackDiv.style.color = varToColor('correct');
                 scrambleInput.disabled = true;
                 scrambleCheckBtn.style.display = 'none';
                 scrambleNextBtn.style.display = 'block';
-
             } else {
-                scrambleFeedbackDiv.textContent = "Incorrect. Essaie encore !";
-                scrambleFeedbackDiv.style.color = '#F44336'; 
-                scrambleInput.focus();
+                scrambleFeedbackDiv.textContent = `Incorrect. La bonne réponse était : ${currentScrambleWord}`;
+                scrambleFeedbackDiv.style.color = varToColor('incorrect');
             }
         }
 
-        scrambleCheckBtn.addEventListener('click', checkScramble);
+        scrambleCheckBtn.addEventListener('click', checkScrambleAnswer);
         scrambleNextBtn.addEventListener('click', startScramble);
-
-        scrambleInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && scrambleCheckBtn.style.display !== 'none') {
-                checkScramble();
-            }
-        });
-
+        
+        // --- DICTATION MODE LOGIC ---
+        
         function startDictation() {
             if (vocab.length === 0) return;
-
+            
+            const randomIndex = Math.floor(Math.random() * vocab.length);
+            currentDictationWord = vocab[randomIndex][0];
+            currentDictationDefinition = vocab[randomIndex][1];
+            
+            dictationClueDiv.textContent = currentDictationDefinition;
             dictationInput.value = '';
             dictationInput.disabled = false;
             dictationCheckBtn.style.display = 'block';
             dictationNextBtn.style.display = 'none';
             dictationFeedbackDiv.textContent = '';
-            
-            const randomPair = vocab[Math.floor(Math.random() * vocab.length)];
-            currentDictationWord = randomPair[0];
-            currentDictationDefinition = randomPair[1];
-            
-            dictationClueDiv.textContent = `Définition : ${currentDictationDefinition}`;
         }
-
-        function checkDictation() {
+        
+        function checkDictationAnswer() {
             const userAnswer = dictationInput.value.trim();
-            const correctWord = currentDictationWord;
-            const normalizedUser = removeAccents(userAnswer).toUpperCase();
-            const normalizedCorrect = removeAccents(correctWord).toUpperCase();
+            const correct = currentDictationWord;
             
-            if (userAnswer === correctWord) {
-                dictationFeedbackDiv.textContent = `Bravo ! Le mot était bien : ${correctWord}`;
-                dictationFeedbackDiv.style.color = '#4CAF50'; 
+            if (userAnswer === correct) {
+                dictationFeedbackDiv.textContent = "Correct !";
+                dictationFeedbackDiv.style.color = varToColor('correct');
                 dictationInput.disabled = true;
                 dictationCheckBtn.style.display = 'none';
                 dictationNextBtn.style.display = 'block';
-
-            } else if (normalizedUser === normalizedCorrect) {
-                dictationFeedbackDiv.textContent = `Attention ! Erreur d'accent ou de casse. Le mot exact était : ${correctWord}`;
-                dictationFeedbackDiv.style.color = '#FF8C00'; 
-                dictationInput.focus();
-            
             } else {
-                dictationFeedbackDiv.textContent = `Faux ! Erreur d'orthographe. Le mot exact était : ${correctWord}`;
-                dictationFeedbackDiv.style.color = '#F44336'; 
-                dictationInput.focus();
+                dictationFeedbackDiv.textContent = `Incorrect. La bonne réponse était : ${correct}`;
+                dictationFeedbackDiv.style.color = varToColor('incorrect');
             }
         }
 
-        dictationCheckBtn.addEventListener('click', checkDictation);
+        dictationCheckBtn.addEventListener('click', checkDictationAnswer);
         dictationNextBtn.addEventListener('click', startDictation);
 
-        dictationInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && dictationCheckBtn.style.display !== 'none') {
-                checkDictation();
-            }
-        });
+        // --- MATCH MODE LOGIC ---
 
         function startMatchGame() {
             if (vocab.length < MATCH_COUNT) {
-                 matchScoreSpan.textContent = `Il faut au moins ${MATCH_COUNT} mots pour ce mode !`;
+                 matchScoreSpan.textContent = "Besoin d'au moins 6 mots pour ce mode.";
                  wordsColumn.innerHTML = '';
                  definitionsColumn.innerHTML = '';
                  matchNextBtn.style.display = 'none';
                  return;
             }
-            
+
+            matchedPairsCount = 0;
+            updateMatchScore();
             wordsColumn.innerHTML = '';
             definitionsColumn.innerHTML = '';
             matchNextBtn.style.display = 'none';
             selectedWordItem = null;
             selectedDefItem = null;
-            matchedPairsCount = 0;
-            updateMatchScore();
 
-            const pairs = shuffle([...vocab]);
-            const selectedPairs = pairs.slice(0, MATCH_COUNT);
+            const shuffledVocab = shuffle([...vocab]);
+            const selectedPairs = shuffledVocab.slice(0, MATCH_COUNT);
+            
+            const words = shuffle(selectedPairs.map(p => ({ text: p[0], pairId: p[0] })));
+            const definitions = shuffle(selectedPairs.map(p => ({ text: p[1], pairId: p[0] }))); // Use word as ID
 
-            const words = selectedPairs.map(p => ({ text: p[0], id: p[0] }));
-            const definitions = selectedPairs.map(p => ({ text: p[1], id: p[0] }));
-
-            const shuffledWords = shuffle(words);
-            const shuffledDefs = shuffle(definitions);
-
-            shuffledWords.forEach(w => {
-                const item = createMatchItem(w.text, 'word', w.id);
-                wordsColumn.appendChild(item);
+            words.forEach(item => {
+                wordsColumn.appendChild(createMatchItem(item.text, 'word', item.pairId));
             });
 
-            shuffledDefs.forEach(d => {
-                const item = createMatchItem(d.text, 'definition', d.id);
-                definitionsColumn.appendChild(item);
+            definitions.forEach(item => {
+                definitionsColumn.appendChild(createMatchItem(item.text, 'definition', item.pairId));
             });
         }
 
-        function createMatchItem(text, type, matchId) {
+        function createMatchItem(text, type, pairId) {
             const item = document.createElement('div');
-            item.classList.add('match-item');
+            item.className = 'match-item';
             item.textContent = text;
             item.setAttribute('data-type', type);
-            item.setAttribute('data-match-id', matchId); 
+            item.setAttribute('data-pair-id', pairId);
             item.addEventListener('click', handleMatchClick);
             return item;
         }
 
         function handleMatchClick(event) {
-            const item = event.currentTarget;
+            const item = event.target;
+            
+            if (item.classList.contains('matched') || item.classList.contains('error')) return;
+
             const type = item.getAttribute('data-type');
             
-            if (item.classList.contains('matched') || item.classList.contains('error')) return; 
-
             if (type === 'word') {
                 if (selectedWordItem) selectedWordItem.classList.remove('selected');
                 selectedWordItem = item;
-                selectedWordItem.classList.add('selected');
             } else if (type === 'definition') {
                 if (selectedDefItem) selectedDefItem.classList.remove('selected');
                 selectedDefItem = item;
-                selectedDefItem.classList.add('selected');
             }
 
+            item.classList.add('selected');
+
             if (selectedWordItem && selectedDefItem) {
-                const wordId = selectedWordItem.getAttribute('data-match-id');
-                const defId = selectedDefItem.getAttribute('data-match-id');
-                
-                if (wordId === defId) {
-                    selectedWordItem.classList.add('matched');
-                    selectedDefItem.classList.add('matched');
+                // Check if they match
+                const id1 = selectedWordItem.getAttribute('data-pair-id');
+                const id2 = selectedDefItem.getAttribute('data-pair-id');
+
+                const item1 = selectedWordItem;
+                const item2 = selectedDefItem;
+
+                selectedWordItem.classList.remove('selected');
+                selectedDefItem.classList.remove('selected');
+
+                if (id1 === id2) {
+                    // Match!
+                    item1.classList.add('matched');
+                    item2.classList.add('matched');
+                    item1.removeEventListener('click', handleMatchClick);
+                    item2.removeEventListener('click', handleMatchClick);
                     matchedPairsCount++;
                     updateMatchScore();
-                    
-                    if (matchedPairsCount === MATCH_COUNT) {
-                        setTimeout(() => {
-                            matchScoreSpan.textContent = "🥳 Bravo ! Tu as trouvé toutes les paires !";
-                            matchNextBtn.style.display = 'block';
-                        }, 250);
-                    }
-                } else {
-                    selectedWordItem.classList.add('error');
-                    selectedDefItem.classList.add('error');
-                    
-                    const item1 = selectedWordItem;
-                    const item2 = selectedDefItem;
 
+                    if (matchedPairsCount === MATCH_COUNT) {
+                        matchNextBtn.style.display = 'block';
+                    }
+
+                } else {
+                    // Mismatch - brief error animation
+                    item1.classList.add('error');
+                    item2.classList.add('error');
+                    
                     setTimeout(() => {
                         item1.classList.remove('error', 'selected');
                         item2.classList.remove('error', 'selected');
-                    }, 500); 
+                    }, 1000); 
                 }
                 
                 selectedWordItem = null;
@@ -1583,6 +1582,7 @@
             generateChapterButtons(); 
             hideAlert();
             
+            // Auto-load default category if available and is a single subcategory
             if (Object.keys(ALL_VOCAB_DATA).length > 0) {
                 const defaultChapterKey = Object.keys(ALL_VOCAB_DATA)[0];
                 const defaultChapter = ALL_VOCAB_DATA[defaultChapterKey];
