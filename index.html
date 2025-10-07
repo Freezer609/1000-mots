@@ -759,11 +759,11 @@
             <button id="matchModeBtn" title="Mode Match"><i class="fas fa-link"></i> Mode Association</button>
         </div>
 
-        <div id="flashcardGameContainer" class="game-container">
+        <div id="flashcardGameContainer" class="game-container active-mode" style="display: flex; opacity: 1;">
             <div class="card-container">
                 <div id="flashcard" class="card">
-                    <div id="front" class="card-face card-front"></div>
-                    <div id="back" class="card-face card-back"></div>
+                    <div id="front" class="card-face card-front">Sélectionnez un chapitre ci-dessus</div>
+                    <div id="back" class="card-face card-back">Puis une section pour commencer à jouer.</div>
                 </div>
             </div>
             <div class="controls"> 
@@ -1006,6 +1006,10 @@
         }
 
         function openCategoryModal(chapterKey, chapter) {
+            
+            document.querySelectorAll('.chapter-selector button').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(chapter.selectorId).classList.add('active');
+
             modalTitle.textContent = `Choisir la section pour ${chapter.title}`;
             modalButtons.innerHTML = '';
             
@@ -1065,6 +1069,14 @@
             showGameContainer(flashcardGameContainer, flashcardModeBtn);
             flashcard.classList.remove('flipped');
             feedbackButtons.style.display = 'none';
+            
+            if (vocab.length === 0) {
+                 frontFace.textContent = "Sélectionnez un chapitre et une section.";
+                 backFace.textContent = "Le jeu commencera après la sélection.";
+                 cardCounter.textContent = "";
+                 return;
+            }
+
             shuffledVocab = shuffleArray([...vocab]);
             currentCardIndex = 0;
             masteredWords = new Set();
@@ -1089,6 +1101,8 @@
         }
 
         function flipCard() {
+            if (vocab.length === 0) return;
+            
             flashcard.classList.toggle('flipped');
             if (flashcard.classList.contains('flipped')) {
                 feedbackButtons.style.display = 'flex';
@@ -1102,7 +1116,7 @@
                 masteredWords.add(currentWord);
             } else {
                 masteredWords.delete(currentWord);
-                // Move the word to a random future position to make it reappear
+                
                 const wordToReinsert = shuffledVocab.splice(currentCardIndex, 1)[0];
                 let insertIndex = currentCardIndex + Math.floor(Math.random() * (shuffledVocab.length - currentCardIndex)) + 1;
                 if (insertIndex > shuffledVocab.length) insertIndex = shuffledVocab.length;
@@ -1114,7 +1128,7 @@
             if (currentCardIndex < shuffledVocab.length) {
                 displayCard();
             } else {
-                // If we reach the end, filter out mastered words and start a new round if words remain
+                
                 shuffledVocab = shuffledVocab.filter(pair => !masteredWords.has(pair[0]));
                 if (shuffledVocab.length > 0) {
                     currentCardIndex = 0;
@@ -1139,6 +1153,13 @@
 
         function startQuizGame() {
             showGameContainer(quizGameContainer, quizModeBtn);
+            if (vocab.length === 0) {
+                quizQuestion.textContent = "Sélectionnez un chapitre et une section pour commencer.";
+                quizOptions.innerHTML = '';
+                quizScore.textContent = "Score: 0 / 0";
+                return;
+            }
+
             shuffledVocab = shuffleArray([...vocab]);
             quizQuestions = generateQuizQuestions();
             currentQuizQuestionIndex = 0;
@@ -1173,7 +1194,7 @@
             hideAlert();
             if (currentQuizQuestionIndex >= quizQuestions.length) {
                 quizQuestion.textContent = `Quiz terminé! Ton score final : ${score.correct} / ${score.total}`;
-                quizOptions.innerHTML = `<button onclick="startQuizGame()">Recommencer le Quiz</button>`;
+                quizOptions.innerHTML = `<button onclick="startQuizGame()" style="background-color: var(--color-secondary); color: var(--color-card); border: none;">Recommencer le Quiz</button>`;
                 return;
             }
 
@@ -1225,6 +1246,12 @@
 
         function startHangGame() {
             showGameContainer(hangmanGameContainer, hangmanModeBtn);
+             if (vocab.length === 0) {
+                hangmanWordDiv.textContent = "Sélectionnez un chapitre pour jouer.";
+                hangmanLettersDiv.innerHTML = '';
+                return;
+            }
+
             hideAlert();
             
             const randomPair = shuffleArray([...vocab])[0];
@@ -1244,7 +1271,7 @@
 
         function generateHangButtons() {
             hangmanLettersDiv.innerHTML = '';
-            // Utiliser uniquement l'alphabet de base (A-Z) pour les boutons
+            
             const baseAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split('');
             
             baseAlphabet.forEach(letter => {
@@ -1269,14 +1296,13 @@
                 button.style.backgroundColor = varCss.colorCorrect;
                 
                 let updatedDisplay = '';
-                let wordComplete = true;
                 let currentWordGuessed = '';
                 
                 for (let i = 0; i < hangmanWord.length; i++) {
                     const currentLetter = hangmanWord[i].toUpperCase();
                     const normalizedCurrentLetter = currentLetter.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-                    if (normalizedCurrentLetter === normalizedLetter || guessedLetters.has(currentLetter.normalize("NFD").replace(/[\u0300-\u036f]/g, ""))) {
+                    if (normalizedCurrentLetter === normalizedLetter || guessedLetters.has(normalizedCurrentLetter)) {
                         updatedDisplay += currentLetter;
                         currentWordGuessed += currentLetter;
                         guessedLetters.add(normalizedCurrentLetter);
@@ -1288,7 +1314,6 @@
                     else {
                         updatedDisplay += '_';
                         currentWordGuessed += '_';
-                        wordComplete = false;
                     }
                 }
                 
@@ -1330,6 +1355,16 @@
 
         function startScrambleGame() {
             showGameContainer(scrambleGameContainer, scrambleModeBtn);
+            if (vocab.length === 0) {
+                scrambleWordDiv.textContent = "Sélectionnez un chapitre pour jouer.";
+                scrambleClueDiv.textContent = "";
+                scrambleInput.value = '';
+                scrambleFeedbackDiv.textContent = '';
+                scrambleNextBtn.style.display = 'none';
+                scrambleCheckBtn.style.display = 'block';
+                return;
+            }
+
             hideAlert();
             scrambleInput.value = '';
             scrambleFeedbackDiv.textContent = '';
@@ -1340,15 +1375,15 @@
             currentScrambleWord = randomPair[0];
             const definition = randomPair[1];
 
-            const scrambled = scrambleWord(currentScrambleWord.toUpperCase());
+            const scrambled = scrambleWord(currentScrambleWord.toUpperCase().replace(/[\s-]/g, '')); 
 
             scrambleWordDiv.textContent = scrambled.split('').join(' ');
             scrambleClueDiv.textContent = definition;
         }
 
         function checkScrambleAnswer() {
-            const userAnswer = scrambleInput.value.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            const correctWord = currentScrambleWord.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            const userAnswer = scrambleInput.value.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\s-]/g, '');
+            const correctWord = currentScrambleWord.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\s-]/g, '');
 
             scrambleCheckBtn.style.display = 'none';
             scrambleNextBtn.style.display = 'block';
@@ -1369,6 +1404,15 @@
 
         function startDictationGame() {
             showGameContainer(dictationGameContainer, dictationModeBtn);
+             if (vocab.length === 0) {
+                dictationClueDiv.textContent = "Sélectionnez un chapitre pour jouer.";
+                dictationInput.value = '';
+                dictationFeedbackDiv.textContent = '';
+                dictationNextBtn.style.display = 'none';
+                dictationCheckBtn.style.display = 'block';
+                return;
+            }
+
             hideAlert();
             dictationInput.value = '';
             dictationFeedbackDiv.textContent = '';
@@ -1406,6 +1450,13 @@
 
         function startMatchGame() {
             showGameContainer(matchGameContainer, matchModeBtn);
+            if (vocab.length === 0) {
+                 matchScoreSpan.textContent = "Sélectionnez un chapitre pour jouer.";
+                 wordsColumn.innerHTML = '';
+                 definitionsColumn.innerHTML = '';
+                 return;
+            }
+
             hideAlert();
             wordsColumn.innerHTML = '';
             definitionsColumn.innerHTML = '';
@@ -1506,18 +1557,13 @@
             generateChapterButtons(); 
             hideAlert();
             
+            // Initialisation de la carte pour afficher le message d'attente
+            frontFace.textContent = "Sélectionnez un chapitre ci-dessus";
+            backFace.textContent = "Puis une section pour commencer à jouer.";
+
             if (typeof ALL_VOCAB_DATA !== 'undefined' && Object.keys(ALL_VOCAB_DATA).length > 0) {
-                const defaultChapterKey = Object.keys(ALL_VOCAB_DATA)[0];
-                const defaultChapter = ALL_VOCAB_DATA[defaultChapterKey];
-                
-                const subcategoriesKeys = Object.keys(defaultChapter.subcategories);
-                if (subcategoriesKeys.length === 1) {
-                     const defaultSubKey = subcategoriesKeys[0];
-                     changeVocabulary(defaultChapterKey, defaultSubKey);
-                } else {
-                    // Si plusieurs sous-catégories existent, ouvre la modale par défaut
-                    openCategoryModal(defaultChapterKey, defaultChapter);
-                }
+                // Ne rien faire ici pour éviter d'ouvrir la modale ou de sélectionner un chapitre par défaut. 
+                // L'utilisateur doit choisir lui-même.
             }
         });
         
