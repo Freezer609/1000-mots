@@ -207,32 +207,8 @@
             margin-bottom: 20px;
         }
         
-        .controls button {
-            background-color: transparent; /* Changed to transparent */
-            color: var(--color-secondary); /* Changed to use var color-secondary */
-            border: none;
-            padding: 0; /* Changed padding */
-            font-size: 2.5em; /* Increased size for visibility */
-            font-weight: 700;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            cursor: pointer;
-            transition: color 0.3s; /* Transition for color */
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .controls button:hover {
-            color: var(--color-primary); /* Hover color for arrows */
-        }
+        /* Les contrôles de navigation gauche/droite ont été supprimés */
         
-        .controls button:disabled {
-            color: #555555;
-            cursor: not-allowed;
-        }
-
         #cardCounter, .quiz-score, #matchScore {
             font-size: 1.2em;
             font-weight: 700;
@@ -290,22 +266,22 @@
             gap: 15px;
         }
 
-        /* DÉBUT DE LA MODIFICATION POUR LES BOUTONS DU QUIZ */
+        /* CORRECTION POUR LE MODE QUIZ : FOND TRANSPARENT PAR DÉFAUT */
         .quiz-options button {
             padding: 15px;
             background-color: transparent; /* Fond transparent initialement */
             color: var(--color-text);
             font-size: 1em;
             border-radius: 8px;
-            transition: background-color 0.2s, border-color 0.2s; /* Ajout de border-color à la transition */
-            border: 2px solid #555555; /* Bordure pour la visibilité */
+            transition: background-color 0.2s, border-color 0.2s; 
+            border: 2px solid #555555; /* Bordure grise pour la visibilité */
             cursor: pointer;
             font-weight: 500;
         }
         
         .quiz-options button:hover:not(.correct):not(.incorrect) {
             background-color: #444444; /* Fond un peu plus foncé au survol */
-            border-color: var(--color-primary); /* Bordure colorée au survol */
+            border-color: var(--color-primary); /* Bordure violette au survol */
         }
 
         .quiz-options button.correct {
@@ -319,7 +295,7 @@
             color: var(--color-card);
             border-color: var(--color-incorrect); /* Bordure rouge pour l'option incorrecte */
         }
-        /* FIN DE LA MODIFICATION */
+        /* FIN DE CORRECTION */
 
         .hangman-drawing {
             margin: 20px auto;
@@ -396,8 +372,9 @@
             font-size: 1.1em;
         }
 
+        /* Boutons d'action dans les jeux (Check) - Couleur secondaire (cyan) remplacée par primaire (violet) pour le mode par défaut */
         .game-container button:not(#scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
-            background-color: var(--color-secondary);
+            background-color: var(--color-primary); 
             color: var(--color-card);
             border: none;
             padding: 12px 25px;
@@ -411,13 +388,13 @@
         }
 
         .game-container button:hover:not(:disabled, #scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
-            background-color: #018786;
+            background-color: #A052EE; /* Hover du violet */
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
         }
         
         #scrambleNextBtn, #dictationNextBtn, #matchNextBtn {
-            background-color: var(--color-primary);
+            background-color: var(--color-secondary); /* Le bouton suivant garde le cyan comme couleur secondaire */
             color: var(--color-card);
             border: none;
             padding: 12px 25px;
@@ -431,7 +408,7 @@
         }
 
         #scrambleNextBtn:hover, #dictationNextBtn:hover, #matchNextBtn:hover {
-            background-color: #A052EE;
+            background-color: #018786; /* Hover du cyan */
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
         }
@@ -663,12 +640,8 @@
                 gap: 10px;
             }
             
-            .controls button {
-                width: 40px;
-                height: 40px;
-                font-size: 2em;
-            }
-            
+            /* Flèches de navigation retirées, cette section devient obsolète */
+
             .feedback-buttons {
                  flex-direction: column;
                  gap: 10px;
@@ -776,9 +749,7 @@
                 </div>
             </div>
             <div class="controls">
-                <button id="prevBtn"><i class="fas fa-chevron-left"></i></button>
                 <span id="cardCounter"></span>
-                <button id="nextBtn"><i class="fas fa-chevron-right"></i></button>
             </div>
 
             <div class="feedback-buttons" id="feedbackButtons">
@@ -874,8 +845,7 @@
         const flashcard = document.getElementById('flashcard');
         const frontFace = document.getElementById('front');
         const backFace = document.getElementById('back');
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
+        // prevBtn et nextBtn ont été supprimés
         const cardCounter = document.getElementById('cardCounter');
         const vocabularyList = document.querySelector('.vocabulary-list');
         const feedbackButtons = document.getElementById('feedbackButtons');
@@ -1084,8 +1054,6 @@
                  flashcardGameContainer.style.display = 'flex'; 
                  allContainers.filter(c => c !== flashcardGameContainer).forEach(c => c.style.display = 'none');
                  cardCounter.textContent = '0 / 0';
-                 prevBtn.disabled = true;
-                 nextBtn.disabled = true;
                  feedbackButtons.style.display = 'none';
                  hideAlert();
                  return;
@@ -1135,8 +1103,7 @@
             if (shuffledVocab.length === 0 && wordsToReview.length === 0) {
                 frontFace.textContent = "C'est fini pour cette catégorie !";
                 backFace.textContent = "Réinitialise le jeu ou change de liste.";
-                prevBtn.disabled = true;
-                nextBtn.disabled = true;
+                cardCounter.textContent = '0 / 0';
                 feedbackButtons.style.display = 'none';
                 return;
             }
@@ -1160,10 +1127,7 @@
         }
 
         function updateFlashcardButtons() {
-            prevBtn.disabled = currentCardIndex === 0;
-            nextBtn.disabled = currentCardIndex >= shuffledVocab.length -1;
-            prevBtn.style.display = 'block';
-            nextBtn.style.display = 'block';
+            // Seuls les boutons feedback sont gérés ici
             feedbackButtons.style.display = 'none';
         }
 
@@ -1171,8 +1135,6 @@
             if (vocab.length === 0) return;
             flashcard.classList.toggle('flipped');
             if (flashcard.classList.contains('flipped')) {
-                prevBtn.style.display = 'none';
-                nextBtn.style.display = 'none';
                 feedbackButtons.style.display = 'flex';
                 knewItBtn.style.backgroundColor = 'var(--color-correct)';
                 didntKnowBtn.style.backgroundColor = 'var(--color-incorrect)';
@@ -1208,18 +1170,7 @@
         knewItBtn.addEventListener('click', () => handleFeedback(true));
         didntKnowBtn.addEventListener('click', () => handleFeedback(false));
 
-        nextBtn.addEventListener('click', () => {
-            currentCardIndex++;
-            flashcard.classList.remove('flipped');
-            setTimeout(displayFlashcard, 300);
-        });
-        prevBtn.addEventListener('click', () => {
-            if (currentCardIndex > 0) {
-                currentCardIndex--;
-                flashcard.classList.remove('flipped');
-                setTimeout(displayFlashcard, 300);
-            }
-        });
+        // Les event listeners pour nextBtn et prevBtn ont été retirés.
 
         function generateQuizQuestions() {
             quizQuestions = shuffle(vocab.map(item => {
