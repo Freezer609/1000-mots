@@ -12,10 +12,10 @@
             --color-background: #121212;
             --color-card: #1E1E1E;
             --color-text: #E0E0E0;
-            --color-primary: #BB86FC;
+            --color-primary: #BB86FC; /* Le magenta/violet */
             --color-secondary: #03DAC6;
-            --color-correct: #4CAF50;
-            --color-incorrect: #F44336;
+            --color-correct: #4CAF50; /* Vert */
+            --color-incorrect: #F44336; /* Rouge */
         }
 
         body {
@@ -207,8 +207,6 @@
             margin-bottom: 20px;
         }
         
-        /* Les contrôles de navigation gauche/droite ont été supprimés */
-        
         #cardCounter, .quiz-score, #matchScore {
             font-size: 1.2em;
             font-weight: 700;
@@ -266,8 +264,8 @@
             gap: 15px;
         }
 
-        /* CORRECTION POUR LE MODE QUIZ : FOND TRANSPARENT PAR DÉFAUT */
-        .quiz-options button {
+        /* CORRECTION POUR LE MODE QUIZ : Augmentation de la spécificité avec #quizGameContainer */
+        #quizGameContainer .quiz-options button {
             padding: 15px;
             background-color: transparent; /* Fond transparent initialement */
             color: var(--color-text);
@@ -279,18 +277,18 @@
             font-weight: 500;
         }
         
-        .quiz-options button:hover:not(.correct):not(.incorrect) {
+        #quizGameContainer .quiz-options button:hover:not(.correct):not(.incorrect) {
             background-color: #444444; /* Fond un peu plus foncé au survol */
             border-color: var(--color-primary); /* Bordure violette au survol */
         }
 
-        .quiz-options button.correct {
+        #quizGameContainer .quiz-options button.correct {
             background-color: var(--color-correct);
             color: var(--color-card);
             border-color: var(--color-correct); /* Bordure verte pour l'option correcte */
         }
 
-        .quiz-options button.incorrect {
+        #quizGameContainer .quiz-options button.incorrect {
             background-color: var(--color-incorrect);
             color: var(--color-card);
             border-color: var(--color-incorrect); /* Bordure rouge pour l'option incorrecte */
@@ -372,7 +370,7 @@
             font-size: 1.1em;
         }
 
-        /* Boutons d'action dans les jeux (Check) - Couleur secondaire (cyan) remplacée par primaire (violet) pour le mode par défaut */
+        /* Boutons d'action dans les jeux (Check) */
         .game-container button:not(#scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
             background-color: var(--color-primary); 
             color: var(--color-card);
@@ -388,13 +386,13 @@
         }
 
         .game-container button:hover:not(:disabled, #scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
-            background-color: #A052EE; /* Hover du violet */
+            background-color: #A052EE; 
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
         }
         
         #scrambleNextBtn, #dictationNextBtn, #matchNextBtn {
-            background-color: var(--color-secondary); /* Le bouton suivant garde le cyan comme couleur secondaire */
+            background-color: var(--color-secondary); 
             color: var(--color-card);
             border: none;
             padding: 12px 25px;
@@ -408,7 +406,7 @@
         }
 
         #scrambleNextBtn:hover, #dictationNextBtn:hover, #matchNextBtn:hover {
-            background-color: #018786; /* Hover du cyan */
+            background-color: #018786; 
             transform: translateY(-2px);
             box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
         }
@@ -640,8 +638,6 @@
                 gap: 10px;
             }
             
-            /* Flèches de navigation retirées, cette section devient obsolète */
-
             .feedback-buttons {
                  flex-direction: column;
                  gap: 10px;
@@ -845,7 +841,6 @@
         const flashcard = document.getElementById('flashcard');
         const frontFace = document.getElementById('front');
         const backFace = document.getElementById('back');
-        // prevBtn et nextBtn ont été supprimés
         const cardCounter = document.getElementById('cardCounter');
         const vocabularyList = document.querySelector('.vocabulary-list');
         const feedbackButtons = document.getElementById('feedbackButtons');
@@ -1169,8 +1164,6 @@
         
         knewItBtn.addEventListener('click', () => handleFeedback(true));
         didntKnowBtn.addEventListener('click', () => handleFeedback(false));
-
-        // Les event listeners pour nextBtn et prevBtn ont été retirés.
 
         function generateQuizQuestions() {
             quizQuestions = shuffle(vocab.map(item => {
