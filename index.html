@@ -1563,3 +1563,278 @@
 
             const normalizedWord = hangmanWord.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             const normalizedLetter = letter.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+            if (normalizedWord.includes(normalizedLetter)) {
+                button.style.backgroundColor = varCss.colorCorrect;
+                
+                let updatedDisplay = '';
+                let currentWordGuessed = '';
+                
+                for (let i = 0; i < hangmanWord.length; i++) {
+                    const currentLetter = hangmanWord[i].toUpperCase();
+                    const normalizedCurrentLetter = currentLetter.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+
+                    if (normalizedCurrentLetter === normalizedLetter || guessedLetters.has(normalizedCurrentLetter)) {
+                        updatedDisplay += currentLetter;
+                        currentWordGuessed += currentLetter;
+                        guessedLetters.add(normalizedCurrentLetter);
+                    } else if (!currentLetter.match(/[A-ZÀ-Ÿ]/i)) {
+                         updatedDisplay += currentLetter;
+                         currentWordGuessed += currentLetter;
+                         guessedLetters.add(normalizedCurrentLetter);
+                    }
+                    else {
+                        updatedDisplay += '_';
+                        currentWordGuessed += '_';
+                    }
+                }
+                
+                hangmanWordDiv.textContent = updatedDisplay.split('').join(' ');
+
+                if (!currentWordGuessed.includes('_')) {
+                    displayAlert(`Gagné ! Le mot était : ${hangmanWord}`, varCss.colorCorrect);
+                    disableHangButtons();
+                }
+
+            } else {
+                button.style.backgroundColor = varCss.colorIncorrect;
+                errors++;
+                if (errors <= maxErrors) {
+                    document.getElementById(hangmanParts[errors - 1]).style.display = 'block';
+                }
+
+                if (errors >= maxErrors) {
+                    displayAlert(`Perdu ! Le mot était : ${hangmanWord}`, varCss.colorIncorrect);
+                    disableHangButtons();
+                }
+            }
+        }
+
+        function disableHangButtons() {
+            Array.from(hangmanLettersDiv.children).forEach(btn => btn.disabled = true);
+        }
+
+        function scrambleWord(word) {
+            const letters = word.split('');
+            for (let i = letters.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [letters[i], letters[j]] = [letters[j], letters[i]];
+            }
+            return letters.join('');
+        }
+
+        function startScrambleGame() {
+            showGameContainer(scrambleGameContainer, scrambleModeBtn);
+            if (vocab.length === 0) {
+                scrambleWordDiv.textContent = "Sélectionnez un chapitre pour jouer.";
+                scrambleClueDiv.textContent = "";
+                scrambleInput.value = '';
+                scrambleFeedbackDiv.textContent = '';
+                scrambleNextBtn.style.display = 'none';
+                scrambleCheckBtn.style.display = 'block';
+                return;
+            }
+
+            hideAlert();
+            scrambleInput.value = '';
+            scrambleFeedbackDiv.textContent = '';
+            scrambleNextBtn.style.display = 'none';
+            scrambleCheckBtn.style.display = 'block';
+            
+            const randomPair = shuffleArray([...vocab])[0];
+            currentScrambleWord = randomPair[0];
+            const definition = randomPair[1];
+
+            const scrambled = scrambleWord(currentScrambleWord.toUpperCase().replace(/[\s-]/g, ''));
+
+            scrambleWordDiv.textContent = scrambled.split('').join(' ');
+            scrambleClueDiv.textContent = definition;
+        }
+
+        function checkScrambleAnswer() {
+            const userAnswer = scrambleInput.value.trim().toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\s-]/g, '');
+            const correctWord = currentScrambleWord.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[\s-]/g, '');
+
+            scrambleCheckBtn.style.display = 'none';
+            scrambleNextBtn.style.display = 'block';
+
+            if (userAnswer === correctWord) {
+                scrambleFeedbackDiv.textContent = `Correct! Le mot était bien : ${currentScrambleWord}`;
+                scrambleFeedbackDiv.style.color = varCss.colorCorrect;
+            } else {
+                scrambleFeedbackDiv.textContent = `Faux. Le mot correct était : ${currentScrambleWord}`;
+                scrambleFeedbackDiv.style.color = varCss.colorIncorrect;
+            }
+        }
+
+        scrambleCheckBtn.addEventListener('click', checkScrambleAnswer);
+        scrambleNextBtn.addEventListener('click', startScrambleGame);
+
+        function startDictationGame() {
+            showGameContainer(dictationGameContainer, dictationModeBtn);
+             if (vocab.length === 0) {
+                dictationClueDiv.textContent = "Sélectionnez un chapitre pour jouer.";
+                dictationInput.value = '';
+                dictationFeedbackDiv.textContent = '';
+                dictationNextBtn.style.display = 'none';
+                dictationCheckBtn.style.display = 'block';
+                return;
+            }
+
+            hideAlert();
+            dictationInput.value = '';
+            dictationFeedbackDiv.textContent = '';
+            dictationNextBtn.style.display = 'none';
+            dictationCheckBtn.style.display = 'block';
+
+            const randomPair = shuffleArray([...vocab])[0];
+            currentDictationWord = randomPair[0];
+            const definition = randomPair[1];
+            
+            dictationClueDiv.textContent = definition;
+            dictationInput.focus();
+        }
+
+        function checkDictationAnswer() {
+            const userAnswer = dictationInput.value.trim();
+            const correctWord = currentDictationWord;
+
+            dictationCheckBtn.style.display = 'none';
+            dictationNextBtn.style.display = 'block';
+            
+            if (userAnswer === correctWord) {
+                dictationFeedbackDiv.textContent = `Exact! Le mot était : ${correctWord}`;
+                dictationFeedbackDiv.style.color = varCss.colorCorrect;
+            } else {
+                dictationFeedbackDiv.textContent = `Incorrect. Le mot exact était : ${correctWord}`;
+                dictationFeedbackDiv.style.color = varCss.colorIncorrect;
+            }
+        }
+
+        dictationCheckBtn.addEventListener('click', checkDictationAnswer);
+        dictationNextBtn.addEventListener('click', startDictationGame);
+
+        function startMatchGame() {
+            showGameContainer(matchGameContainer, matchModeBtn);
+            if (vocab.length === 0) {
+                 matchScoreSpan.textContent = "Sélectionnez un chapitre pour jouer.";
+                 wordsColumn.innerHTML = '';
+                 definitionsColumn.innerHTML = '';
+                 return;
+            }
+
+            hideAlert();
+            wordsColumn.innerHTML = '';
+            definitionsColumn.innerHTML = '';
+            matchNextBtn.style.display = 'none';
+            matchedPairsCount = 0;
+            selectedWordItem = null;
+            selectedDefItem = null;
+            updateMatchScore();
+
+            const pairs = shuffleArray([...vocab]).slice(0, MATCH_COUNT);
+            matchPairs = pairs.map(([word, definition]) => ({ word, definition }));
+
+            let words = shuffleArray(matchPairs.map(p => p.word));
+            let definitions = shuffleArray(matchPairs.map(p => p.definition));
+
+            words.forEach(word => createMatchItem(wordsColumn, word, 'word'));
+            definitions.forEach(def => createMatchItem(definitionsColumn, def, 'definition'));
+        }
+
+        function createMatchItem(parent, content, type) {
+            const item = document.createElement('div');
+            item.classList.add('match-item');
+            item.textContent = content;
+            item.dataset.type = type;
+            item.dataset.value = content;
+            item.addEventListener('click', () => handleMatchSelection(item));
+            parent.appendChild(item);
+        }
+
+        function getMatchPair(item1, item2) {
+            const wordValue = item1.dataset.type === 'word' ? item1.dataset.value : item2.dataset.value;
+            const defValue = item1.dataset.type === 'definition' ? item1.dataset.value : item2.dataset.value;
+
+            return matchPairs.find(p => p.word === wordValue && p.definition === defValue);
+        }
+
+        function handleMatchSelection(item) {
+            if (item.classList.contains('matched')) return;
+
+            if (item.dataset.type === 'word') {
+                if (selectedWordItem) selectedWordItem.classList.remove('selected');
+                selectedWordItem = item;
+            } else {
+                if (selectedDefItem) selectedDefItem.classList.remove('selected');
+                selectedDefItem = item;
+            }
+
+            item.classList.add('selected');
+
+            if (selectedWordItem && selectedDefItem) {
+                const wordItem = selectedWordItem;
+                const defItem = selectedDefItem;
+
+                const pair = getMatchPair(wordItem, defItem);
+
+                if (pair) {
+                    matchedPairsCount++;
+                    wordItem.classList.remove('selected');
+                    defItem.classList.remove('selected');
+                    wordItem.classList.add('matched');
+                    defItem.classList.add('matched');
+                    updateMatchScore();
+
+                    if (matchedPairsCount === MATCH_COUNT) {
+                        displayAlert('Félicitations! Toutes les paires trouvées.', varCss.colorCorrect);
+                        matchNextBtn.style.display = 'block';
+                    }
+                } else {
+                    wordItem.classList.add('error');
+                    defItem.classList.add('error');
+                    setTimeout(() => {
+                        wordItem.classList.remove('error', 'selected');
+                        defItem.classList.remove('error', 'selected');
+                    }, 1000);
+                }
+                
+                selectedWordItem = null;
+                selectedDefItem = null;
+            }
+        }
+
+        function updateMatchScore() {
+            matchScoreSpan.textContent = `Paires trouvées : ${matchedPairsCount} / ${MATCH_COUNT}`;
+        }
+
+        matchNextBtn.addEventListener('click', startMatchGame);
+
+        flashcardModeBtn.addEventListener('click', startFlashcardGame);
+        quizModeBtn.addEventListener('click', startQuizGame);
+        hangmanModeBtn.addEventListener('click', startHangGame);
+        scrambleModeBtn.addEventListener('click', startScrambleGame);
+        dictationModeBtn.addEventListener('click', startDictationGame);
+        matchModeBtn.addEventListener('click', startMatchGame);
+
+        document.addEventListener('DOMContentLoaded', () => {
+            generateChapterButtons();
+            hideAlert();
+            
+            frontFace.textContent = "Sélectionnez un chapitre ci-dessus";
+            backFace.textContent = "Puis une section pour commencer à jouer.";
+        });
+
+        const ADMIN_SECRET_KEY = '4dm1nK3y';
+
+        window.unlockAdminBridge = function(key) {
+            if (key === ADMIN_SECRET_KEY) {
+                console.log("%c🔑 Clé Administrateur acceptée. Le pont admin est prêt. Les données sont exposées sur window.adminData.", "color: #03DAC6; font-weight: bold;");
+                window.adminData = ALL_VOCAB_DATA;
+            } else {
+                console.error("Clé secrète incorrecte.");
+            }
+        };
+    </script>
+</body>
+</html>
