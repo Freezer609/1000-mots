@@ -1289,6 +1289,8 @@
             document.querySelectorAll('.chapter-selector button').forEach(btn => btn.classList.remove('active'));
             document.getElementById(chapter.selectorId).classList.add('active');
 
+            trackEvent(`chapitre-${chapterKey}-clicked`);
+
             modalTitle.textContent = `Choisir la section pour ${chapter.title}`;
             modalButtons.innerHTML = '';
             
@@ -1310,6 +1312,8 @@
             hideAllGameContainers();
             currentChapterKey = chapterKey;
             currentSubcategoryKey = subcategoryKey;
+            
+            trackEvent(`section-${chapterKey}-${subcategoryKey}-selected`);
             
             if (typeof ALL_VOCAB_DATA === 'undefined') {
                 displayAlert("Erreur: Fichier de données (vocab_data.js) manquant ou incorrect.", varCss.colorIncorrect);
@@ -1344,6 +1348,7 @@
 
         function startFlashcardGame() {
             showGameContainer(flashcardGameContainer, flashcardModeBtn);
+            trackEvent('mode-cartes-started');
             flashcard.classList.remove('flipped');
             feedbackButtons.style.display = 'none';
             
@@ -1427,6 +1432,7 @@
 
         function startQuizGame() {
             showGameContainer(quizGameContainer, quizModeBtn);
+            trackEvent('mode-quiz-started');
             if (vocab.length === 0) {
                 quizQuestion.textContent = "Sélectionnez un chapitre et une section pour commencer.";
                 quizOptions.innerHTML = '';
@@ -1497,7 +1503,7 @@
                 }
             });
 
-            if (selectedAnswer === correctAnswer) {
+                            if (selectedAnswer === correctAnswer) {
                 score.correct++;
                 displayAlert('Correct!', varCss.colorCorrect);
             } else {
@@ -1514,10 +1520,15 @@
 
         function updateQuizScore() {
             quizScore.textContent = `Score: ${score.correct} / ${score.total}`;
+            
+            if (score.total > 0 && currentQuizQuestionIndex >= quizQuestions.length) {
+                trackEvent(`quiz-completed-score-${score.correct}-sur-${score.total}`);
+            }
         }
 
         function startHangGame() {
             showGameContainer(hangmanGameContainer, hangmanModeBtn);
+            trackEvent('mode-pendu-started');
              if (vocab.length === 0) {
                 hangmanWordDiv.textContent = "Sélectionnez un chapitre pour jouer.";
                 hangmanLettersDiv.innerHTML = '';
@@ -1593,6 +1604,7 @@
 
                 if (!currentWordGuessed.includes('_')) {
                     displayAlert(`Gagné ! Le mot était : ${hangmanWord}`, varCss.colorCorrect);
+                    trackEvent('pendu-won');
                     disableHangButtons();
                 }
 
@@ -1605,6 +1617,7 @@
 
                 if (errors >= maxErrors) {
                     displayAlert(`Perdu ! Le mot était : ${hangmanWord}`, varCss.colorIncorrect);
+                    trackEvent('pendu-lost');
                     disableHangButtons();
                 }
             }
@@ -1625,6 +1638,7 @@
 
         function startScrambleGame() {
             showGameContainer(scrambleGameContainer, scrambleModeBtn);
+            trackEvent('mode-scramble-started');
             if (vocab.length === 0) {
                 scrambleWordDiv.textContent = "Sélectionnez un chapitre pour jouer.";
                 scrambleClueDiv.textContent = "";
@@ -1672,6 +1686,7 @@
 
         function startDictationGame() {
             showGameContainer(dictationGameContainer, dictationModeBtn);
+            trackEvent('mode-dictation-started');
              if (vocab.length === 0) {
                 dictationClueDiv.textContent = "Sélectionnez un chapitre pour jouer.";
                 dictationInput.value = '';
@@ -1716,6 +1731,7 @@
 
         function startMatchGame() {
             showGameContainer(matchGameContainer, matchModeBtn);
+            trackEvent('mode-match-started');
             if (vocab.length === 0) {
                  matchScoreSpan.textContent = "Sélectionnez un chapitre pour jouer.";
                  wordsColumn.innerHTML = '';
@@ -1788,6 +1804,7 @@
 
                     if (matchedPairsCount === MATCH_COUNT) {
                         displayAlert('Félicitations! Toutes les paires trouvées.', varCss.colorCorrect);
+                        trackEvent('match-completed');
                         matchNextBtn.style.display = 'block';
                     }
                 } else {
@@ -1835,6 +1852,18 @@
                 console.error("Clé secrète incorrecte.");
             }
         };
+
+        function trackEvent(eventName) {
+            if (window.goatcounter && window.goatcounter.count) {
+                window.goatcounter.count({
+                    path: eventName,
+                    title: eventName,
+                    event: true,
+                });
+            }
+        }
     </script>
+
+    <script data-goatcounter="https://freezer609.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
