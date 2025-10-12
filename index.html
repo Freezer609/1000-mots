@@ -4,70 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>1000 Mots - Révision Vocabulaire</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/Jp9v0H9S+t5W9qF/0m+y2iN1m2vN0k65B0x1L/K11g+B0+1rA==1" crossorigin="anonymous" referrerpolicy="no-referrer" />
     
     <style>
         :root {
-            --color-background: #0a0a0f;
-            --color-card: #1a1a24;
-            --color-text: #E8E8F0;
-            --color-primary: #BB86FC;
+            --color-background: #121212;
+            --color-card: #1E1E1E;
+            --color-text: #E0E0E0;
+            --color-primary: #BB86FC; 
             --color-secondary: #03DAC6;
             --color-correct: #4CAF50;
             --color-incorrect: #F44336;
-            --color-glow: rgba(187, 134, 252, 0.4);
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        @keyframes gradient-shift {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
-        @keyframes glow-pulse {
-            0%, 100% { box-shadow: 0 0 20px var(--color-glow); }
-            50% { box-shadow: 0 0 40px var(--color-glow), 0 0 60px var(--color-glow); }
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20%, 60% { transform: translateX(-5px); }
-            40%, 80% { transform: translateX(5px); }
-        }
-
-        @keyframes fadeIn {
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
-        }
-
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
         }
 
         body {
             font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0a0a0f 0%, #1a1a24 100%);
+            background-color: var(--color-background);
             color: var(--color-text);
             display: flex;
             justify-content: center;
@@ -75,235 +29,172 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            position: relative;
-            overflow-x: hidden;
-        }
-
-        body::before {
-            content: '';
-            position: fixed;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(187, 134, 252, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
-            animation: float 20s ease-in-out infinite;
-            pointer-events: none;
-            z-index: 0;
+            box-sizing: border-box;
         }
 
         .container {
             width: 100%;
-            max-width: 900px;
-            background: rgba(26, 26, 36, 0.7);
-            backdrop-filter: blur(20px);
-            padding: 50px 40px;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), 0 0 1px rgba(187, 134, 252, 0.2);
+            max-width: 800px;
+            background-color: var(--color-card);
+            padding: 40px;
+            border-radius: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
             text-align: center;
+            transition: opacity 0.3s ease-in-out; 
             min-height: 90vh;
-            position: relative;
-            z-index: 1;
-            border: 1px solid rgba(187, 134, 252, 0.1);
+        }
+
+        .container.fade-out {
+            opacity: 0;
         }
 
         h1 {
-            font-weight: 800;
-            font-size: 3.5em;
-            margin-bottom: 30px;
-            background: linear-gradient(135deg, #BB86FC 0%, #03DAC6 100%);
-            background-size: 200% 200%;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient-shift 3s ease infinite;
+            font-weight: 700;
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: var(--color-text);
             text-align: left;
-            letter-spacing: -1px;
         }
         
         .alert-message {
             color: #FFFFFF;
-            padding: 16px 20px;
-            border-radius: 12px;
+            padding: 15px;
+            border-radius: 10px;
             font-weight: 600;
             margin-bottom: 30px;
             text-align: left;
-            display: none;
+            display: none; 
             font-size: 0.9em;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            animation: slideIn 0.5s ease-out;
         }
 
         .chapter-selector {
             display: flex;
             justify-content: flex-start;
-            gap: 10px;
-            margin-bottom: 35px;
+            gap: 8px;
+            margin-bottom: 30px;
             flex-wrap: wrap;
             padding: 5px 0;
         }
         
         .chapter-selector button {
-            background: rgba(51, 51, 51, 0.6);
-            backdrop-filter: blur(10px);
+            background-color: #333333;
             color: var(--color-text);
-            border: 2px solid transparent;
-            padding: 10px 18px;
-            font-size: 0.95em;
+            border: none;
+            padding: 8px 15px;
+            font-size: 0.9em;
             font-weight: 700;
-            border-radius: 10px;
+            border-radius: 6px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .chapter-selector button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(187, 134, 252, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.4s, height 0.4s;
-        }
-
-        .chapter-selector button:hover::before {
-            width: 300px;
-            height: 300px;
+            transition: background-color 0.3s;
         }
         
         .chapter-selector button:hover {
-            border-color: var(--color-primary);
-            transform: translateY(-2px);
+            background-color: #444444;
         }
 
         .chapter-selector button.active {
-            background: linear-gradient(135deg, var(--color-primary) 0%, #9966CC 100%);
+            background-color: var(--color-primary);
             color: var(--color-card);
-            border-color: var(--color-primary);
-            box-shadow: 0 4px 15px var(--color-glow);
         }
         
         .mode-selector {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             gap: 20px;
-            margin-bottom: 45px;
+            margin-bottom: 40px;
         }
 
         .mode-selector button {
-            background: rgba(44, 44, 44, 0.6);
-            backdrop-filter: blur(15px);
+            background-color: #2C2C2C;
             color: var(--color-primary);
-            border: 2px solid rgba(187, 134, 252, 0.2);
-            padding: 25px 15px;
-            font-size: 1.05em;
+            border: 2px solid #2C2C2C;
+            padding: 20px 10px;
+            font-size: 1.1em;
             font-weight: 700;
-            border-radius: 16px;
+            border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.2s;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            line-height: 1.4;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .mode-selector button::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, transparent 0%, rgba(187, 134, 252, 0.1) 100%);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .mode-selector button:hover::after {
-            opacity: 1;
+            line-height: 1.3;
         }
 
         .mode-selector button:hover {
             border-color: var(--color-primary);
-            transform: translateY(-4px) scale(1.02);
-            box-shadow: 0 8px 25px rgba(187, 134, 252, 0.3);
+            transform: translateY(-2px);
         }
 
         .mode-selector button.active {
-            background: linear-gradient(135deg, var(--color-primary) 0%, #9966CC 100%);
-            color: #FFFFFF;
+            background-color: var(--color-primary);
+            color: var(--color-card);
             border-color: var(--color-primary);
-            box-shadow: 0 8px 30px var(--color-glow);
-            animation: glow-pulse 2s ease-in-out infinite;
+            box-shadow: 0 0 15px rgba(187, 134, 252, 0.5);
         }
         
         .mode-selector button i {
-            font-size: 1.8em;
-            margin-bottom: 8px;
-            transition: transform 0.3s;
-        }
-
-        .mode-selector button:hover i {
-            transform: scale(1.15) rotate(5deg);
+            font-size: 1.5em;
+            margin-bottom: 5px;
         }
         
         .mode-selector button.active i {
-             color: #FFFFFF;
+             color: var(--color-card);
         }
-        
         .mode-selector button:not(.active) i {
              color: var(--color-primary);
         }
         
         .game-container {
             display: none;
-            padding: 30px;
-            background: rgba(44, 44, 44, 0.4);
-            backdrop-filter: blur(20px);
-            border-radius: 16px;
-            margin-bottom: 35px;
-            min-height: 280px;
-            flex-direction: column;
+            padding: 20px;
+            background-color: #2C2C2C;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            min-height: 250px;
+            flex-direction: column; 
             align-items: center;
             justify-content: center;
+            
             opacity: 0;
-            transition: opacity 0.4s ease-in-out;
+            transition: opacity 0.35s ease-in-out;
             pointer-events: none;
-            border: 1px solid rgba(187, 134, 252, 0.15);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            position: relative;
         }
         
         .game-container.active-mode {
              pointer-events: auto;
         }
         
+        #adminHintDisplay {
+            display: none;
+            position: absolute; 
+            top: 10px; 
+            right: 10px; 
+            background-color: var(--color-secondary); 
+            color: var(--color-card); 
+            padding: 5px 10px; 
+            border-radius: 5px; 
+            font-size: 0.8em; 
+            font-weight: bold; 
+            z-index: 10;
+        }
+
         .card-container {
             position: relative;
             width: 100%;
-            max-width: 600px;
-            height: 220px;
-            perspective: 1200px;
-            margin-bottom: 35px;
+            height: 200px;
+            perspective: 1000px;
+            margin-bottom: 30px;
         }
 
         .card {
             position: absolute;
             width: 100%;
             height: 100%;
-            transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.6s;
             transform-style: preserve-3d;
             cursor: pointer;
-        }
-
-        .card:hover {
-            transform: scale(1.02);
         }
 
         .card.flipped {
@@ -315,30 +206,28 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 16px;
+            border-radius: 10px;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 2.2em;
+            font-size: 2em;
             font-weight: 700;
-            padding: 25px;
+            padding: 20px;
             box-sizing: border-box;
             word-wrap: break-word;
             text-align: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         .card-front {
-            background: linear-gradient(135deg, rgba(58, 58, 58, 0.9) 0%, rgba(44, 44, 44, 0.9) 100%);
+            background-color: #3A3A3A;
             color: var(--color-text);
         }
 
         .card-back {
-            background: linear-gradient(135deg, var(--color-primary) 0%, #9966CC 100%);
-            color: #FFFFFF;
+            background-color: var(--color-primary);
+            color: var(--color-card);
             transform: rotateY(180deg);
-            font-size: 1.3em;
+            font-size: 1.2em;
         }
 
         .controls {
@@ -346,83 +235,54 @@
             justify-content: center;
             align-items: center;
             gap: 20px;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         
         #cardCounter, .quiz-score, #matchScore {
-            font-size: 1.3em;
+            font-size: 1.2em;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--color-primary);
         }
 
         .feedback-buttons {
             display: none;
             flex-direction: row;
-            gap: 18px;
-            margin-top: 25px;
+            gap: 15px;
+            margin-top: 20px;
             justify-content: center;
         }
 
         .feedback-buttons button {
             width: 50%;
-            padding: 16px;
+            padding: 15px;
             font-size: 1.1em;
-            border-radius: 12px;
+            border-radius: 8px;
             border: none;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
-            color: #FFFFFF;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .feedback-buttons button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.4s, height 0.4s;
-        }
-
-        .feedback-buttons button:hover::before {
-            width: 300px;
-            height: 300px;
+            color: var(--color-card);
+            transition: background-color 0.3s;
         }
 
         .feedback-buttons .knew-it-btn {
-            background: linear-gradient(135deg, var(--color-correct) 0%, #388E3C 100%);
-            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            background-color: var(--color-correct);
         }
-        
         .feedback-buttons .knew-it-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+            background-color: #388E3C;
         }
 
         .feedback-buttons .didnt-know-it-btn {
-            background: linear-gradient(135deg, var(--color-incorrect) 0%, #D32F2F 100%);
-            box-shadow: 0 4px 15px rgba(244, 67, 54, 0.4);
+            background-color: var(--color-incorrect);
         }
-        
         .feedback-buttons .didnt-know-it-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(244, 67, 54, 0.6);
+            background-color: #D32F2F;
         }
         
         .quiz-question {
-            font-size: 1.9em;
+            font-size: 1.8em;
             font-weight: 700;
-            margin-bottom: 35px;
-            min-height: 90px;
+            margin-bottom: 30px;
+            min-height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -432,376 +292,283 @@
         .quiz-options {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 16px;
+            gap: 15px;
         }
 
         #quizGameContainer .quiz-options button {
-            padding: 18px;
-            background: rgba(58, 58, 58, 0.6);
-            backdrop-filter: blur(10px);
+            padding: 15px;
+            background-color: transparent;
             color: var(--color-text);
             font-size: 1em;
-            border-radius: 12px;
-            transition: all 0.3s ease;
-            border: 2px solid rgba(85, 85, 85, 0.6);
+            border-radius: 8px;
+            transition: background-color 0.2s, border-color 0.2s; 
+            border: 2px solid #555555;
             cursor: pointer;
-            font-weight: 600;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #quizGameContainer .quiz-options button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(187, 134, 252, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.3s, height 0.3s;
-        }
-
-        #quizGameContainer .quiz-options button:hover::before {
-            width: 300px;
-            height: 300px;
+            font-weight: 500;
         }
         
         #quizGameContainer .quiz-options button:hover:not(.correct):not(.incorrect) {
+            background-color: #444444;
             border-color: var(--color-primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(187, 134, 252, 0.3);
         }
 
         #quizGameContainer .quiz-options button.correct {
-            background: linear-gradient(135deg, var(--color-correct) 0%, #388E3C 100%);
-            color: #FFFFFF;
+            background-color: var(--color-correct);
+            color: var(--color-card);
             border-color: var(--color-correct);
-            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.5);
         }
 
         #quizGameContainer .quiz-options button.incorrect {
-            background: linear-gradient(135deg, var(--color-incorrect) 0%, #D32F2F 100%);
-            color: #FFFFFF;
+            background-color: var(--color-incorrect);
+            color: var(--color-card);
             border-color: var(--color-incorrect);
-            box-shadow: 0 4px 20px rgba(244, 67, 54, 0.5);
         }
 
         .hangman-drawing {
             margin: 20px auto;
             max-width: 200px;
         }
-        
         .hangman-word {
-            font-size: 2.8em;
-            letter-spacing: 15px;
-            margin-bottom: 35px;
+            font-size: 2.5em;
+            letter-spacing: 12px;
+            margin-bottom: 30px;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
-        
         .hangman-letters {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
             margin-bottom: 20px;
         }
-        
         .hangman-letters button {
-            width: 48px;
-            height: 48px;
+            width: 45px;
+            height: 45px;
             padding: 0;
-            font-size: 1.15em;
-            font-weight: 700;
-            border-radius: 10px;
-            background: rgba(58, 58, 58, 0.6);
-            backdrop-filter: blur(10px);
+            font-size: 1.1em;
+            border-radius: 8px;
+            background-color: #3A3A3A;
             color: var(--color-text);
-            border: 2px solid rgba(187, 134, 252, 0.2);
+            border: none;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background-color 0.2s;
         }
-        
         .hangman-letters button:hover:not(:disabled) {
-            background: rgba(68, 68, 68, 0.8);
-            border-color: var(--color-primary);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(187, 134, 252, 0.3);
+            background-color: #444444;
         }
-        
         .hangman-letters button:disabled {
-            background: rgba(34, 34, 34, 0.4);
+            background-color: #222222;
             color: #555555;
             cursor: not-allowed;
-            border-color: transparent;
         }
 
         #scrambleInput, #dictationInput {
-            padding: 16px 20px;
+            padding: 15px;
             width: 90%;
-            max-width: 500px;
-            border: 2px solid rgba(187, 134, 252, 0.3);
-            border-radius: 12px;
-            font-size: 1.6em;
+            max-width: 450px;
+            border: 2px solid var(--color-primary);
+            border-radius: 8px;
+            font-size: 1.5em;
             text-align: center;
-            background: rgba(51, 51, 51, 0.6);
-            backdrop-filter: blur(10px);
+            background-color: #333333;
             color: var(--color-text);
-            transition: all 0.3s ease;
-            font-weight: 600;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
 
         #scrambleInput:focus, #dictationInput:focus {
             outline: none;
             border-color: var(--color-secondary);
-            box-shadow: 0 0 20px rgba(3, 218, 198, 0.4), 0 0 40px rgba(3, 218, 198, 0.2);
-            background: rgba(51, 51, 51, 0.8);
+            box-shadow: 0 0 10px rgba(3, 218, 198, 0.5);
         }
 
         .scramble-clue, .dictation-clue {
-            font-size: 1.15em;
-            color: #CCCCCC;
-            margin-bottom: 25px;
-            min-height: 45px;
+            font-size: 1.1em;
+            color: #AAAAAA;
+            margin-bottom: 20px;
+            min-height: 40px;
             display: flex;
             align-items: center;
             justify-content: center;
             text-align: center;
-            font-weight: 500;
         }
         
         .scramble-feedback, .dictation-feedback {
             font-weight: 700;
-            margin-top: 15px;
-            min-height: 25px;
-            font-size: 1.15em;
+            margin-top: 10px;
+            min-height: 20px;
+            font-size: 1.1em;
         }
 
         .game-container button:not(#scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
-            background: linear-gradient(135deg, var(--color-primary) 0%, #9966CC 100%);
-            color: #FFFFFF;
+            background-color: var(--color-primary);
+            color: var(--color-card);
             border: none;
-            padding: 14px 30px;
-            font-size: 1.05em;
+            padding: 12px 25px;
+            font-size: 1em;
             font-weight: 700;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(187, 134, 252, 0.4);
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             margin-top: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .game-container button:not(#scrambleNextBtn, #dictationNextBtn, #matchNextBtn)::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.4s, height 0.4s;
-        }
-
-        .game-container button:not(#scrambleNextBtn, #dictationNextBtn, #matchNextBtn):hover::before {
-            width: 300px;
-            height: 300px;
         }
 
         .game-container button:hover:not(:disabled, #scrambleNextBtn, #dictationNextBtn, #matchNextBtn) {
+            background-color: #A052EE;
             transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(187, 134, 252, 0.6);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
         }
         
         #scrambleNextBtn, #dictationNextBtn, #matchNextBtn {
-            background: linear-gradient(135deg, var(--color-secondary) 0%, #018786 100%);
-            color: #FFFFFF;
+            background-color: var(--color-secondary);
+            color: var(--color-card);
             border: none;
-            padding: 14px 30px;
-            font-size: 1.05em;
+            padding: 12px 25px;
+            font-size: 1em;
             font-weight: 700;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(3, 218, 198, 0.4);
+            transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             margin-top: 20px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        #scrambleNextBtn::before, #dictationNextBtn::before, #matchNextBtn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.4s, height 0.4s;
-        }
-
-        #scrambleNextBtn:hover::before, #dictationNextBtn:hover::before, #matchNextBtn:hover::before {
-            width: 300px;
-            height: 300px;
         }
 
         #scrambleNextBtn:hover, #dictationNextBtn:hover, #matchNextBtn:hover {
+            background-color: #018786;
             transform: translateY(-2px);
-            box-shadow: 0 6px 25px rgba(3, 218, 198, 0.6);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
         }
 
         #matchGrid {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 25px;
-            margin-top: 25px;
+            gap: 20px;
+            margin-top: 20px;
             width: 100%;
         }
 
         .match-column {
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
         }
 
         .match-item {
-            padding: 16px;
-            background: rgba(58, 58, 58, 0.6);
-            backdrop-filter: blur(10px);
+            padding: 15px;
+            background-color: #3A3A3A;
             color: var(--color-text);
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s, transform 0.1s, border 0.3s;
             text-align: left;
-            font-size: 0.95em;
-            min-height: 55px;
+            font-size: 0.9em;
+            min-height: 50px;
             display: flex;
             align-items: center;
             border: 2px solid transparent;
-            font-weight: 500;
         }
 
         .match-item:hover:not(.matched):not(.error) {
-            background: rgba(68, 68, 68, 0.8);
-            border-color: var(--color-primary);
-            transform: translateX(4px);
-            box-shadow: 0 4px 15px rgba(187, 134, 252, 0.3);
+            background-color: #444444;
         }
 
         .match-item.selected {
             border-color: var(--color-primary);
-            background: rgba(187, 134, 252, 0.2);
-            transform: scale(1.03);
-            box-shadow: 0 4px 20px var(--color-glow);
+            background-color: #3A3A3A;
+            transform: scale(1.02);
         }
 
         .match-item.matched {
-            background: linear-gradient(135deg, var(--color-correct) 0%, #388E3C 100%);
-            color: #FFFFFF;
+            background-color: var(--color-correct);
+            color: var(--color-card);
             cursor: default;
             pointer-events: none;
-            opacity: 1;
+            opacity: 1; 
             border-color: transparent;
-            box-shadow: 0 4px 20px rgba(76, 175, 80, 0.4);
         }
 
         .match-item.error {
-            background: linear-gradient(135deg, var(--color-incorrect) 0%, #D32F2F 100%);
-            color: #FFFFFF;
+            background-color: var(--color-incorrect);
+            color: var(--color-card);
             animation: shake 0.5s;
             border-color: transparent;
         }
 
+        @keyframes shake {
+            0%, 100% { transform: translateX(0);
+            }
+            20%, 60% { transform: translateX(-5px);
+            }
+            40%, 80% { transform: translateX(5px);
+            }
+        }
+
         details {
-            margin-top: 30px;
-            background: rgba(44, 44, 44, 0.4);
-            backdrop-filter: blur(15px);
-            border-radius: 14px;
-            overflow: hidden;
-            border: 1px solid rgba(187, 134, 252, 0.1);
+            margin-top: 25px;
+            background-color: #2C2C2C;
+            border-radius: 10px;
+            overflow: hidden; 
         }
         
         summary {
-            font-size: 1.25em;
+            font-size: 1.2em;
             font-weight: 700;
-            padding: 22px;
+            padding: 20px;
             cursor: pointer;
             outline: none;
-            background: linear-gradient(135deg, var(--color-secondary) 0%, #018786 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+            color: var(--color-secondary);
             list-style: none;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.3s ease;
+            transition: background-color 0.2s;
         }
 
         summary:hover {
-            background: rgba(58, 58, 58, 0.6);
-            -webkit-text-fill-color: var(--color-secondary);
+            background-color: #3A3A3A;
         }
 
         summary::after {
             content: '\25BC';
             margin-left: 10px;
             transition: transform 0.3s;
-            color: var(--color-secondary);
         }
 
         details[open] summary::after {
             content: '\25B2';
-            transform: rotate(180deg);
         }
         
         .list-content, .instructions-content {
-            padding: 0 22px 22px 22px;
+            padding: 0 20px 20px 20px;
             text-align: left;
+            
             max-height: 0;
             transition: max-height 0.4s ease-out, border-top 0.4s;
-            overflow: hidden;
+            overflow: hidden; 
             border-top: none;
         }
         
         details[open] .list-content,
         details[open] .instructions-content {
-            max-height: 2500px;
-            border-top: 1px solid rgba(187, 134, 252, 0.2);
+            max-height: 2000px;
+            border-top: 1px solid #444444; 
         }
 
         .vocabulary-list {
             columns: 2;
-            column-gap: 45px;
-            font-size: 0.95em;
-            line-height: 1.9;
-            padding-left: 22px;
-            margin-top: 18px;
+            column-gap: 40px;
+            font-size: 0.9em;
+            line-height: 1.8;
+            padding-left: 20px;
+            margin-top: 15px;
         }
-        
         .vocabulary-list li {
-            margin-bottom: 6px;
-            transition: color 0.2s;
-        }
-
-        .vocabulary-list li:hover {
-            color: var(--color-primary);
+            margin-bottom: 5px;
         }
 
         .instructions-content p {
-            margin-top: 18px;
-            line-height: 1.7;
-            color: #CCCCCC;
+            margin-top: 15px;
+            line-height: 1.6;
         }
 
         .modal {
@@ -813,80 +580,59 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
+            background-color: rgba(0, 0, 0, 0.7);
             justify-content: center;
             align-items: center;
         }
 
         .modal-content {
-            background: rgba(26, 26, 36, 0.95);
-            backdrop-filter: blur(30px);
+            background-color: #2C2C2C;
             margin: auto;
-            padding: 35px;
-            border-radius: 20px;
-            width: 85%;
-            max-width: 450px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.8), 0 0 1px rgba(187, 134, 252, 0.5);
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 400px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
             text-align: center;
             transform: translateY(-20px);
             opacity: 0;
-            animation: fadeIn 0.4s forwards ease-out;
-            border: 1px solid rgba(187, 134, 252, 0.2);
+            animation: fadeIn 0.3s forwards ease-out;
+        }
+
+        @keyframes fadeIn {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         .modal-content h3 {
-            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 28px;
-            font-size: 1.6em;
-            font-weight: 800;
+            color: var(--color-primary);
+            margin-bottom: 25px;
+            font-size: 1.5em;
         }
 
         .modal-buttons {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
 
         .modal-buttons button {
             width: 100%;
-            padding: 16px;
-            font-size: 1.15em;
+            padding: 15px;
+            font-size: 1.1em;
             font-weight: 700;
             border: none;
-            border-radius: 12px;
+            border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            color: #FFFFFF;
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-
-        .modal-buttons button::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            transform: translate(-50%, -50%);
-            transition: width 0.4s, height 0.4s;
-        }
-
-        .modal-buttons button:hover::before {
-            width: 400px;
-            height: 400px;
+            color: var(--color-card);
+            transition: background-color 0.3s, transform 0.2s;
         }
 
         .modal-buttons button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
+            transform: translateY(-2px);
+            opacity: 0.9;
         }
         
         @media (max-width: 600px) {
@@ -894,12 +640,12 @@
                 padding: 10px;
             }
             .container {
-                padding: 25px 18px;
+                padding: 20px 15px;
                 min-height: 95vh;
             }
             h1 {
-                font-size: 2.2em;
-                margin-bottom: 20px;
+                font-size: 2em;
+                margin-bottom: 15px;
             }
             
             .chapter-selector {
@@ -908,119 +654,205 @@
             .chapter-selector button {
                 flex-grow: 1;
                 min-width: unset;
-                padding: 10px 14px;
-                font-size: 0.9em;
+                padding: 10px;
             }
             
             .mode-selector {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 14px;
+                gap: 15px;
             }
             
             .mode-selector button {
-                padding: 18px 12px;
-                font-size: 0.95em;
-            }
-
-            .mode-selector button i {
-                font-size: 1.6em;
+                padding: 15px 10px;
+                font-size: 0.9em;
             }
             
             .card-face {
-                font-size: 1.6em;
-                padding: 20px;
+                font-size: 1.5em;
             }
             
             .card-back {
-                font-size: 1.1em;
+                font-size: 1em;
             }
 
             .controls {
-                gap: 12px;
+                gap: 10px;
             }
             
             .feedback-buttons {
                  flex-direction: column;
-                gap: 12px;
+                gap: 10px;
             }
             
             .feedback-buttons button {
                 width: 100%;
                 font-size: 1em;
-                padding: 14px;
-            }
-
-            .quiz-question {
-                font-size: 1.5em;
-                min-height: 70px;
+                padding: 12px;
             }
 
             .quiz-options {
                 grid-template-columns: 1fr;
-                gap: 12px;
+                gap: 10px;
             }
             .quiz-options button {
-                font-size: 0.95em;
-                padding: 14px;
+                font-size: 0.9em;
+                padding: 12px;
             }
             
             .hangman-word {
-                font-size: 2em;
-                letter-spacing: 10px;
+                font-size: 1.8em;
+                letter-spacing: 8px;
             }
             .hangman-letters button {
-                width: 40px;
-                height: 40px;
-                font-size: 1em;
+                width: 38px;
+                height: 38px;
+                font-size: 0.9em;
             }
 
             #scrambleInput, #dictationInput {
-                font-size: 1.3em;
-                padding: 14px 16px;
+                font-size: 1.2em;
+                padding: 12px;
             }
             .scramble-clue, .dictation-clue {
                 font-size: 1em;
             }
             .game-container button {
-                padding: 12px 22px;
-                font-size: 0.95em;
+                padding: 10px 20px;
+                font-size: 0.9em;
             }
             
             #matchGrid {
                 grid-template-columns: 1fr;
-                gap: 16px;
+                gap: 15px;
             }
             .match-item {
-                font-size: 0.9em;
-                padding: 14px;
-                min-height: 48px;
+                font-size: 0.85em;
+                padding: 12px;
+                min-height: 45px;
             }
 
             summary {
-                font-size: 1.15em;
-                padding: 18px;
+                font-size: 1.1em;
+                padding: 15px;
             }
             .list-content, .instructions-content {
-                padding: 0 18px 18px 18px;
+                padding: 0 15px 15px 15px;
             }
             .vocabulary-list {
-                padding-left: 18px;
-                font-size: 0.9em;
-                column-gap: 30px;
+                padding-left: 15px;
+                font-size: 0.85em;
             }
             .modal-content {
-                width: 92%;
-                padding: 25px;
+                width: 90%;
+                padding: 20px;
             }
             .modal-content h3 {
-                font-size: 1.4em;
-                margin-bottom: 22px;
+                font-size: 1.3em;
+                margin-bottom: 20px;
             }
             .modal-buttons button {
                 font-size: 1em;
-                padding: 14px;
+                padding: 12px;
+            }
+            
+            #adminButton {
+                 bottom: 10px;
+                 right: 10px;
+            }
+
+            #adminPanel {
+                 width: 90%;
+                 max-width: unset;
+                 right: 5%;
+                 left: 5%;
+                 bottom: 60px;
             }
         }
+        
+        #adminButton {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: var(--color-primary);
+            color: var(--color-card);
+            border: none;
+            padding: 10px 15px;
+            font-size: 0.9em;
+            font-weight: 700;
+            border-radius: 5px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            z-index: 50; 
+        }
+
+        #adminButton.unlocked {
+            background-color: var(--color-secondary); 
+        }
+
+        #adminPanel {
+            display: none;
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            width: 300px;
+            background-color: #2C2C2C;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.7);
+            z-index: 50;
+            text-align: left;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        #adminPanel h3 {
+            color: var(--color-secondary);
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        #adminPanel button {
+            width: 100%;
+            background-color: #3A3A3A;
+            color: var(--color-text);
+            padding: 10px;
+            border: 1px solid #444444;
+            border-radius: 5px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        #adminPanel button:hover {
+            background-color: #444444;
+        }
+
+        #adminKeyInput {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid var(--color-primary);
+            background-color: #1E1E1E;
+            color: var(--color-text);
+            box-sizing: border-box; 
+        }
+        
+        #adminButtonFallback {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            color: #444444; 
+            font-size: 1.5em;
+            cursor: pointer;
+            z-index: 50;
+            transition: color 0.2s;
+        }
+        #adminButtonFallback:hover {
+            color: var(--color-primary);
+        }
+        
     </style>
 </head>
 <body>
@@ -1041,6 +873,7 @@
         </div>
 
         <div id="flashcardGameContainer" class="game-container active-mode" style="display: flex; opacity: 1;">
+            <div id="adminHintDisplayFlashcard" style="display: none; position: absolute; top: 10px; right: 10px; background-color: var(--color-secondary); color: var(--color-card); padding: 5px 10px; border-radius: 5px; font-size: 0.8em; font-weight: bold; z-index: 10;"></div>
             <div class="card-container">
                 <div id="flashcard" class="card">
                     <div id="front" class="card-face card-front">Sélectionnez un chapitre ci-dessus</div>
@@ -1057,12 +890,14 @@
         </div>
 
         <div id="quizGameContainer" class="game-container">
+            <div id="adminHintDisplayQuiz" style="display: none; position: absolute; top: 10px; right: 10px; background-color: var(--color-secondary); color: var(--color-card); padding: 5px 10px; border-radius: 5px; font-size: 0.8em; font-weight: bold; z-index: 10;"></div>
             <div id="quizScore" class="quiz-score">Score: 0 / 0</div>
             <div id="quizQuestion" class="quiz-question"></div>
             <div id="quizOptions" class="quiz-options"></div>
         </div>
 
         <div id="hangmanGameContainer" class="game-container">
+             <div id="adminHintDisplayHangman" style="display: none; position: absolute; top: 10px; right: 10px; background-color: var(--color-secondary); color: var(--color-card); padding: 5px 10px; border-radius: 5px; font-size: 0.8em; font-weight: bold; z-index: 10;"></div>
              <svg class="hangman-drawing" viewBox="0 0 200 200">
                 <line x1="10" y1="190" x2="150" y2="190" stroke="#fff" stroke-width="4" />
                 <line x1="40" y1="190" x2="40" y2="20" stroke="#fff" stroke-width="4" />
@@ -1081,6 +916,7 @@
         </div>
 
         <div id="scrambleGameContainer" class="game-container">
+            <div id="adminHintDisplayScramble" style="display: none; position: absolute; top: 10px; right: 10px; background-color: var(--color-secondary); color: var(--color-card); padding: 5px 10px; border-radius: 5px; font-size: 0.8em; font-weight: bold; z-index: 10;"></div>
             <div id="scrambleWord" class="quiz-question"></div>
             <div id="scrambleClue" class="scramble-clue"></div>
             <input type="text" id="scrambleInput" placeholder="Écris le mot ici..." autocomplete="off">
@@ -1090,6 +926,7 @@
         </div>
 
         <div id="dictationGameContainer" class="game-container">
+            <div id="adminHintDisplayDictation" style="display: none; position: absolute; top: 10px; right: 10px; background-color: var(--color-secondary); color: var(--color-card); padding: 5px 10px; border-radius: 5px; font-size: 0.8em; font-weight: bold; z-index: 10;"></div>
             <div id="dictationClue" class="dictation-clue"></div>
             <input type="text" id="dictationInput" placeholder="Écris le mot exact ici..." autocomplete="off">
             <button id="dictationCheckBtn">Vérifier</button>
@@ -1098,6 +935,7 @@
         </div>
 
         <div id="matchGameContainer" class="game-container">
+            <div id="adminHintDisplayMatch" style="display: none; position: absolute; top: 10px; right: 10px; background-color: var(--color-secondary); color: var(--color-card); padding: 5px 10px; border-radius: 5px; font-size: 0.8em; font-weight: bold; z-index: 10;"></div>
             <div id="matchScore">Paires trouvées : 0 / 6</div>
             <div id="matchGrid">
                 <div id="wordsColumn" class="match-column"></div>
@@ -1106,7 +944,7 @@
             <button id="matchNextBtn" style="display:none; margin-top: 30px;">Prochain Match &rarr;</button>
         </div>
 
-        <details>
+        <details id="vocabDetails">
             <summary id="listTitle">Liste Complète</summary>
             <div class="list-content">
                 <ul class="vocabulary-list"></ul>
@@ -1134,6 +972,34 @@
             <h3 id="modalTitle"></h3>
             <div id="modalButtons" class="modal-buttons">
             </div>
+        </div>
+    </div>
+    
+    <button id="adminButton">Admin</button>
+    <div id="adminButtonFallback" style="display: none;" onclick="toggleAdminButtonVisibility(true)">...</div>
+
+    <div id="adminPanel">
+        <h3 id="panelTitle">Accès Admin (Verrouillé)</h3>
+        <input type="password" id="adminKeyInput" placeholder="Entrez la clé secrète">
+        <button id="adminUnlockBtn">Déverrouiller</button>
+
+        <div id="adminContent" style="display: none; margin-top: 15px;">
+            <p style="color: var(--color-primary); font-weight: bold; margin-bottom: 15px;">Le bridge est actif !</p>
+            
+            <button id="toggleCheatModeBtn" style="background-color: var(--color-incorrect); color: var(--color-card);">Activer Mode Cheat</button>
+            <button id="toggleVocabListBtn">Afficher/Cacher la Liste</button>
+            <button id="restartGameBtn">Relancer le Jeu de A à Z</button>
+            <button id="resetFlashcardProgressBtn">Réinitialiser Progression Flashcard</button>
+
+            <hr style="margin: 10px 0; border-top: 1px solid #444;">
+            
+            <button id="showCurrentVocabBtn">Vocabulaire Actif (Console)</button>
+            <button id="logAllDataBtn">TOUTES les Données (Console)</button>
+            
+            <hr style="margin: 10px 0; border-top: 1px solid var(--color-incorrect);">
+            
+            <button id="hideAdminButtonBtn" style="background-color: var(--color-incorrect); color: var(--color-card);">Masquer le Bouton Admin</button>
+            
         </div>
     </div>
 
@@ -1195,17 +1061,41 @@
         const listTitleSummary = document.getElementById('listTitle');
         const alertMessageDiv = document.getElementById('alertMessage');
         const alertTextP = document.getElementById('alertText');
+        const vocabDetails = document.getElementById('vocabDetails');
 
         const categoryModal = document.getElementById('categoryModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalButtons = document.getElementById('modalButtons');
+        
+        const adminButton = document.getElementById('adminButton');
+        const adminPanel = document.getElementById('adminPanel');
+        const adminUnlockBtn = document.getElementById('adminUnlockBtn');
+        const adminKeyInput = document.getElementById('adminKeyInput');
+        const adminContent = document.getElementById('adminContent');
+        const panelTitle = document.getElementById('panelTitle');
+        const showCurrentVocabBtn = document.getElementById('showCurrentVocabBtn');
+        const restartGameBtn = document.getElementById('restartGameBtn');
+        const logAllDataBtn = document.getElementById('logAllDataBtn');
+        const toggleCheatModeBtn = document.getElementById('toggleCheatModeBtn');
+        const hideAdminButtonBtn = document.getElementById('hideAdminButtonBtn');
+        const adminButtonFallback = document.getElementById('adminButtonFallback');
+        const toggleVocabListBtn = document.getElementById('toggleVocabListBtn');
+        const resetFlashcardProgressBtn = document.getElementById('resetFlashcardProgressBtn');
+        
+        const adminHintDisplayFlashcard = document.getElementById('adminHintDisplayFlashcard');
+        const adminHintDisplayQuiz = document.getElementById('adminHintDisplayQuiz');
+        const adminHintDisplayHangman = document.getElementById('adminHintDisplayHangman');
+        const adminHintDisplayScramble = document.getElementById('adminHintDisplayScramble');
+        const adminHintDisplayDictation = document.getElementById('adminHintDisplayDictation');
+        const adminHintDisplayMatch = document.getElementById('adminHintDisplayMatch');
 
         const varCss = {
             colorCorrect: getComputedStyle(document.documentElement).getPropertyValue('--color-correct').trim(),
             colorIncorrect: getComputedStyle(document.documentElement).getPropertyValue('--color-incorrect').trim(),
             colorPrimary: getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim(),
             colorCard: getComputedStyle(document.documentElement).getPropertyValue('--color-card').trim(),
-            colorText: getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim()
+            colorText: getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim(),
+            colorSecondary: getComputedStyle(document.documentElement).getPropertyValue('--color-secondary').trim()
         };
 
         let vocab = [];
@@ -1216,12 +1106,15 @@
         let shuffledVocab = [];
         let currentCardIndex = 0;
         let masteredWords = new Set();
+        let isAdminUnlocked = false;
+        let isCheatModeEnabled = false;
 
         let currentQuizQuestionIndex = 0;
         let quizQuestions = [];
         let score = { correct: 0, total: 0 };
 
         let hangmanWord = '';
+        let hangmanCorrectAnswer = '';
         let guessedLetters = new Set();
         const maxErrors = hangmanParts.length;
         let errors = 0;
@@ -1234,6 +1127,7 @@
         let selectedWordItem = null;
         let selectedDefItem = null;
         const MATCH_COUNT = 6;
+
 
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -1260,6 +1154,19 @@
                 container.classList.add('active-mode');
                 container.style.opacity = '1';
             }, 50);
+            updateAdminHint('');
+        }
+        
+        function updateAdminHint(hintText) {
+            const activeHintDisplay = document.querySelector('.game-container.active-mode div[id^="adminHintDisplay"]');
+            if (activeHintDisplay) {
+                 if (isCheatModeEnabled && hintText) {
+                     activeHintDisplay.textContent = `Indice Admin : ${hintText}`;
+                     activeHintDisplay.style.display = 'block';
+                 } else {
+                     activeHintDisplay.style.display = 'none';
+                 }
+            }
         }
 
         function displayAlert(message, color) {
@@ -1286,10 +1193,9 @@
         }
 
         function openCategoryModal(chapterKey, chapter) {
+            
             document.querySelectorAll('.chapter-selector button').forEach(btn => btn.classList.remove('active'));
             document.getElementById(chapter.selectorId).classList.add('active');
-
-            trackEvent(`chapitre-${chapterKey}-clicked`);
 
             modalTitle.textContent = `Choisir la section pour ${chapter.title}`;
             modalButtons.innerHTML = '';
@@ -1298,7 +1204,7 @@
                 const button = document.createElement('button');
                 button.textContent = subcategory.name;
                 button.style.backgroundColor = subcategory.color;
-                button.style.color = '#FFFFFF';
+                button.style.color = '#1E1E1E';
                 button.addEventListener('click', () => {
                     changeVocabulary(chapterKey, subKey);
                     categoryModal.style.display = 'none';
@@ -1312,8 +1218,6 @@
             hideAllGameContainers();
             currentChapterKey = chapterKey;
             currentSubcategoryKey = subcategoryKey;
-            
-            trackEvent(`section-${chapterKey}-${subcategoryKey}-selected`);
             
             if (typeof ALL_VOCAB_DATA === 'undefined') {
                 displayAlert("Erreur: Fichier de données (vocab_data.js) manquant ou incorrect.", varCss.colorIncorrect);
@@ -1348,7 +1252,6 @@
 
         function startFlashcardGame() {
             showGameContainer(flashcardGameContainer, flashcardModeBtn);
-            trackEvent('mode-cartes-started');
             flashcard.classList.remove('flipped');
             feedbackButtons.style.display = 'none';
             
@@ -1356,6 +1259,7 @@
                  frontFace.textContent = "Sélectionnez un chapitre et une section.";
                  backFace.textContent = "Le jeu commencera après la sélection.";
                  cardCounter.textContent = "";
+                 updateAdminHint('');
                  return;
             }
 
@@ -1370,6 +1274,7 @@
                 frontFace.textContent = "Aucun mot à réviser.";
                 backFace.textContent = "";
                 cardCounter.textContent = "0 / 0";
+                updateAdminHint('');
                 return;
             }
             
@@ -1380,6 +1285,7 @@
             
             flashcard.classList.remove('flipped');
             feedbackButtons.style.display = 'none';
+            updateAdminHint(definition);
         }
 
         function flipCard() {
@@ -1403,13 +1309,14 @@
                 let insertIndex = currentCardIndex + Math.floor(Math.random() * (shuffledVocab.length - currentCardIndex)) + 1;
                 if (insertIndex > shuffledVocab.length) insertIndex = shuffledVocab.length;
                 shuffledVocab.splice(insertIndex, 0, wordToReinsert);
-                currentCardIndex--;
+                currentCardIndex--; 
             }
 
             currentCardIndex++;
             if (currentCardIndex < shuffledVocab.length) {
                 displayCard();
             } else {
+                
                 shuffledVocab = shuffledVocab.filter(pair => !masteredWords.has(pair[0]));
                 if (shuffledVocab.length > 0) {
                     currentCardIndex = 0;
@@ -1422,6 +1329,7 @@
                     cardCounter.textContent = "";
                     feedbackButtons.style.display = 'none';
                     flashcard.classList.remove('flipped');
+                    updateAdminHint('');
                 }
             }
         }
@@ -1432,11 +1340,11 @@
 
         function startQuizGame() {
             showGameContainer(quizGameContainer, quizModeBtn);
-            trackEvent('mode-quiz-started');
             if (vocab.length === 0) {
                 quizQuestion.textContent = "Sélectionnez un chapitre et une section pour commencer.";
                 quizOptions.innerHTML = '';
                 quizScore.textContent = "Score: 0 / 0";
+                updateAdminHint('');
                 return;
             }
 
@@ -1474,7 +1382,8 @@
             hideAlert();
             if (currentQuizQuestionIndex >= quizQuestions.length) {
                 quizQuestion.textContent = `Quiz terminé! Ton score final : ${score.correct} / ${score.total}`;
-                quizOptions.innerHTML = `<button onclick="startQuizGame()" style="background: linear-gradient(135deg, var(--color-secondary) 0%, #018786 100%); color: #FFFFFF; border: none;">Recommencer le Quiz</button>`;
+                quizOptions.innerHTML = `<button onclick="startQuizGame()" style="background-color: ${varCss.colorSecondary}; color: ${varCss.colorCard}; border: none;">Recommencer le Quiz</button>`;
+                updateAdminHint('');
                 return;
             }
 
@@ -1489,6 +1398,7 @@
                 quizOptions.appendChild(button);
             });
             updateQuizScore();
+            updateAdminHint(q.correctAnswer);
         }
 
         function checkQuizAnswer(button, selectedAnswer, correctAnswer) {
@@ -1503,7 +1413,7 @@
                 }
             });
 
-                            if (selectedAnswer === correctAnswer) {
+            if (selectedAnswer === correctAnswer) {
                 score.correct++;
                 displayAlert('Correct!', varCss.colorCorrect);
             } else {
@@ -1511,6 +1421,7 @@
             }
             
             updateQuizScore();
+            updateAdminHint(correctAnswer);
             
             setTimeout(() => {
                 currentQuizQuestionIndex++;
@@ -1520,36 +1431,41 @@
 
         function updateQuizScore() {
             quizScore.textContent = `Score: ${score.correct} / ${score.total}`;
-            
-            if (score.total > 0 && currentQuizQuestionIndex >= quizQuestions.length) {
-                trackEvent(`quiz-completed-score-${score.correct}-sur-${score.total}`);
-            }
         }
 
         function startHangGame() {
             showGameContainer(hangmanGameContainer, hangmanModeBtn);
-            trackEvent('mode-pendu-started');
              if (vocab.length === 0) {
                 hangmanWordDiv.textContent = "Sélectionnez un chapitre pour jouer.";
                 hangmanLettersDiv.innerHTML = '';
+                updateAdminHint('');
                 return;
             }
 
             hideAlert();
             
             const randomPair = shuffleArray([...vocab])[0];
-            hangmanWord = randomPair[0].toUpperCase();
+            hangmanCorrectAnswer = randomPair[0];
+            hangmanWord = randomPair[0].toUpperCase(); 
             guessedLetters = new Set();
             errors = 0;
             
             hangmanParts.forEach(id => document.getElementById(id).style.display = 'none');
             
-            hangmanWordDiv.textContent = hangmanWord.split('').map(char => {
-                if (char.match(/[A-ZÀ-Ÿ]/i)) return '_';
-                return char;
-            }).join(' ');
+            let initialDisplay = '';
+            for (const char of hangmanWord) {
+                if (char.match(/[A-ZÀ-Ÿ]/i)) {
+                    initialDisplay += '_';
+                } else {
+                    initialDisplay += char;
+                    guessedLetters.add(char.toUpperCase());
+                }
+            }
+
+            hangmanWordDiv.textContent = initialDisplay.split('').join(' ');
 
             generateHangButtons();
+            updateAdminHint(hangmanCorrectAnswer);
         }
 
         function generateHangButtons() {
@@ -1574,38 +1490,33 @@
 
             const normalizedWord = hangmanWord.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             const normalizedLetter = letter.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            
+            guessedLetters.add(normalizedLetter);
 
             if (normalizedWord.includes(normalizedLetter)) {
                 button.style.backgroundColor = varCss.colorCorrect;
                 
                 let updatedDisplay = '';
-                let currentWordGuessed = '';
+                let wordComplete = true;
                 
                 for (let i = 0; i < hangmanWord.length; i++) {
                     const currentLetter = hangmanWord[i].toUpperCase();
                     const normalizedCurrentLetter = currentLetter.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-                    if (normalizedCurrentLetter === normalizedLetter || guessedLetters.has(normalizedCurrentLetter)) {
+                    if (guessedLetters.has(normalizedCurrentLetter) || !currentLetter.match(/[A-ZÀ-Ÿ]/i)) {
                         updatedDisplay += currentLetter;
-                        currentWordGuessed += currentLetter;
-                        guessedLetters.add(normalizedCurrentLetter);
-                    } else if (!currentLetter.match(/[A-ZÀ-Ÿ]/i)) {
-                         updatedDisplay += currentLetter;
-                         currentWordGuessed += currentLetter;
-                         guessedLetters.add(normalizedCurrentLetter);
-                    }
-                    else {
+                    } else {
                         updatedDisplay += '_';
-                        currentWordGuessed += '_';
+                        wordComplete = false;
                     }
                 }
                 
                 hangmanWordDiv.textContent = updatedDisplay.split('').join(' ');
 
-                if (!currentWordGuessed.includes('_')) {
-                    displayAlert(`Gagné ! Le mot était : ${hangmanWord}`, varCss.colorCorrect);
-                    trackEvent('pendu-won');
+                if (wordComplete) {
+                    displayAlert(`Gagné ! Le mot était : ${hangmanCorrectAnswer}`, varCss.colorCorrect);
                     disableHangButtons();
+                    updateAdminHint(hangmanCorrectAnswer);
                 }
 
             } else {
@@ -1616,9 +1527,9 @@
                 }
 
                 if (errors >= maxErrors) {
-                    displayAlert(`Perdu ! Le mot était : ${hangmanWord}`, varCss.colorIncorrect);
-                    trackEvent('pendu-lost');
+                    displayAlert(`Perdu ! Le mot était : ${hangmanCorrectAnswer}`, varCss.colorIncorrect);
                     disableHangButtons();
+                    updateAdminHint(hangmanCorrectAnswer);
                 }
             }
         }
@@ -1638,7 +1549,6 @@
 
         function startScrambleGame() {
             showGameContainer(scrambleGameContainer, scrambleModeBtn);
-            trackEvent('mode-scramble-started');
             if (vocab.length === 0) {
                 scrambleWordDiv.textContent = "Sélectionnez un chapitre pour jouer.";
                 scrambleClueDiv.textContent = "";
@@ -1646,6 +1556,7 @@
                 scrambleFeedbackDiv.textContent = '';
                 scrambleNextBtn.style.display = 'none';
                 scrambleCheckBtn.style.display = 'block';
+                updateAdminHint('');
                 return;
             }
 
@@ -1659,10 +1570,12 @@
             currentScrambleWord = randomPair[0];
             const definition = randomPair[1];
 
-            const scrambled = scrambleWord(currentScrambleWord.toUpperCase().replace(/[\s-]/g, ''));
+            const scrambled = scrambleWord(currentScrambleWord.toUpperCase().replace(/[\s-]/g, '')); 
 
             scrambleWordDiv.textContent = scrambled.split('').join(' ');
             scrambleClueDiv.textContent = definition;
+            scrambleInput.focus();
+            updateAdminHint(currentScrambleWord);
         }
 
         function checkScrambleAnswer() {
@@ -1679,6 +1592,7 @@
                 scrambleFeedbackDiv.textContent = `Faux. Le mot correct était : ${currentScrambleWord}`;
                 scrambleFeedbackDiv.style.color = varCss.colorIncorrect;
             }
+            updateAdminHint(currentScrambleWord);
         }
 
         scrambleCheckBtn.addEventListener('click', checkScrambleAnswer);
@@ -1686,13 +1600,13 @@
 
         function startDictationGame() {
             showGameContainer(dictationGameContainer, dictationModeBtn);
-            trackEvent('mode-dictation-started');
              if (vocab.length === 0) {
                 dictationClueDiv.textContent = "Sélectionnez un chapitre pour jouer.";
                 dictationInput.value = '';
                 dictationFeedbackDiv.textContent = '';
                 dictationNextBtn.style.display = 'none';
                 dictationCheckBtn.style.display = 'block';
+                updateAdminHint('');
                 return;
             }
 
@@ -1708,6 +1622,7 @@
             
             dictationClueDiv.textContent = definition;
             dictationInput.focus();
+            updateAdminHint(currentDictationWord);
         }
 
         function checkDictationAnswer() {
@@ -1724,6 +1639,7 @@
                 dictationFeedbackDiv.textContent = `Incorrect. Le mot exact était : ${correctWord}`;
                 dictationFeedbackDiv.style.color = varCss.colorIncorrect;
             }
+            updateAdminHint(correctWord);
         }
 
         dictationCheckBtn.addEventListener('click', checkDictationAnswer);
@@ -1731,11 +1647,11 @@
 
         function startMatchGame() {
             showGameContainer(matchGameContainer, matchModeBtn);
-            trackEvent('mode-match-started');
             if (vocab.length === 0) {
                  matchScoreSpan.textContent = "Sélectionnez un chapitre pour jouer.";
                  wordsColumn.innerHTML = '';
                  definitionsColumn.innerHTML = '';
+                 updateAdminHint('');
                  return;
             }
 
@@ -1756,6 +1672,9 @@
 
             words.forEach(word => createMatchItem(wordsColumn, word, 'word'));
             definitions.forEach(def => createMatchItem(definitionsColumn, def, 'definition'));
+            
+            const matchHint = matchPairs.map(p => `${p.word} = ${p.definition}`).join(' | ');
+            updateAdminHint(matchHint);
         }
 
         function createMatchItem(parent, content, type) {
@@ -1804,8 +1723,8 @@
 
                     if (matchedPairsCount === MATCH_COUNT) {
                         displayAlert('Félicitations! Toutes les paires trouvées.', varCss.colorCorrect);
-                        trackEvent('match-completed');
                         matchNextBtn.style.display = 'block';
+                        updateAdminHint('');
                     }
                 } else {
                     wordItem.classList.add('error');
@@ -1835,35 +1754,144 @@
         matchModeBtn.addEventListener('click', startMatchGame);
 
         document.addEventListener('DOMContentLoaded', () => {
-            generateChapterButtons();
+            generateChapterButtons(); 
             hideAlert();
             
             frontFace.textContent = "Sélectionnez un chapitre ci-dessus";
             backFace.textContent = "Puis une section pour commencer à jouer.";
         });
-
+        
         const ADMIN_SECRET_KEY = '4dm1nK3y';
+
+        adminButton.addEventListener('click', () => {
+            if (adminPanel.style.display === 'block') {
+                adminPanel.style.display = 'none';
+            } else {
+                adminPanel.style.display = 'block';
+                adminKeyInput.focus();
+            }
+        });
 
         window.unlockAdminBridge = function(key) {
             if (key === ADMIN_SECRET_KEY) {
-                console.log("%c🔑 Clé Administrateur acceptée. Le pont admin est prêt. Les données sont exposées sur window.adminData.", "color: #03DAC6; font-weight: bold;");
+                console.log("%c🔑 Clé Administrateur acceptée. Le pont admin est actif.", "color: " + varCss.colorSecondary + "; font-weight: bold;");
+                
                 window.adminData = ALL_VOCAB_DATA;
+                
+                adminKeyInput.style.display = 'none';
+                adminUnlockBtn.style.display = 'none';
+                adminContent.style.display = 'block';
+                panelTitle.textContent = "Panel Admin (Déverrouillé)";
+                adminButton.classList.add('unlocked');
+                adminKeyInput.value = '';
+                isAdminUnlocked = true;
+                
+                return true;
             } else {
                 console.error("Clé secrète incorrecte.");
+                adminKeyInput.value = ''; 
+                displayAlert("Clé admin incorrecte. Essayez à nouveau.", varCss.colorIncorrect);
+                return false;
             }
         };
 
-        function trackEvent(eventName) {
-            if (window.goatcounter && window.goatcounter.count) {
-                window.goatcounter.count({
-                    path: eventName,
-                    title: eventName,
-                    event: true,
-                });
+        adminUnlockBtn.addEventListener('click', () => {
+            unlockAdminBridge(adminKeyInput.value.trim());
+        });
+        
+        function toggleAdminButtonVisibility(show) {
+            if (show) {
+                adminButton.style.display = 'block';
+                adminButtonFallback.style.display = 'none';
+                hideAdminButtonBtn.textContent = 'Masquer le Bouton Admin';
+                hideAdminButtonBtn.style.backgroundColor = varCss.colorIncorrect;
+                displayAlert("Bouton Admin flottant réaffiché.", varCss.colorSecondary);
+            } else {
+                adminButton.style.display = 'none';
+                adminPanel.style.display = 'none';
+                adminButtonFallback.style.display = 'block';
+                hideAdminButtonBtn.textContent = 'Afficher le Bouton Admin';
+                hideAdminButtonBtn.style.backgroundColor = varCss.colorCorrect;
+                displayAlert("Bouton Admin flottant masqué.", varCss.colorIncorrect);
             }
         }
-    </script>
 
-    <script data-goatcounter="https://freezer609.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+        hideAdminButtonBtn.addEventListener('click', () => {
+            if (adminButton.style.display === 'none') {
+                toggleAdminButtonVisibility(true);
+            } else {
+                toggleAdminButtonVisibility(false);
+            }
+        });
+        
+        toggleCheatModeBtn.addEventListener('click', () => {
+            isCheatModeEnabled = !isCheatModeEnabled;
+            if (isCheatModeEnabled) {
+                 toggleCheatModeBtn.textContent = 'Mode Cheat ACTIF (CLIQUER pour DÉSACTIVER)';
+                 toggleCheatModeBtn.style.backgroundColor = varCss.colorCorrect;
+                 displayAlert("Mode Cheat activé : les réponses apparaissent en haut à droite des jeux.", varCss.colorCorrect);
+            } else {
+                 toggleCheatModeBtn.textContent = 'Activer Mode Cheat';
+                 toggleCheatModeBtn.style.backgroundColor = varCss.colorIncorrect;
+                 displayAlert("Mode Cheat désactivé.", varCss.colorIncorrect);
+            }
+            const activeModeBtn = document.querySelector('.mode-selector button.active');
+            if (activeModeBtn) {
+                 activeModeBtn.click();
+            } else {
+                 updateAdminHint('');
+            }
+        });
+        
+        toggleVocabListBtn.addEventListener('click', () => {
+            if (vocabDetails.open) {
+                 vocabDetails.open = false;
+                 toggleVocabListBtn.textContent = 'Afficher la Liste Complète';
+            } else {
+                 vocabDetails.open = true;
+                 toggleVocabListBtn.textContent = 'Cacher la Liste Complète';
+            }
+        });
+
+        resetFlashcardProgressBtn.addEventListener('click', () => {
+            masteredWords = new Set();
+            if (shuffledVocab.length > 0) {
+                 shuffledVocab = shuffleArray([...vocab]);
+                 currentCardIndex = 0;
+                 displayCard();
+            }
+            displayAlert("Progression Flashcard réinitialisée (tous les mots sont réintégrés).", varCss.colorSecondary);
+            adminPanel.style.display = 'none';
+        });
+
+        showCurrentVocabBtn.addEventListener('click', () => {
+             console.log("%c--- Vocabulaire ACTUELLEMENT ACTIF dans le jeu ---", "color: " + varCss.colorPrimary + "; font-weight: bold;");
+             if (vocab.length > 0) {
+                 console.log(vocab);
+                 displayAlert(`Vocabulaire actif logué dans la console (${vocab.length} paires).`, varCss.colorPrimary);
+             } else {
+                 console.log("Aucun vocabulaire actif.");
+                 displayAlert("Aucun vocabulaire actif.", varCss.colorIncorrect);
+             }
+        });
+        
+        restartGameBtn.addEventListener('click', () => {
+            if (currentChapterKey && currentSubcategoryKey) {
+                changeVocabulary(currentChapterKey, currentSubcategoryKey);
+                displayAlert(`Jeu redémarré avec le chapitre : ${ALL_VOCAB_DATA[currentChapterKey].title}`, varCss.colorSecondary);
+                adminPanel.style.display = 'none';
+            } else {
+                startFlashcardGame(); 
+                displayAlert("Interface de jeu redémarrée (choisir un chapitre).", varCss.colorSecondary);
+                adminPanel.style.display = 'none';
+            }
+        });
+
+        logAllDataBtn.addEventListener('click', () => {
+            console.log("%c--- TOUTES les Données de ALL_VOCAB_DATA ---", "color: " + varCss.colorSecondary + "; font-weight: bold;");
+            console.log(window.adminData);
+            displayAlert("TOUTES les données du fichier vocab_data.js ont été loguées dans la console.", varCss.colorPrimary);
+        });
+    </script>
 </body>
 </html>
