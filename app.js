@@ -54,6 +54,7 @@ const chapterSelectorDiv = document.getElementById('chapterSelector');
 const listTitleSummary = document.getElementById('listTitle');
 const alertMessageDiv = document.getElementById('alertMessage');
 const alertTextP = document.getElementById('alertText');
+const vocabDetails = document.getElementById('vocabDetails');
 
 const categoryModal = document.getElementById('categoryModal');
 const modalTitle = document.getElementById('modalTitle');
@@ -64,7 +65,8 @@ const varCss = {
     colorIncorrect: getComputedStyle(document.documentElement).getPropertyValue('--color-incorrect').trim(),
     colorPrimary: getComputedStyle(document.documentElement).getPropertyValue('--color-primary').trim(),
     colorCard: getComputedStyle(document.documentElement).getPropertyValue('--color-card').trim(),
-    colorText: getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim()
+    colorText: getComputedStyle(document.documentElement).getPropertyValue('--color-text').trim(),
+    colorSecondary: getComputedStyle(document.documentElement).getPropertyValue('--color-secondary').trim()
 };
 
 let vocab = [];
@@ -81,6 +83,7 @@ let quizQuestions = [];
 let score = { correct: 0, total: 0 };
 
 let hangmanWord = '';
+let hangmanCorrectAnswer = '';
 let guessedLetters = new Set();
 const maxErrors = hangmanParts.length;
 let errors = 0;
@@ -93,6 +96,7 @@ let matchedPairsCount = 0;
 let selectedWordItem = null;
 let selectedDefItem = null;
 const MATCH_COUNT = 6;
+
 
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -145,10 +149,9 @@ function generateChapterButtons() {
 }
 
 function openCategoryModal(chapterKey, chapter) {
+    
     document.querySelectorAll('.chapter-selector button').forEach(btn => btn.classList.remove('active'));
     document.getElementById(chapter.selectorId).classList.add('active');
-
-    trackEvent(`chapitre-${chapterKey}-clicked`);
 
     modalTitle.textContent = `Choisir la section pour ${chapter.title}`;
     modalButtons.innerHTML = '';
@@ -157,7 +160,7 @@ function openCategoryModal(chapterKey, chapter) {
         const button = document.createElement('button');
         button.textContent = subcategory.name;
         button.style.backgroundColor = subcategory.color;
-        button.style.color = '#FFFFFF';
+        button.style.color = '#1E1E1E';
         button.addEventListener('click', () => {
             changeVocabulary(chapterKey, subKey);
             categoryModal.style.display = 'none';
@@ -171,8 +174,6 @@ function changeVocabulary(chapterKey, subcategoryKey) {
     hideAllGameContainers();
     currentChapterKey = chapterKey;
     currentSubcategoryKey = subcategoryKey;
-    
-    trackEvent(`section-${chapterKey}-${subcategoryKey}-selected`);
     
     if (typeof ALL_VOCAB_DATA === 'undefined') {
         displayAlert("Erreur: Fichier de données (vocab_data.js) manquant ou incorrect.", varCss.colorIncorrect);
@@ -207,7 +208,6 @@ function generateList() {
 
 function startFlashcardGame() {
     showGameContainer(flashcardGameContainer, flashcardModeBtn);
-    trackEvent('mode-cartes-started');
     flashcard.classList.remove('flipped');
     feedbackButtons.style.display = 'none';
     
@@ -233,17 +233,11 @@ function displayCard() {
     }
     
     const [word, definition] = shuffledVocab[currentCardIndex];
-
-    if (Math.random() < 0.5) {
-        frontFace.textContent = word;
-        backFace.innerHTML = definition;
-    } else {
-        frontFace.textContent = definition;
-        backFace.innerHTML = word;
-    }
-    
+    frontFace.textContent = word;
+    backFace.innerHTML = definition;
     cardCounter.textContent = `${currentCardIndex + 1} / ${shuffledVocab.length}`;
     
+    flashcard.classList.remove('flipped');
     feedbackButtons.style.display = 'none';
 }
 
@@ -268,30 +262,28 @@ function handleFeedback(known) {
         let insertIndex = currentCardIndex + Math.floor(Math.random() * (shuffledVocab.length - currentCardIndex)) + 1;
         if (insertIndex > shuffledVocab.length) insertIndex = shuffledVocab.length;
         shuffledVocab.splice(insertIndex, 0, wordToReinsert);
-        currentCardIndex--;
+        currentCardIndex--; 
     }
 
-    flashcard.classList.remove('flipped');
-    feedbackButtons.style.display = 'none';
-
-    setTimeout(() => {
-        currentCardIndex++;
-        if (currentCardIndex < shuffledVocab.length) {
+    currentCardIndex++;
+    if (currentCardIndex < shuffledVocab.length) {
+        displayCard();
+    } else {
+        
+        shuffledVocab = shuffledVocab.filter(pair => !masteredWords.has(pair[0]));
+        if (shuffledVocab.length > 0) {
+            currentCardIndex = 0;
+            shuffleArray(shuffledVocab);
+            displayAlert(`Nouveau tour avec ${shuffledVocab.length} mots restants!`, varCss.colorPrimary);
             displayCard();
         } else {
-            shuffledVocab = shuffledVocab.filter(pair => !masteredWords.has(pair[0]));
-            if (shuffledVocab.length > 0) {
-                currentCardIndex = 0;
-                shuffleArray(shuffledVocab);
-                displayAlert(`Nouveau tour avec ${shuffledVocab.length} mots restants!`, varCss.colorPrimary);
-                displayCard();
-            } else {
-                frontFace.textContent = "Félicitations! Tu as maîtrisé tous les mots!";
-                backFace.textContent = "Clique sur le bouton 'Mode Cartes' pour recommencer.";
-                cardCounter.textContent = "";
-            }
+            frontFace.textContent = "Félicitations! Tu as maîtrisé tous les mots!";
+            backFace.textContent = "Clique sur le bouton 'Mode Cartes' pour recommencer.";
+            cardCounter.textContent = "";
+            feedbackButtons.style.display = 'none';
+            flashcard.classList.remove('flipped');
         }
-    }, 350);
+    }
 }
 
 flashcard.addEventListener('click', flipCard);
@@ -300,7 +292,6 @@ didntKnowBtn.addEventListener('click', () => handleFeedback(false));
 
 function startQuizGame() {
     showGameContainer(quizGameContainer, quizModeBtn);
-    trackEvent('mode-quiz-started');
     if (vocab.length === 0) {
         quizQuestion.textContent = "Sélectionnez un chapitre et une section pour commencer.";
         quizOptions.innerHTML = '';
@@ -342,7 +333,7 @@ function displayQuizQuestion() {
     hideAlert();
     if (currentQuizQuestionIndex >= quizQuestions.length) {
         quizQuestion.textContent = `Quiz terminé! Ton score final : ${score.correct} / ${score.total}`;
-        quizOptions.innerHTML = `<button onclick="startQuizGame()" style="background: linear-gradient(135deg, var(--color-secondary) 0%, #018786 100%); color: #FFFFFF; border: none;">Recommencer le Quiz</button>`;
+        quizOptions.innerHTML = `<button onclick="startQuizGame()" style="background-color: ${varCss.colorSecondary}; color: ${varCss.colorCard}; border: none;">Recommencer le Quiz</button>`;
         return;
     }
 
@@ -371,12 +362,12 @@ function checkQuizAnswer(button, selectedAnswer, correctAnswer) {
         }
     });
 
-                            if (selectedAnswer === correctAnswer) {
-                score.correct++;
-                displayAlert('Correct!', varCss.colorCorrect);
-            } else {
-                displayAlert(`Faux. La bonne réponse était : ${correctAnswer}`, varCss.colorIncorrect);
-            }
+    if (selectedAnswer === correctAnswer) {
+        score.correct++;
+        displayAlert('Correct!', varCss.colorCorrect);
+    } else {
+        displayAlert(`Faux. La bonne réponse était : ${correctAnswer}`, varCss.colorIncorrect);
+    }
     
     updateQuizScore();
     
@@ -388,15 +379,10 @@ function checkQuizAnswer(button, selectedAnswer, correctAnswer) {
 
 function updateQuizScore() {
     quizScore.textContent = `Score: ${score.correct} / ${score.total}`;
-    
-    if (score.total > 0 && currentQuizQuestionIndex >= quizQuestions.length) {
-        trackEvent(`quiz-completed-score-${score.correct}-sur-${score.total}`);
-    }
 }
 
 function startHangGame() {
     showGameContainer(hangmanGameContainer, hangmanModeBtn);
-    trackEvent('mode-pendu-started');
      if (vocab.length === 0) {
         hangmanWordDiv.textContent = "Sélectionnez un chapitre pour jouer.";
         hangmanLettersDiv.innerHTML = '';
@@ -406,16 +392,24 @@ function startHangGame() {
     hideAlert();
     
     const randomPair = shuffleArray([...vocab])[0];
-    hangmanWord = randomPair[0].toUpperCase();
+    hangmanCorrectAnswer = randomPair[0];
+    hangmanWord = randomPair[0].toUpperCase(); 
     guessedLetters = new Set();
     errors = 0;
     
     hangmanParts.forEach(id => document.getElementById(id).style.display = 'none');
     
-    hangmanWordDiv.textContent = hangmanWord.split('').map(char => {
-        if (char.match(/[A-ZÀ-Ÿ]/i)) return '_';
-        return char;
-    }).join(' ');
+    let initialDisplay = '';
+    for (const char of hangmanWord) {
+        if (char.match(/[A-ZÀ-Ÿ]/i)) {
+            initialDisplay += '_';
+        } else {
+            initialDisplay += char;
+            guessedLetters.add(char.toUpperCase());
+        }
+    }
+
+    hangmanWordDiv.textContent = initialDisplay.split('').join(' ');
 
     generateHangButtons();
 }
@@ -442,37 +436,31 @@ function guessLetter(letter, button) {
 
     const normalizedWord = hangmanWord.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
     const normalizedLetter = letter.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    
+    guessedLetters.add(normalizedLetter);
 
     if (normalizedWord.includes(normalizedLetter)) {
         button.style.backgroundColor = varCss.colorCorrect;
         
         let updatedDisplay = '';
-        let currentWordGuessed = '';
+        let wordComplete = true;
         
         for (let i = 0; i < hangmanWord.length; i++) {
             const currentLetter = hangmanWord[i].toUpperCase();
             const normalizedCurrentLetter = currentLetter.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
 
-            if (normalizedCurrentLetter === normalizedLetter || guessedLetters.has(normalizedCurrentLetter)) {
+            if (guessedLetters.has(normalizedCurrentLetter) || !currentLetter.match(/[A-ZÀ-Ÿ]/i)) {
                 updatedDisplay += currentLetter;
-                currentWordGuessed += currentLetter;
-                guessedLetters.add(normalizedCurrentLetter);
-            } else if (!currentLetter.match(/[A-ZÀ-Ÿ]/i)) {
-                 updatedDisplay += currentLetter;
-                 currentWordGuessed += currentLetter;
-                 guessedLetters.add(normalizedCurrentLetter);
-            }
-            else {
+            } else {
                 updatedDisplay += '_';
-                currentWordGuessed += '_';
+                wordComplete = false;
             }
         }
         
         hangmanWordDiv.textContent = updatedDisplay.split('').join(' ');
 
-        if (!currentWordGuessed.includes('_')) {
-            displayAlert(`Gagné ! Le mot était : ${hangmanWord}`, varCss.colorCorrect);
-            trackEvent('pendu-won');
+        if (wordComplete) {
+            displayAlert(`Gagné ! Le mot était : ${hangmanCorrectAnswer}`, varCss.colorCorrect);
             disableHangButtons();
         }
 
@@ -484,8 +472,7 @@ function guessLetter(letter, button) {
         }
 
         if (errors >= maxErrors) {
-            displayAlert(`Perdu ! Le mot était : ${hangmanWord}`, varCss.colorIncorrect);
-            trackEvent('pendu-lost');
+            displayAlert(`Perdu ! Le mot était : ${hangmanCorrectAnswer}`, varCss.colorIncorrect);
             disableHangButtons();
         }
     }
@@ -506,7 +493,6 @@ function scrambleWord(word) {
 
 function startScrambleGame() {
     showGameContainer(scrambleGameContainer, scrambleModeBtn);
-    trackEvent('mode-scramble-started');
     if (vocab.length === 0) {
         scrambleWordDiv.textContent = "Sélectionnez un chapitre pour jouer.";
         scrambleClueDiv.textContent = "";
@@ -527,10 +513,11 @@ function startScrambleGame() {
     currentScrambleWord = randomPair[0];
     const definition = randomPair[1];
 
-    const scrambled = scrambleWord(currentScrambleWord.toUpperCase().replace(/[\s-]/g, ''));
+    const scrambled = scrambleWord(currentScrambleWord.toUpperCase().replace(/[\s-]/g, '')); 
 
     scrambleWordDiv.textContent = scrambled.split('').join(' ');
     scrambleClueDiv.textContent = definition;
+    scrambleInput.focus();
 }
 
 function checkScrambleAnswer() {
@@ -554,7 +541,6 @@ scrambleNextBtn.addEventListener('click', startScrambleGame);
 
 function startDictationGame() {
     showGameContainer(dictationGameContainer, dictationModeBtn);
-    trackEvent('mode-dictation-started');
      if (vocab.length === 0) {
         dictationClueDiv.textContent = "Sélectionnez un chapitre pour jouer.";
         dictationInput.value = '';
@@ -599,7 +585,6 @@ dictationNextBtn.addEventListener('click', startDictationGame);
 
 function startMatchGame() {
     showGameContainer(matchGameContainer, matchModeBtn);
-    trackEvent('mode-match-started');
     if (vocab.length === 0) {
          matchScoreSpan.textContent = "Sélectionnez un chapitre pour jouer.";
          wordsColumn.innerHTML = '';
@@ -672,7 +657,6 @@ function handleMatchSelection(item) {
 
             if (matchedPairsCount === MATCH_COUNT) {
                 displayAlert('Félicitations! Toutes les paires trouvées.', varCss.colorCorrect);
-                trackEvent('match-completed');
                 matchNextBtn.style.display = 'block';
             }
         } else {
@@ -703,24 +687,9 @@ dictationModeBtn.addEventListener('click', startDictationGame);
 matchModeBtn.addEventListener('click', startMatchGame);
 
 document.addEventListener('DOMContentLoaded', () => {
-    generateChapterButtons();
+    generateChapterButtons(); 
     hideAlert();
     
     frontFace.textContent = "Sélectionnez un chapitre ci-dessus";
     backFace.textContent = "Puis une section pour commencer à jouer.";
 });
-
-const ADMIN_SECRET_KEY = '4dm1nK3y';
-
-window.unlockAdminBridge = function(key) {
-    if (key === ADMIN_SECRET_KEY) {
-        console.log("%c🔑 Clé Administrateur acceptée. Le pont admin est prêt. Les données sont exposées sur window.adminData.", "color: #03DAC6; font-weight: bold;");
-        window.adminData = ALL_VOCAB_DATA;
-    } else {
-        console.error("Clé secrète incorrecte.");
-    }
-};
-
-function trackEvent(eventName) {
-
-}

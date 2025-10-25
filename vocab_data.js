@@ -7,7 +7,7 @@ const ALL_VOCAB_DATA = {
                 name: 'Noms',
                 color: '#FF8C00',
                 alert: {
-                    message: "La liste de vocabulaire est toujours à jour mais l'intero s'est déroulé le 22-09-25. Cette liste est donc obsolète pour la prochaine intero.",
+                    message: "l'évaluation est déjà passé. Le site supporte toujours la liste de voc mais cette liste est obsolète pour la prochaine évaluation",
                     color: '#FF8C00'
                 },
                 data: [
@@ -54,10 +54,10 @@ const ALL_VOCAB_DATA = {
             },
             'adj_verbes': {
                 name: 'Adjectifs et Verbes',
-                color: '#4CAF50', 
+                color: '#FF8C00', 
                 alert: {
-                    message: "Le voc est à jour ! Vous pouvez étudier et tester vos connaissances sur le site ! Si une erreur survient, prévenez-moi, je me droguerai à nouveau à la caféine :)",
-                    color: '#4CAF50'
+                    message: "l'évaluation est déjà passé. Le site supporte toujours la liste de voc mais cette liste est obsolète pour la prochaine évaluation",
+                    color: '#FF8C00'
                 },
                 data: [
     ["absurde", "insensée, déraisonnable, contraire à la logique"],
