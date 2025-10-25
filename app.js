@@ -38,6 +38,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const nextCardBtn = document.getElementById('nextCardBtn');
     const knewItBtn = document.getElementById('knewItBtn');
     const didntKnowBtn = document.getElementById('didntKnowBtn');
+    const masteredBtn = document.getElementById('masteredBtn');
+    const masteredVocabularyList = document.getElementById('masteredVocabularyList');
+    const resetMasteredBtn = document.getElementById('resetMasteredBtn');
 
     const quizQuestion = document.getElementById('quizQuestion');
     const quizOptions = document.getElementById('quizOptions');
@@ -70,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentMode = 'flashcard';
     let shuffledVocab = [];
     let currentCardIndex = 0;
-    let masteredWords = new Set();
+    let masteredWords = new Set(JSON.parse(localStorage.getItem('masteredWords')) || []);
     let markedWords = new Set();
     let quizQuestions = [];
     let currentQuizQuestionIndex = 0;
@@ -200,19 +203,54 @@ document.addEventListener('DOMContentLoaded', () => {
     prevCardBtn.addEventListener('click', () => { if (currentCardIndex > 0) { currentCardIndex--; displayCard(); }});
     nextCardBtn.addEventListener('click', () => { if (currentCardIndex < shuffledVocab.length - 1) { currentCardIndex++; displayCard(); }});
     flashcard.addEventListener('click', () => flashcard.classList.toggle('flipped'));
-    knewItBtn.addEventListener('click', () => handleFeedback(true));
+    knewItBtn.addEventListener('click', () => handleFeedback(false)); // Knew it is not mastering
     didntKnowBtn.addEventListener('click', () => handleFeedback(false));
+    masteredBtn.addEventListener('click', () => {
+        const word = shuffledVocab[currentCardIndex][0];
+        masteredWords.add(word);
+        updateMasteredList();
+        handleFeedback(false); // Move to next card, dont remove from current session
+    });
+
+    // --- Mastered Words Management ---
+    function updateMasteredList() {
+        masteredVocabularyList.innerHTML = '';
+        const masteredArray = Array.from(masteredWords);
+        masteredArray.forEach(word => {
+            const li = document.createElement('li');
+            li.textContent = word;
+            const deleteBtn = document.createElement('button');
+            deleteBtn.innerHTML = '&times;';
+            deleteBtn.className = 'delete-word-btn';
+            deleteBtn.onclick = () => {
+                masteredWords.delete(word);
+                updateMasteredList();
+                startGame(currentMode); // Refresh game
+            };
+            li.appendChild(deleteBtn);
+            masteredVocabularyList.appendChild(li);
+        });
+        localStorage.setItem('masteredWords', JSON.stringify(masteredArray));
+    }
+
+    resetMasteredBtn.addEventListener('click', () => {
+        masteredWords.clear();
+        updateMasteredList();
+        startGame(currentMode); // Refresh game
+    });
+
 
     // --- Quiz Game ---
     function startQuizGame() {
-        if (vocab.length < 4) {
+        const availableVocab = vocab.filter(v => !masteredWords.has(v[0]));
+        if (availableVocab.length < 4) {
             quizQuestion.textContent = "Pas assez de mots pour un quiz.";
             quizOptions.innerHTML = '';
             return;
         }
-        quizQuestions = shuffleArray([...vocab]).map(([word, definition]) => {
+        quizQuestions = shuffleArray([...availableVocab]).map(([word, definition]) => {
             const correctAnswer = definition;
-            let incorrectAnswers = shuffleArray(vocab.filter(v => v[1] !== correctAnswer)).slice(0, 3).map(v => v[1]);
+            let incorrectAnswers = shuffleArray(availableVocab.filter(v => v[1] !== correctAnswer)).slice(0, 3).map(v => v[1]);
             return { question: word, options: shuffleArray([correctAnswer, ...incorrectAnswers]), correctAnswer };
         });
         currentQuizQuestionIndex = 0;
@@ -259,11 +297,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Hangman Game ---
     function startHangmanGame() {
-        if (!vocab.length) {
-            hangmanWordDiv.textContent = "Sélectionnez un chapitre.";
+        const availableVocab = vocab.filter(v => !masteredWords.has(v[0]));
+        if (!availableVocab.length) {
+            hangmanWordDiv.textContent = "Aucun mot disponible.";
             return;
         }
-        [hangmanCorrectAnswer] = vocab[Math.floor(Math.random() * vocab.length)];
+        [hangmanCorrectAnswer] = availableVocab[Math.floor(Math.random() * availableVocab.length)];
         hangmanCorrectAnswer = hangmanCorrectAnswer.toUpperCase();
         guessedLetters.clear();
         errors = 0;
@@ -299,12 +338,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Scramble & Dictation ---
     const setupInputGame = (mode) => {
-        if (!vocab.length) {
-            if(mode === 'scramble') scrambleWordDiv.textContent = "Pas de mots";
-            else dictationClueDiv.textContent = "Pas de mots";
+        const availableVocab = vocab.filter(v => !masteredWords.has(v[0]));
+        if (!availableVocab.length) {
+            if(mode === 'scramble') scrambleWordDiv.textContent = "Aucun mot disponible.";
+            else dictationClueDiv.textContent = "Aucun mot disponible.";
             return;
         }
-        const [word, clue] = vocab[Math.floor(Math.random() * vocab.length)];
+        const [word, clue] = availableVocab[Math.floor(Math.random() * availableVocab.length)];
         currentWord = word;
         const elements = mode === 'scramble' ?
             { wordDiv: scrambleWordDiv, clueDiv: scrambleClueDiv, input: scrambleInput, feedback: scrambleFeedbackDiv, checkBtn: scrambleCheckBtn, nextBtn: scrambleNextBtn } :
@@ -339,12 +379,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Match Game ---
     function startMatchGame() {
-        if(vocab.length < MATCH_COUNT) {
+        const availableVocab = vocab.filter(v => !masteredWords.has(v[0]));
+        if(availableVocab.length < MATCH_COUNT) {
             wordsColumn.innerHTML = 'Pas assez de mots';
             definitionsColumn.innerHTML = '';
             return;
         }
-        matchPairs = shuffleArray([...vocab]).slice(0, MATCH_COUNT);
+        matchPairs = shuffleArray([...availableVocab]).slice(0, MATCH_COUNT);
         const words = shuffleArray(matchPairs.map(p => p[0]));
         const defs = shuffleArray(matchPairs.map(p => p[1]));
 
@@ -398,5 +439,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     generateChapterButtons();
+    updateMasteredList(); // Initial population of the mastered list
     showGameContainer('flashcard');
 });

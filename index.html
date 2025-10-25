@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOCABULARY REVAMP</title>
+    <title>1000 mots</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
@@ -16,7 +16,7 @@
 
     <div class="container">
         <header>
-            <h1 id="mainTitle">VOCABULARY REVAMP</h1>
+            <h1 id="mainTitle">1000 mots</h1>
             <nav class="mode-selector">
                 <button id="flashcardModeBtn" class="active">Flashcards</button>
                 <button id="quizModeBtn">Quiz</button>
@@ -46,6 +46,7 @@
                             <p>Fugace, de courte durée</p>
                             <div class="feedback-buttons">
                                 <button id="didntKnowBtn">Je ne l'avais pas</button>
+                                <button id="masteredBtn">Maîtriser</button>
                                 <button id="knewItBtn">Je l'avais</button>
                             </div>
                         </div>
@@ -116,6 +117,13 @@
         </main>
 
         <div class="details-section">
+            <details id="masteredDetails">
+                <summary>Mots Maîtrisés</summary>
+                <div class="list-content">
+                    <ul id="masteredVocabularyList" class="vocabulary-list"></ul>
+                    <button id="resetMasteredBtn" class="reset-btn">Réinitialiser</button>
+                </div>
+            </details>
             <details id="vocabDetails">
                 <summary id="listTitle">Liste Complète</summary>
                 <div class="list-content">
