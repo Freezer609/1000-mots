@@ -3,122 +3,147 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1000 Mots - Révision Vocabulaire</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" xintegrity="sha512-SnH5WK+bZxgPHs44uWIX+LLMD/Jp9v0H9S+t5W9qF/0m+y2iN1m2vN0k65B0x1L/K11g+B0+1rA==1" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>VOCABULARY REVAMP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="blurry-shapes">
+        <div class="shape-1"></div>
+        <div class="shape-2"></div>
+    </div>
+
     <div class="container">
-        <h1 id="mainTitle">1000 MOTS</h1>
+        <header>
+            <h1 id="mainTitle">VOCABULARY REVAMP</h1>
+            <nav class="mode-selector">
+                <button id="flashcardModeBtn" class="active">Flashcards</button>
+                <button id="quizModeBtn">Quiz</button>
+                <button id="hangmanModeBtn">Hangman</button>
+                <button id="scrambleModeBtn">Scramble</button>
+                <button id="dictationModeBtn">Dictation</button>
+                <button id="matchModeBtn">Match</button>
+            </nav>
+        </header>
+
         <div id="chapterSelector" class="chapter-selector">
         </div>
-        <div id="alertMessage" class="alert-message">
-            <p id="alertText"></p>
-        </div>
-        <div class="mode-selector">
-            <button id="flashcardModeBtn" class="active" title="Mode Cartes"><i class="fas fa-redo-alt"></i> Mode Cartes</button>
-            <button id="quizModeBtn" title="Mode Quiz"><i class="fas fa-question-circle"></i> Mode Quiz</button>
-            <button id="hangmanModeBtn" title="Mode Pendu"><i class="fas fa-user-slash"></i> Mode Pendu</button>
-            <button id="scrambleModeBtn" title="Mode Réarrangement"><i class="fas fa-random"></i> Mots Mélangés</button>
-            <button id="dictationModeBtn" title="Mode Dictée"><i class="fas fa-keyboard"></i> Mode Dictée</button>
-            <button id="matchModeBtn" title="Mode Match"><i class="fas fa-link"></i> Mode Association</button>
-        </div>
+        <div id="alertMessage" class="alert-message" style="display:none;"></div>
 
-        <div id="flashcardGameContainer" class="game-container active-mode" style="display: flex; opacity: 1;">
-            
-            <div class="card-container">
-                <div id="flashcard" class="card">
-                    <div id="front" class="card-face card-front">Sélectionnez un chapitre ci-dessus</div>
-                    <div id="back" class="card-face card-back">Puis une section pour commencer à jouer.</div>
+        <main id="game-zone">
+            <div id="flashcardGameContainer" class="game-container active-mode">
+                <button class="nav-arrow prev-arrow" id="prevCardBtn"><i class="fas fa-chevron-left"></i></button>
+
+                <div class="card-container">
+                    <div id="flashcard" class="card">
+                        <div id="front" class="card-face card-front">
+                            <span class="word-type">adjective</span>
+                            <h2 class="word">Epehernal</h2>
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div id="back" class="card-face card-back">
+                            <p>Fugace, de courte durée</p>
+                            <div class="feedback-buttons">
+                                <button id="didntKnowBtn">Je ne l'avais pas</button>
+                                <button id="knewItBtn">Je l'avais</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="nav-arrow next-arrow" id="nextCardBtn"><i class="fas fa-chevron-right"></i></button>
+
+                <div class="bottom-ui">
+                    <div class="progress-container">
+                        <span id="cardCounter">7/10</span>
+                        <div class="progress-bar-background">
+                            <div id="progressBar" class="progress-bar-foreground"></div>
+                        </div>
+                    </div>
+                    <div class="action-buttons">
+                        <button id="revealAnswerBtn">Reveal Answer</button>
+                        <button id="markCardBtn">Marked</button>
+                        <button id="shuffleBtn">Shuffle</button>
+                    </div>
                 </div>
             </div>
-            <div class="controls"> 
-                <span id="cardCounter"></span>
+
+            <!-- Other game containers remain the same -->
+            <div id="quizGameContainer" class="game-container">
+                <div id="quizScore" class="quiz-score">Score: 0 / 0</div>
+                <div id="quizQuestion" class="quiz-question"></div>
+                <div id="quizOptions" class="quiz-options"></div>
             </div>
-            <div class="feedback-buttons" id="feedbackButtons">
-                <button class="knew-it-btn" id="knewItBtn">Je l'avais</button>
-                <button class="didnt-know-it-btn" id="didntKnowBtn">Je ne l'avais pas</button>
+
+            <div id="hangmanGameContainer" class="game-container">
+                <svg class="hangman-drawing" viewBox="0 0 200 200">
+                    <line x1="10" y1="190" x2="150" y2="190" class="hangman-svg-part" />
+                    <line x1="40" y1="190" x2="40" y2="20" class="hangman-svg-part" />
+                    <line x1="40" y1="20" x2="120" y2="20" class="hangman-svg-part" />
+                    <line x1="120" y1="20" x2="120" y2="40" class="hangman-svg-part" />
+                    <circle id="head" cx="120" cy="55" r="15" class="hangman-svg-part" />
+                    <line id="body" x1="120" y1="70" x2="120" y2="120" class="hangman-svg-part" />
+                    <line id="arm1" x1="120" y1="80" x2="100" y2="100" class="hangman-svg-part" />
+                    <line id="arm2" x1="120" y1="80" x2="140" y2="100" class="hangman-svg-part" />
+                    <line id="leg1" x1="120" y1="120" x2="100" y2="150" class="hangman-svg-part" />
+                    <line id="leg2" x1="120" y1="120" x2="140" y2="150" class="hangman-svg-part" />
+                </svg>
+                <div id="hangmanWord" class="hangman-word"></div>
+                <div id="hangmanLetters" class="hangman-letters"></div>
             </div>
-        </div>
 
-        <div id="quizGameContainer" class="game-container">
-            
-            <div id="quizScore" class="quiz-score">Score: 0 / 0</div>
-            <div id="quizQuestion" class="quiz-question"></div>
-            <div id="quizOptions" class="quiz-options"></div>
-        </div>
-
-        <div id="hangmanGameContainer" class="game-container">
-             
-             <svg class="hangman-drawing" viewBox="0 0 200 200">
-                <line x1="10" y1="190" x2="150" y2="190" stroke="#fff" stroke-width="4" />
-                <line x1="40" y1="190" x2="40" y2="20" stroke="#fff" stroke-width="4" />
-                <line x1="40" y1="20" x2="120" y2="20" stroke="#fff" stroke-width="4" />
-                <line x1="120" y1="20" x2="120" y2="40" stroke="#fff" stroke-width="4" />
-
-                <circle id="head" cx="120" cy="55" r="15" stroke="#fff" stroke-width="3" fill="none" style="display:none" />
-                <line id="body" x1="120" y1="70" x2="120" y2="120" stroke="#fff" stroke-width="3" style="display:none" />
-                <line id="arm1" x1="120" y1="80" x2="100" y2="100" stroke="#fff" stroke-width="3" style="display:none" />
-                <line id="arm2" x1="120" y1="80" x2="140" y2="100" stroke="#fff" stroke-width="3" style="display:none" />
-                <line id="leg1" x1="120" y1="120" x2="100" y2="150" stroke="#fff" stroke-width="3" style="display:none" />
-                <line id="leg2" x1="120" y1="120" x2="140" y2="150" stroke="#fff" stroke-width="3" style="display:none" />
-            </svg>
-            <div id="hangmanWord" class="hangman-word"></div>
-            <div id="hangmanLetters" class="hangman-letters"></div>
-        </div>
-
-        <div id="scrambleGameContainer" class="game-container">
-            
-            <div id="scrambleWord" class="quiz-question"></div>
-            <div id="scrambleClue" class="scramble-clue"></div>
-            <input type="text" id="scrambleInput" placeholder="Écris le mot ici..." autocomplete="off">
-            <button id="scrambleCheckBtn">Vérifier</button>
-            <div id="scrambleFeedback" class="scramble-feedback"></div>
-            <button id="scrambleNextBtn" style="display:none;">Mot Suivant &rarr;</button>
-        </div>
-
-        <div id="dictationGameContainer" class="game-container">
-            
-            <div id="dictationClue" class="dictation-clue"></div>
-            <input type="text" id="dictationInput" placeholder="Écris le mot exact ici..." autocomplete="off">
-            <button id="dictationCheckBtn">Vérifier</button>
-            <div id="dictationFeedback" class="dictation-feedback"></div>
-            <button id="dictationNextBtn" style="display:none;">Mot Suivant &rarr;</button>
-        </div>
-
-        <div id="matchGameContainer" class="game-container">
-            
-            <div id="matchScore">Paires trouvées : 0 / 6</div>
-            <div id="matchGrid">
-                <div id="wordsColumn" class="match-column"></div>
-                <div id="definitionsColumn" class="match-column"></div>
+            <div id="scrambleGameContainer" class="game-container">
+                <div id="scrambleWord" class="quiz-question"></div>
+                <div id="scrambleClue" class="scramble-clue"></div>
+                <input type="text" id="scrambleInput" placeholder="Écris le mot ici..." autocomplete="off">
+                <button id="scrambleCheckBtn">Vérifier</button>
+                <div id="scrambleFeedback" class="scramble-feedback"></div>
+                <button id="scrambleNextBtn" style="display:none;">Mot Suivant &rarr;</button>
             </div>
-            <button id="matchNextBtn" style="display:none; margin-top: 30px;">Prochain Match &rarr;</button>
+
+            <div id="dictationGameContainer" class="game-container">
+                <div id="dictationClue" class="dictation-clue"></div>
+                <input type="text" id="dictationInput" placeholder="Écris le mot exact ici..." autocomplete="off">
+                <button id="dictationCheckBtn">Vérifier</button>
+                <div id="dictationFeedback" class="dictation-feedback"></div>
+                <button id="dictationNextBtn" style="display:none;">Mot Suivant &rarr;</button>
+            </div>
+
+            <div id="matchGameContainer" class="game-container">
+                <div id="matchScore">Paires trouvées : 0 / 6</div>
+                <div id="matchGrid">
+                    <div id="wordsColumn" class="match-column"></div>
+                    <div id="definitionsColumn" class="match-column"></div>
+                </div>
+                <button id="matchNextBtn" style="display:none; margin-top: 30px;">Prochain Match &rarr;</button>
+            </div>
+        </main>
+
+        <div class="details-section">
+            <details id="vocabDetails">
+                <summary id="listTitle">Liste Complète</summary>
+                <div class="list-content">
+                    <ul class="vocabulary-list"></ul>
+                </div>
+            </details>
+
+            <details>
+                <summary>Comment Utiliser</summary>
+                <div class="instructions-content">
+                    <p>
+                        - **Sélecteur de Chapitre** : Choisis la catégorie de vocabulaire à réviser en haut de la page.
+                        - **Mode Cartes** : Clique sur la carte pour voir la définition, puis dis si tu l'avais ou non. Les mots non connus reviendront plus souvent.
+                        - **Mode Quiz** : Lis le mot ou la définition et choisis la bonne réponse.
+                        - **Mode Pendu** : Devine le mot en cliquant sur les lettres.
+                        - **Mots Mélangés** : Un mot est mélangé, retrouve le mot original avec l'aide de sa définition.
+                        - **Mode Dictée** : Écris le mot exact correspondant à la définition. (Attention aux accents et à l'orthographe exacte).
+                        - **Mode Association** : Associe les mots à leur définition en cliquant sur une paire.
+                    </p>
+                </div>
+            </details>
         </div>
 
-        <details id="vocabDetails">
-            <summary id="listTitle">Liste Complète</summary>
-            <div class="list-content">
-                <ul class="vocabulary-list"></ul>
-            </div>
-        </details>
-
-        <details>
-            <summary>Comment Utiliser</summary>
-            <div class="instructions-content">
-                <p>
-                    - **Sélecteur de Chapitre** : Choisis la catégorie de vocabulaire à réviser en haut de la page.
-                    - **Mode Cartes** : Clique sur la carte pour voir la définition, puis dis si tu l'avais ou non. Les mots non connus reviendront plus souvent.
-                    - **Mode Quiz** : Lis le mot ou la définition et choisis la bonne réponse.
-                    - **Mode Pendu** : Devine le mot en cliquant sur les lettres.
-                    - **Mots Mélangés** : Un mot est mélangé, retrouve le mot original avec l'aide de sa définition.
-                    - **Mode Dictée** : Écris le mot exact correspondant à la définition. (Attention aux accents et à l'orthographe exacte).
-                    - **Mode Association** : Associe les mots à leur définition en cliquant sur une paire.
-                </p>
-            </div>
-        </details>
     </div>
 
     <div id="categoryModal" class="modal">
@@ -129,8 +154,6 @@
         </div>
     </div>
     
-
-
     <script src="vocab_data.js"></script>
     <script src="app.js"></script>
 </body>
