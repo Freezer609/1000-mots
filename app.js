@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const mainContainer = document.querySelector('.container');
     const alertMessageDiv = document.getElementById('alertMessage');
     const listTitle = document.getElementById('listTitle');
-    const vocabularyList = document.querySelector('.vocabulary-list');
+    const fullVocabularyList = document.getElementById('fullVocabularyList');
     const flashcard = document.getElementById('flashcard');
     const wordTypeSpan = document.querySelector('.word-type');
     const wordH2 = document.querySelector('.word');
@@ -145,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const sub = ALL_VOCAB_DATA[chapterKey].subcategories[subcategoryKey];
         vocab = sub.data;
         listTitle.textContent = `${ALL_VOCAB_DATA[chapterKey].title} - ${sub.name}`;
-        vocabularyList.innerHTML = vocab.map(v => `<li>${v[0]} - ${v[1]}</li>`).join('');
+        fullVocabularyList.innerHTML = vocab.map(v => `<li>${v[0]} - ${v[1]}</li>`).join('');
         sub.alert ? displayAlert(sub.alert.message, sub.alert.color) : hideAlert();
         startGame(currentMode);
     }
