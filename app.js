@@ -183,12 +183,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (known) {
             masteredWords.add(currentWord);
         }
-        currentCardIndex++;
-        if (currentCardIndex >= shuffledVocab.length) {
-            startFlashcardGame();
-        } else {
-            displayCard();
-        }
+        setTimeout(() => {
+            currentCardIndex++;
+            if (currentCardIndex >= shuffledVocab.length) {
+                startFlashcardGame();
+            } else {
+                displayCard();
+            }
+            flashcard.classList.remove('flipped');
+        }, 400);
     }
 
     function updateFlashcardUI() {
