@@ -33,6 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoryModal = document.getElementById('categoryModal');
     const modalTitle = document.getElementById('modalTitle');
     const modalButtons = document.getElementById('modalButtons');
+    const closeButton = document.querySelector('.close-button');
 
     const prevCardBtn = document.getElementById('prevCardBtn');
     const nextCardBtn = document.getElementById('nextCardBtn');
@@ -183,12 +184,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (known) {
             masteredWords.add(currentWord);
         }
-        currentCardIndex++;
-        if (currentCardIndex >= shuffledVocab.length) {
-            startFlashcardGame();
-        } else {
-            displayCard();
-        }
+        setTimeout(() => {
+            currentCardIndex++;
+            if (currentCardIndex >= shuffledVocab.length) {
+                startFlashcardGame();
+            } else {
+                displayCard();
+            }
+            flashcard.classList.remove('flipped');
+        }, 400);
     }
 
     function updateFlashcardUI() {
@@ -208,29 +212,33 @@ document.addEventListener('DOMContentLoaded', () => {
     masteredBtn.addEventListener('click', () => {
         const word = shuffledVocab[currentCardIndex][0];
         masteredWords.add(word);
-        updateMasteredList();
-        handleFeedback(false); // Move to next card, dont remove from current session
+        updateMasteredList(word, true);
+        handleFeedback(false);
     });
 
     // --- Mastered Words Management ---
-    function updateMasteredList() {
-        masteredVocabularyList.innerHTML = '';
-        const masteredArray = Array.from(masteredWords);
-        masteredArray.forEach(word => {
+    function updateMasteredList(word, shouldAdd) {
+        if (shouldAdd) {
             const li = document.createElement('li');
             li.textContent = word;
+            li.dataset.word = word;
             const deleteBtn = document.createElement('button');
             deleteBtn.innerHTML = '&times;';
             deleteBtn.className = 'delete-word-btn';
             deleteBtn.onclick = () => {
                 masteredWords.delete(word);
-                updateMasteredList();
+                updateMasteredList(word, false);
                 startGame(currentMode); // Refresh game
             };
             li.appendChild(deleteBtn);
             masteredVocabularyList.appendChild(li);
-        });
-        localStorage.setItem('masteredWords', JSON.stringify(masteredArray));
+        } else {
+            const liToRemove = masteredVocabularyList.querySelector(`[data-word="${word}"]`);
+            if (liToRemove) {
+                masteredVocabularyList.removeChild(liToRemove);
+            }
+        }
+        localStorage.setItem('masteredWords', JSON.stringify(Array.from(masteredWords)));
     }
 
     resetMasteredBtn.addEventListener('click', () => {
@@ -441,4 +449,14 @@ document.addEventListener('DOMContentLoaded', () => {
     generateChapterButtons();
     updateMasteredList(); // Initial population of the mastered list
     showGameContainer('flashcard');
+
+    closeButton.addEventListener('click', () => {
+        categoryModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target == categoryModal) {
+            categoryModal.style.display = 'none';
+        }
+    });
 });

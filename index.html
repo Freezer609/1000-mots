@@ -33,7 +33,7 @@
 
         <main id="game-zone">
             <div id="flashcardGameContainer" class="game-container active-mode">
-                <button class="nav-arrow prev-arrow" id="prevCardBtn"><i class="fas fa-chevron-left"></i></button>
+                <button class="nav-arrow prev-arrow" id="prevCardBtn" aria-label="Previous Card"><i class="fas fa-chevron-left"></i></button>
 
                 <div class="card-container">
                     <div id="flashcard" class="card">
@@ -53,7 +53,7 @@
                     </div>
                 </div>
 
-                <button class="nav-arrow next-arrow" id="nextCardBtn"><i class="fas fa-chevron-right"></i></button>
+                <button class="nav-arrow next-arrow" id="nextCardBtn" aria-label="Next Card"><i class="fas fa-chevron-right"></i></button>
 
                 <div class="bottom-ui">
                     <div class="progress-container">
@@ -151,6 +151,7 @@
 
     <div id="categoryModal" class="modal">
         <div class="modal-content">
+            <span class="close-button">&times;</span>
             <h3 id="modalTitle"></h3>
             <div id="modalButtons" class="modal-buttons">
             </div>
