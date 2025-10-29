@@ -116,7 +116,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Chapter & Vocab Data ---
     function generateChapterButtons() {
-        chapterSelectorDiv.innerHTML = '';
+        while (chapterSelectorDiv.firstChild) {
+            chapterSelectorDiv.removeChild(chapterSelectorDiv.firstChild);
+        }
         Object.entries(ALL_VOCAB_DATA).forEach(([key, chapter]) => {
             const button = document.createElement('button');
             button.id = chapter.selectorId;
@@ -130,7 +132,9 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.chapter-selector button').forEach(btn => btn.classList.remove('active'));
         document.getElementById(chapter.selectorId)?.classList.add('active');
         modalTitle.textContent = `Choisir la section pour ${chapter.title}`;
-        modalButtons.innerHTML = '';
+        while (modalButtons.firstChild) {
+            modalButtons.removeChild(modalButtons.firstChild);
+        }
         Object.entries(chapter.subcategories).forEach(([subKey, sub]) => {
             const button = document.createElement('button');
             button.textContent = sub.name;
@@ -145,7 +149,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const sub = ALL_VOCAB_DATA[chapterKey].subcategories[subcategoryKey];
         vocab = sub.data;
         listTitle.textContent = `${ALL_VOCAB_DATA[chapterKey].title} - ${sub.name}`;
-        fullVocabularyList.innerHTML = vocab.map(v => `<li>${v[0]} - ${v[1]}</li>`).join('');
+        while (fullVocabularyList.firstChild) {
+            fullVocabularyList.removeChild(fullVocabularyList.firstChild);
+        }
+        vocab.forEach(v => {
+            const li = document.createElement('li');
+            li.textContent = `${v[0]} - ${v[1]}`;
+            fullVocabularyList.appendChild(li);
+        });
         sub.alert ? displayAlert(sub.alert.message, sub.alert.color) : hideAlert();
         startGame(currentMode);
     }
@@ -217,7 +228,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Mastered Words Management ---
     function updateMasteredList() {
-        masteredVocabularyList.innerHTML = '';
+        while (masteredVocabularyList.firstChild) {
+            masteredVocabularyList.removeChild(masteredVocabularyList.firstChild);
+        }
         const masteredArray = Array.from(masteredWords);
         masteredArray.forEach(word => {
             const li = document.createElement('li');
@@ -248,7 +261,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const availableVocab = vocab.filter(v => !masteredWords.has(v[0]));
         if (availableVocab.length < 4) {
             quizQuestion.textContent = "Pas assez de mots pour un quiz.";
-            quizOptions.innerHTML = '';
+            while (quizOptions.firstChild) {
+                quizOptions.removeChild(quizOptions.firstChild);
+            }
             return;
         }
         quizQuestions = shuffleArray([...availableVocab]).map(([word, definition]) => {
@@ -264,12 +279,25 @@ document.addEventListener('DOMContentLoaded', () => {
     function displayQuizQuestion() {
         if (currentQuizQuestionIndex >= quizQuestions.length) {
             quizQuestion.textContent = `Quiz terminé! Score: ${score.correct}/${score.total}`;
-            quizOptions.innerHTML = `<button onclick="startGame('quiz')">Recommencer</button>`;
+            while (quizOptions.firstChild) {
+                quizOptions.removeChild(quizOptions.firstChild);
+            }
+            const button = document.createElement('button');
+            button.textContent = "Recommencer";
+            button.onclick = () => startGame('quiz');
+            quizOptions.appendChild(button);
             return;
         }
         const q = quizQuestions[currentQuizQuestionIndex];
         quizQuestion.textContent = q.question;
-        quizOptions.innerHTML = q.options.map(option => `<button>${option}</button>`).join('');
+        while (quizOptions.firstChild) {
+            quizOptions.removeChild(quizOptions.firstChild);
+        }
+        q.options.forEach(option => {
+            const button = document.createElement('button');
+            button.textContent = option;
+            quizOptions.appendChild(button);
+        });
         updateQuizScore();
     }
 
@@ -315,7 +343,16 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const displayHangmanWord = () => hangmanWordDiv.textContent = hangmanCorrectAnswer.split('').map(l => (guessedLetters.has(l) || !/[A-Z]/.test(l) ? l : '_')).join(' ');
-    const generateHangmanLetters = () => hangmanLettersDiv.innerHTML = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(l => `<button>${l}</button>`).join('');
+    const generateHangmanLetters = () => {
+        while (hangmanLettersDiv.firstChild) {
+            hangmanLettersDiv.removeChild(hangmanLettersDiv.firstChild);
+        }
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach(l => {
+            const button = document.createElement('button');
+            button.textContent = l;
+            hangmanLettersDiv.appendChild(button);
+        });
+    };
 
     hangmanLettersDiv.addEventListener('click', e => {
         if(e.target.tagName === 'BUTTON' && !e.target.disabled) handleGuess(e.target.textContent, e.target);
@@ -384,16 +421,38 @@ document.addEventListener('DOMContentLoaded', () => {
     function startMatchGame() {
         const availableVocab = vocab.filter(v => !masteredWords.has(v[0]));
         if(availableVocab.length < MATCH_COUNT) {
-            wordsColumn.innerHTML = 'Pas assez de mots';
-            definitionsColumn.innerHTML = '';
+            wordsColumn.textContent = 'Pas assez de mots';
+            while (definitionsColumn.firstChild) {
+                definitionsColumn.removeChild(definitionsColumn.firstChild);
+            }
             return;
         }
         matchPairs = shuffleArray([...availableVocab]).slice(0, MATCH_COUNT);
         const words = shuffleArray(matchPairs.map(p => p[0]));
         const defs = shuffleArray(matchPairs.map(p => p[1]));
 
-        wordsColumn.innerHTML = words.map(w => `<div class="match-item" data-type="word">${w}</div>`).join('');
-        definitionsColumn.innerHTML = defs.map(d => `<div class="match-item" data-type="def">${d}</div>`).join('');
+        while (wordsColumn.firstChild) {
+            wordsColumn.removeChild(wordsColumn.firstChild);
+        }
+        words.forEach(w => {
+            const div = document.createElement('div');
+            div.className = 'match-item';
+            div.dataset.type = 'word';
+            div.textContent = w;
+            wordsColumn.appendChild(div);
+        });
+
+        while (definitionsColumn.firstChild) {
+            definitionsColumn.removeChild(definitionsColumn.firstChild);
+        }
+        defs.forEach(d => {
+            const div = document.createElement('div');
+            div.className = 'match-item';
+            div.dataset.type = 'def';
+            div.textContent = d;
+            definitionsColumn.appendChild(div);
+        });
+
         matchNextBtn.style.display = 'none';
         updateMatchScore(0);
     }

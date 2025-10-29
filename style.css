@@ -312,6 +312,7 @@ details[open] .list-content, details[open] .instructions-content {
         flex-direction: column;
         gap: 0.5rem;
         bottom: 1rem;
+        width: 100%;
     }
     .feedback-buttons button {
         width: 100%;
