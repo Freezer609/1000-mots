@@ -98,7 +98,10 @@ const ALL_VOCAB_DATA = {
             'general': {
                 name: 'Vocabulaire Général',
                 color: '#BB86FC',
-                alert: null,
+                alert: {
+                    message: "le voc est à jour ! utiliser le site afin d'étudier et de consolider vos connaissances ! des erreurs peuvent survenir donc dites moi si ça arrive...",
+                    color: '#4CAF50' 
+                },
                 data: [
                     ["Acception", "la signification d'un mot, d'un concept", "nom"],
                     ["Bibliographie", "une liste des ouvrages écrits sur ce sujet", "nom"],
