@@ -185,17 +185,28 @@ function openCategoryModal(chapterKey, chapter) {
 }
 
 function changeVocabulary(chapterKey, subcategoryKey) {
+    console.log(`changeVocabulary called: ${chapterKey}, ${subcategoryKey}`);
     hideAllGameContainers();
     currentChapterKey = chapterKey;
     currentSubcategoryKey = subcategoryKey;
     
     if (typeof ALL_VOCAB_DATA === 'undefined') {
+        console.error("ALL_VOCAB_DATA is undefined");
         displayAlert("Erreur: Fichier de données (vocab_data.js) manquant ou incorrect.", varCss.colorIncorrect);
         return;
     }
 
     const chapter = ALL_VOCAB_DATA[chapterKey];
+    if (!chapter) {
+        console.error(`Chapter not found: ${chapterKey}`);
+        return;
+    }
     const subcategory = chapter.subcategories[subcategoryKey];
+    if (!subcategory) {
+        console.error(`Subcategory not found: ${subcategoryKey}`);
+        return;
+    }
+
     vocab = subcategory.data;
     chapterAlert = subcategory.alert;
 
@@ -207,6 +218,7 @@ function changeVocabulary(chapterKey, subcategoryKey) {
         hideAlert();
     }
 
+    console.log(`Loaded ${vocab.length} words.`);
     generateList();
     startFlashcardGame();
 }
