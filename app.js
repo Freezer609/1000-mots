@@ -149,31 +149,39 @@ function generateChapterButtons() {
 }
 
 function openCategoryModal(chapterKey, chapter) {
-    
+    console.log(`openCategoryModal called for ${chapterKey}`);
     document.querySelectorAll('.chapter-selector button').forEach(btn => btn.classList.remove('active'));
     document.getElementById(chapter.selectorId).classList.add('active');
 
-    const subEntries = Object.entries(chapter.subcategories);
-    if (subEntries.length === 1) {
-        changeVocabulary(chapterKey, subEntries[0][0]);
-        return;
-    }
+    try {
+        const subEntries = Object.entries(chapter.subcategories);
+        console.log(`Subcategories found: ${subEntries.length}`);
+        
+        if (subEntries.length === 1) {
+            console.log(`Auto-selecting subcategory: ${subEntries[0][0]}`);
+            changeVocabulary(chapterKey, subEntries[0][0]);
+            return;
+        }
 
-    modalTitle.textContent = `Choisir la section pour ${chapter.title}`;
-    modalButtons.innerHTML = '';
-    
-    subEntries.forEach(([subKey, subcategory]) => {
-        const button = document.createElement('button');
-        button.textContent = subcategory.name;
-        button.style.backgroundColor = subcategory.color;
-        button.style.color = '#1E1E1E';
-        button.addEventListener('click', () => {
-            changeVocabulary(chapterKey, subKey);
-            categoryModal.style.display = 'none';
+        modalTitle.textContent = `Choisir la section pour ${chapter.title}`;
+        modalButtons.innerHTML = '';
+        
+        subEntries.forEach(([subKey, subcategory]) => {
+            const button = document.createElement('button');
+            button.textContent = subcategory.name;
+            button.style.backgroundColor = subcategory.color;
+            button.style.color = '#1E1E1E';
+            button.addEventListener('click', () => {
+                changeVocabulary(chapterKey, subKey);
+                categoryModal.style.display = 'none';
+            });
+            modalButtons.appendChild(button);
         });
-        modalButtons.appendChild(button);
-    });
-    categoryModal.style.display = 'flex';
+        categoryModal.style.display = 'flex';
+    } catch (e) {
+        console.error("Error in openCategoryModal:", e);
+        displayAlert(`Erreur: ${e.message}`, varCss.colorIncorrect);
+    }
 }
 
 function changeVocabulary(chapterKey, subcategoryKey) {
