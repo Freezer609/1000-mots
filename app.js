@@ -153,10 +153,16 @@ function openCategoryModal(chapterKey, chapter) {
     document.querySelectorAll('.chapter-selector button').forEach(btn => btn.classList.remove('active'));
     document.getElementById(chapter.selectorId).classList.add('active');
 
+    const subEntries = Object.entries(chapter.subcategories);
+    if (subEntries.length === 1) {
+        changeVocabulary(chapterKey, subEntries[0][0]);
+        return;
+    }
+
     modalTitle.textContent = `Choisir la section pour ${chapter.title}`;
     modalButtons.innerHTML = '';
     
-    Object.entries(chapter.subcategories).forEach(([subKey, subcategory]) => {
+    subEntries.forEach(([subKey, subcategory]) => {
         const button = document.createElement('button');
         button.textContent = subcategory.name;
         button.style.backgroundColor = subcategory.color;
