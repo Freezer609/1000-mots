@@ -93,14 +93,14 @@ const ALL_VOCAB_DATA = {
     }, 
     
     'chap20': {
-        title: 'Chapitre 20',
+        title: 'Chapitre 20 (MAJ)',
         selectorId: 'chap20SelectBtn',
         subcategories: {
             'general': {
                 name: 'Vocabulaire Général',
                 color: '#BB86FC',
                 alert: {
-                    message: "les mots de vocabulaires est à jour ! utiliser cette liste afin d'étudier ou de vérifier vos connaissances",
+                    message: "Les mots de vocabulaire sont à jour ! Utilisez cette liste afin d'étudier ou de vérifier vos connaissances.",
                     color: '#4CAF50'
                 },
                 data: [

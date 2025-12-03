@@ -717,6 +717,7 @@ dictationModeBtn.addEventListener('click', startDictationGame);
 matchModeBtn.addEventListener('click', startMatchGame);
 
 document.addEventListener('DOMContentLoaded', () => {
+    // alert('App Loaded - v3'); // Uncomment to verify script execution if needed
     generateChapterButtons(); 
     hideAlert();
     
