@@ -99,9 +99,48 @@ const ALL_VOCAB_DATA = {
             'general': {
                 name: 'Vocabulaire Général',
                 color: '#BB86FC',
-                alert: null,
+                alert: {
+                    message: "les mots de vocabulaires est à jour ! utiliser cette liste afin d'étudier ou de vérifier vos connaissances",
+                    color: '#4CAF50'
+                },
                 data: [
-                     
+    ["une acception", "la signification d'un mot, d'un concept"],
+    ["une bibliographie", "une liste des ouvrages écrits sur ce sujet"],
+    ["la critique d'une œuvre", "l'avis qu'elle a reçu, pouvant être négatif ou positif"],
+    ["érudit", "qui a des connaissances approfondies dans une matière"],
+    ["un leitmotiv", "une formule revenant plusieurs fois dans un texte pour créer un effet comique ou dramatique"],
+    ["un mécène", "une personne ou une institution qui aide financièrement et protège un ou plusieurs artistes"],
+    ["un média", "un support de communication"],
+    ["un mythe", "un récit qui idéalise les actions du personnage"],
+    ["péjoratif", "dévalorisant"],
+    ["le plagiat", "la copie et l'accaparation de l'œuvre d'autrui"],
+    ["la psychanalyse", "l'interprétation de la vie psychique"],
+    ["référer", "consulter pour y trouver des indications sur lesquelles vous appuyer"],
+    ["suspense", "un moment d'attente qui suspend le déroulement d'une action ou précède son dénouement et tient le spectateur en haleine"],
+    ["lyrique", "sens propre : œuvre destinée à être chantée; sens figuré: œuvre exprimant des sentiments intimes de manière à communiquer une émotion"],
+    ["didactique", "qualifie un discours ou un texte dont la principale visée est d'instruire"],
+    ["dramatique", "sens propre; qui a un rapport avec le théâtre; sens figuré: qualifie une action dont l'issue est incertaine, une lutte contre la mort qui émeut ceux qui en sont témoins"],
+    ["épique", "qualifie une œuvre qui met en scène des événements historiques ou légendaires en mettant en valeur leur caractère grandiose ou héroïque; s'applique aussi à d'autres formes d'art (ex: cinéma)."],
+    ["fantastique", "créé par l'imagination, qui n'existe pas dans la réalité, souvent avec connotation de bizarre, d'inquiétant."],
+    ["humour", "disposition d'esprit qui consiste à faire apparaître les aspects drôles ou insolites de la réalité, par exemple en prenant au sérieux ce qui ne l'est pas et vice versa"],
+    ["ironie", "manière de critiquer une chose ou de s'en moquer en disant le contraire de ce que l'on pense, en faisant comme si l'on était d'accord avec le point de vue opposé"],
+    ["merveilleux", "qui étonne ou enchante par son caractère magique ou miraculeux, avec la connotation d'heureux ou d'admirable"],
+    ["une parodie", "sens propre: imitation burlesque d'une œuvre sérieuse; sens figuré: imitation regrettable d'une action respectable"],
+    ["réalisme", "volonté de donner dans une œuvre une vision exacte de la réalité telle qu'elle est, d'où parfois une certaine tendance à insister sur les aspects grossiers, répugnants de la réalité"],
+    ["utopie", "gouvernement imaginaire et idéal / conception ou projet qui paraît irréalisable, mais qui peut pourtant être fructueux; parfois employé avec une nuance péjorative"],
+    ["romanesque", "sens propre: qui se trouve dans les romans; sens figuré (avec nuances parfois péjorative): qualifie un esprit qui a tendance à s'évader de ka réalité, à se complaire dans un monde plus agréable que la réalité, comme on en trouve dans les romans"],
+    ["tragique", "qualifie la situation d'un être qui paraît victime de la fatalité, qui s'efforce en vain d'échapper à son destin"],
+    ["épistolaire", "qui concerne la correspondance"],
+    ["Satires", "type d'écrit ou de discours qui critique une personne, une œuvre ou une institutions, en s'en moquant avec verve et virulence"],
+    ["culture", "aventure personnelle qui tend à développer les qualités naturelles de l'individu, à le mettre en état de croissance intellectuels (selon Madeleine Hours)"],
+    ["civilisation", "ensemble des aspects religieux et moraux, intellectuels, scientifiques et techniques ainsi que des pratiques sociales commune à un peuple ou à un groupe de peuples (peut sous entendre le progrès par rapport à un état primitif)"],
+    ["connotation", "ensemble des valeurs affectives attachées à un mot en plus de son sens propre"],
+    ["ellipse", "omission d'un mot qui se trouve ainsi sous-entendu; raccourci ou sous-entendu dans un récit ou un film"],
+    ["euphémique", "expression atténuée pour parler d'une réalité déplaisante"],
+    ["litote", "expression modéré d'une situation extrême"],
+    ["métaphore", "comparaison condensée, figure de style fréquente en poésie"],
+    ["néologisme", "mot nouveau ou sens nouveau d'un mot déjà existant"],
+    ["symbole", "signe concret évoquant par un rapport qui paraît naturel quelque chose d'invisible; objet ou image de la réalité ayant des correspondance avec la vie intérieure"]
                 ]
             }
         }
