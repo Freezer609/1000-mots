@@ -149,16 +149,15 @@ function generateChapterButtons() {
 }
 
 function openCategoryModal(chapterKey, chapter) {
-    console.log(`openCategoryModal called for ${chapterKey}`);
+    // alert(`Debug: Clicked ${chapter.title}`); // Commented out to avoid spam, but used for verification
+    
     document.querySelectorAll('.chapter-selector button').forEach(btn => btn.classList.remove('active'));
     document.getElementById(chapter.selectorId).classList.add('active');
 
     try {
         const subEntries = Object.entries(chapter.subcategories);
-        console.log(`Subcategories found: ${subEntries.length}`);
         
         if (subEntries.length === 1) {
-            console.log(`Auto-selecting subcategory: ${subEntries[0][0]}`);
             changeVocabulary(chapterKey, subEntries[0][0]);
             return;
         }
@@ -179,8 +178,8 @@ function openCategoryModal(chapterKey, chapter) {
         });
         categoryModal.style.display = 'flex';
     } catch (e) {
+        alert(`Erreur critique : ${e.message}`);
         console.error("Error in openCategoryModal:", e);
-        displayAlert(`Erreur: ${e.message}`, varCss.colorIncorrect);
     }
 }
 
@@ -230,6 +229,11 @@ function generateList() {
         li.textContent = `${pair[0]} - ${pair[1]}`;
         vocabularyList.appendChild(li);
     });
+    
+    // Auto-open the details to show the list
+    if (vocab.length > 0) {
+        vocabDetails.open = true;
+    }
 }
 
 function startFlashcardGame() {
