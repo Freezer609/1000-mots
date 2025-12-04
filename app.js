@@ -149,7 +149,26 @@ document.addEventListener('DOMContentLoaded', () => {
     function openStats() {
         updateStatsUI();
         statsModal.style.display = 'flex';
+        // Slight delay to allow display:flex to apply before adding class for transition
+        setTimeout(() => {
+            statsModal.classList.add('show');
+        }, 10);
     }
+    
+    function closeStats() {
+        statsModal.classList.remove('show');
+        // Wait for transition to finish before hiding
+        setTimeout(() => {
+            statsModal.style.display = 'none';
+        }, 300); // Match CSS transition time
+    }
+
+    // Update event listeners to use the new closeStats function
+    statsBtn.addEventListener('click', openStats);
+    closeModal.addEventListener('click', closeStats);
+    window.addEventListener('click', (e) => { 
+        if (e.target === statsModal) closeStats(); 
+    });
 
     function formatTime(seconds) {
         const h = Math.floor(seconds / 3600);
