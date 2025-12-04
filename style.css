@@ -107,6 +107,10 @@ header {
     z-index: 10; /* Ensure dropdown appears above other content */
 }
 
+.custom-select-wrapper.open {
+    z-index: 100; /* Lift active dropdown above everything */
+}
+
 .custom-select-trigger {
     background: rgba(26, 23, 52, 0.9);
     border: 2px solid var(--primary-glow);
