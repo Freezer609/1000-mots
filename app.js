@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const modeButtons = {
         flashcard: document.getElementById('flashcardModeBtn'),
+        reverse: document.getElementById('reverseModeBtn'),
         quiz: document.getElementById('quizModeBtn'),
         hangman: document.getElementById('hangmanModeBtn'),
         scramble: document.getElementById('scrambleModeBtn'),
@@ -22,6 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const gameContainers = {
         flashcard: document.getElementById('flashcardGameContainer'),
+        reverse: document.getElementById('flashcardGameContainer'), // Reuses the same container
         quiz: document.getElementById('quizGameContainer'),
         hangman: document.getElementById('hangmanGameContainer'),
         scramble: document.getElementById('scrambleGameContainer'),
@@ -286,7 +288,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const startGame = (mode) => {
         const startFunctions = {
-            flashcard: startFlashcardGame, quiz: startQuizGame, hangman: startHangmanGame,
+            flashcard: startFlashcardGame, reverse: startFlashcardGame, // Both use same logic
+            quiz: startQuizGame, hangman: startHangmanGame,
             scramble: startScrambleGame, dictation: startDictationGame, match: startMatchGame,
         };
         if(startFunctions[mode]) startFunctions[mode]();
@@ -504,8 +507,23 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function displayCard() {
         const [word, definition, type] = shuffledVocab[currentCardIndex];
-        wordH2.textContent = word;
-        backFaceP.textContent = definition;
+        
+        if (currentMode === 'reverse') {
+            // In reverse mode: Front = Definition, Back = Word
+            wordH2.textContent = definition;
+            wordH2.style.fontSize = definition.length > 50 ? '1.5rem' : '2rem'; // Adjust size for long defs
+            backFaceP.textContent = word;
+            backFaceP.style.fontSize = '2rem';
+            backFaceP.style.fontWeight = 'bold';
+        } else {
+            // Normal mode: Front = Word, Back = Definition
+            wordH2.textContent = word;
+            wordH2.style.fontSize = ''; // Reset
+            backFaceP.textContent = definition;
+            backFaceP.style.fontSize = ''; // Reset
+            backFaceP.style.fontWeight = '';
+        }
+        
         wordTypeSpan.textContent = type || 'voc';
         flashcard.classList.remove('flipped');
         updateFlashcardUI();
