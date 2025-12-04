@@ -65,9 +65,168 @@ header {
     align-items: center;
     margin-bottom: 1.5rem;
     flex-wrap: wrap;
+    gap: 1rem;
 }
 
-#mainTitle { font-size: 1.5rem; font-weight: 600; letter-spacing: 2px; }
+.header-left { flex: 1; }
+.header-right { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+
+#mainTitle { font-size: 1.5rem; font-weight: 600; letter-spacing: 2px; margin: 0; }
+
+.icon-btn {
+    background: rgba(26, 23, 52, 0.9);
+    border: 1px solid var(--primary-glow);
+    color: var(--primary-glow);
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.icon-btn:hover {
+    background: var(--primary-glow);
+    color: white;
+    box-shadow: 0 0 15px rgba(106, 75, 255, 0.6);
+}
+
+/* Stats Modal Styles */
+.stats-content {
+    background: rgba(15, 13, 30, 0.98);
+    border: 1px solid var(--primary-glow);
+    box-shadow: 0 0 30px rgba(106, 75, 255, 0.2);
+    max-width: 600px;
+    width: 95%;
+    padding: 0;
+    overflow: hidden;
+}
+
+.stats-header {
+    background: rgba(106, 75, 255, 0.1);
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.stats-header h3 {
+    margin: 0;
+    font-family: 'Courier New', monospace;
+    color: var(--secondary-glow);
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+}
+
+.close-modal {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.close-modal:hover { color: white; }
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    padding: 1.5rem;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.main-stat { grid-column: span 2; flex-direction: row; justify-content: space-between; padding: 1.5rem; }
+.main-stat .stat-value { font-size: 2rem; color: var(--correct-color); }
+.main-stat .stat-label { font-size: 1rem; }
+
+/* Make the time card take full width since it's alone now */
+.stat-card:last-child {
+    grid-column: span 2;
+}
+
+.stat-label {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.5);
+    letter-spacing: 1px;
+    margin-bottom: 0.5rem;
+    font-family: 'Courier New', monospace;
+}
+
+.stat-value {
+    font-size: 1.2rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+}
+
+.stat-bar-bg {
+    width: 100%;
+    max-width: 200px;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 3px;
+    margin-left: 1rem;
+}
+.stat-bar-fg { height: 100%; background: var(--correct-color); border-radius: 3px; width: 0%; transition: width 1s ease; }
+
+.radar-container {
+    width: 100%;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    padding: 1rem 0;
+}
+
+#radarChart {
+    width: 220px;
+    height: 220px;
+    filter: drop-shadow(0 0 10px rgba(106, 75, 255, 0.3));
+}
+
+/* SVG Styles */
+.radar-axis { stroke: rgba(255, 255, 255, 0.1); stroke-width: 1; }
+.radar-level { stroke: rgba(255, 255, 255, 0.05); fill: none; stroke-width: 1; }
+.radar-shape { fill: rgba(106, 75, 255, 0.3); stroke: var(--primary-glow); stroke-width: 2; stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: drawShape 1.5s forwards ease-out; }
+.radar-label { font-size: 8px; fill: rgba(255, 255, 255, 0.7); font-family: 'Courier New', monospace; text-anchor: middle; }
+
+@keyframes drawShape { to { stroke-dashoffset: 0; } }
+
+.detailed-stats {
+    padding: 0 1.5rem 1.5rem;
+    font-family: 'Courier New', monospace;
+}
+
+.detail-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+.stat-lvl { color: var(--secondary-glow); font-weight: bold; }
+
+@media (max-width: 600px) {
+    .stats-grid { grid-template-columns: 1fr 1fr; }
+    .main-stat { grid-column: span 2; }
+}
 
 .mode-selector { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .mode-selector button {

@@ -92,6 +92,159 @@ document.addEventListener('DOMContentLoaded', () => {
     let matchPairs = [];
     let selected = {word: null, def: null};
 
+    // --- Statistics System ---
+    const defaultStats = {
+        totalMastered: 0,
+        totalLearnedTime: 0, // seconds
+        lastLogin: new Date().toDateString(),
+        streak: 0,
+        skills: {
+            memory: 0, // Flashcards
+            speed: 0, // Quiz
+            precision: 0, // Dictation/Hangman
+            logic: 0 // Scramble/Match
+        }
+    };
+    
+    let userStats = JSON.parse(localStorage.getItem('userStats')) || defaultStats;
+
+    // Check streak
+    const today = new Date().toDateString();
+    if (userStats.lastLogin !== today) {
+        const lastLoginDate = new Date(userStats.lastLogin);
+        const diffTime = Math.abs(new Date() - lastLoginDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        
+        if (diffDays === 1) userStats.streak++;
+        else if (diffDays > 1) userStats.streak = 1; // Reset if missed a day
+        
+        userStats.lastLogin = today;
+        saveStats();
+    }
+
+    function saveStats() {
+        localStorage.setItem('userStats', JSON.stringify(userStats));
+    }
+
+    function updateSkill(skill, amount) {
+        userStats.skills[skill] += amount;
+        userStats.totalMastered = masteredWords.size;
+        saveStats();
+    }
+
+    // Timer for total time
+    setInterval(() => {
+        if (document.hasFocus()) {
+            userStats.totalLearnedTime++;
+            if (userStats.totalLearnedTime % 60 === 0) saveStats(); // Save every minute
+        }
+    }, 1000);
+
+
+    // --- Stats UI & Radar Chart ---
+    const statsBtn = document.getElementById('statsBtn');
+    const statsModal = document.getElementById('statsModal');
+    const closeModal = statsModal.querySelector('.close-modal');
+
+    function openStats() {
+        updateStatsUI();
+        statsModal.style.display = 'flex';
+    }
+
+    function formatTime(seconds) {
+        const h = Math.floor(seconds / 3600);
+        const m = Math.floor((seconds % 3600) / 60);
+        return `${h}h ${m}m`;
+    }
+
+    function getLevel(xp) {
+        return Math.floor(Math.sqrt(xp / 10)) + 1; // Simple progression curve
+    }
+
+    function updateStatsUI() {
+        document.getElementById('statTotalMastered').textContent = userStats.totalMastered;
+        document.getElementById('statTotalBar').style.width = `${Math.min((userStats.totalMastered / 1000) * 100, 100)}%`;
+        document.getElementById('statTime').textContent = formatTime(userStats.totalLearnedTime);
+
+        document.getElementById('lvlMemory').textContent = `Lvl ${getLevel(userStats.skills.memory)}`;
+        document.getElementById('lvlSpeed').textContent = `Lvl ${getLevel(userStats.skills.speed)}`;
+        document.getElementById('lvlPrecision').textContent = `Lvl ${getLevel(userStats.skills.precision)}`;
+        document.getElementById('lvlLogic').textContent = `Lvl ${getLevel(userStats.skills.logic)}`;
+
+        drawRadarChart();
+    }
+
+    function drawRadarChart() {
+        const svg = document.getElementById('radarChart');
+        svg.innerHTML = ''; // Clear
+        
+        const stats = [
+            { val: getLevel(userStats.skills.memory), label: "MÉMOIRE" },
+            { val: getLevel(userStats.skills.speed), label: "VITESSE" },
+            { val: getLevel(userStats.skills.precision), label: "PRÉCISION" },
+            { val: getLevel(userStats.skills.logic), label: "LOGIQUE" }
+        ];
+
+        const maxLvl = Math.max(...stats.map(s => s.val), 10); // Scale based on max level
+        const center = 100;
+        const radius = 80;
+        const angleStep = (Math.PI * 2) / 4;
+
+        // Draw Axis & Levels
+        for (let i = 0; i < 4; i++) {
+            const angle = i * angleStep - Math.PI / 2;
+            const x = center + radius * Math.cos(angle);
+            const y = center + radius * Math.sin(angle);
+            
+            // Axis
+            const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            line.setAttribute("x1", center); line.setAttribute("y1", center);
+            line.setAttribute("x2", x); line.setAttribute("y2", y);
+            line.classList.add("radar-axis");
+            svg.appendChild(line);
+
+            // Label
+            const labelX = center + (radius + 15) * Math.cos(angle);
+            const labelY = center + (radius + 15) * Math.sin(angle);
+            const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+            text.setAttribute("x", labelX); text.setAttribute("y", labelY + 3); // +3 to center vertically
+            text.textContent = stats[i].label;
+            text.classList.add("radar-label");
+            svg.appendChild(text);
+        }
+
+        // Draw Levels (Concentric polygons)
+        [0.25, 0.5, 0.75, 1].forEach(scale => {
+            let points = "";
+            for (let i = 0; i < 4; i++) {
+                const angle = i * angleStep - Math.PI / 2;
+                const r = radius * scale;
+                points += `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)} `;
+            }
+            const poly = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+            poly.setAttribute("points", points);
+            poly.classList.add("radar-level");
+            svg.appendChild(poly);
+        });
+
+        // Draw Data Shape
+        let dataPoints = "";
+        stats.forEach((s, i) => {
+            const angle = i * angleStep - Math.PI / 2;
+            const r = (s.val / maxLvl) * radius;
+            dataPoints += `${center + r * Math.cos(angle)},${center + r * Math.sin(angle)} `;
+        });
+
+        const shape = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        shape.setAttribute("points", dataPoints);
+        shape.classList.add("radar-shape");
+        svg.appendChild(shape);
+    }
+
+    statsBtn.addEventListener('click', openStats);
+    closeModal.addEventListener('click', () => statsModal.style.display = 'none');
+    window.addEventListener('click', (e) => { if (e.target === statsModal) statsModal.style.display = 'none'; });
+
 
     // --- Utility ---
     const shuffleArray = (arr) => arr.sort(() => Math.random() - 0.5);
@@ -343,6 +496,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const currentWord = shuffledVocab[currentCardIndex][0];
         if (known) {
             masteredWords.add(currentWord);
+            updateSkill('memory', 10); // XP for mastering
+        } else {
+            updateSkill('memory', 2); // Small XP just for practicing
         }
         setTimeout(() => {
             currentCardIndex++;
@@ -373,7 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const word = shuffledVocab[currentCardIndex][0];
         masteredWords.add(word);
         updateMasteredList();
-        handleFeedback(false); // Move to next card, dont remove from current session
+        handleFeedback(true); // Move to next card, dont remove from current session
     });
 
     // --- Mastered Words Management ---
@@ -391,12 +547,15 @@ document.addEventListener('DOMContentLoaded', () => {
             deleteBtn.onclick = () => {
                 masteredWords.delete(word);
                 updateMasteredList();
+                updateSkill('memory', -5); // Penalty for forgetting
                 startGame(currentMode); // Refresh game
             };
             li.appendChild(deleteBtn);
             masteredVocabularyList.appendChild(li);
         });
         localStorage.setItem('masteredWords', JSON.stringify(masteredArray));
+        userStats.totalMastered = masteredWords.size; // Sync count
+        saveStats();
     }
 
     resetMasteredBtn.addEventListener('click', () => {
@@ -467,6 +626,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (selected === correct) {
             score.correct++;
             button.classList.add('correct');
+            updateSkill('speed', 5); // XP Speed
+            updateSkill('memory', 2); // XP Memory
         } else {
             button.classList.add('incorrect');
         }
@@ -513,6 +674,7 @@ document.addEventListener('DOMContentLoaded', () => {
         guessedLetters.add(letter);
         if (hangmanCorrectAnswer.includes(letter)) {
             displayHangmanWord();
+            updateSkill('precision', 1); // Small XP per letter
             if (!hangmanWordDiv.textContent.includes('_')) endHangmanGame(true);
         } else {
             errors++;
@@ -522,6 +684,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const endHangmanGame = (won) => {
+        if(won) updateSkill('precision', 10); // Bonus for win
         displayAlert(won ? "Gagné!" : `Perdu! Le mot était ${hangmanCorrectAnswer}`, won ? 'var(--correct-color)' : 'var(--incorrect-color)');
         setTimeout(() => { hideAlert(); startHangmanGame(); }, 2000);
     };
@@ -556,6 +719,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const isCorrect = elements.input.value.trim().toLowerCase() === currentWord.toLowerCase();
         elements.feedback.textContent = isCorrect ? 'Correct!' : `Faux, le mot était : ${currentWord}`;
         elements.feedback.style.color = isCorrect ? 'var(--correct-color)' : 'var(--incorrect-color)';
+        
+        if(isCorrect) {
+            if(mode === 'scramble') updateSkill('logic', 8);
+            else updateSkill('precision', 10);
+        }
+
         elements.checkBtn.style.display = 'none';
         elements.nextBtn.style.display = 'inline-block';
     }
@@ -626,6 +795,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if(isMatch){
                 selected.word.classList.add('matched');
                 selected.def.classList.add('matched');
+                updateSkill('logic', 3); // XP Logic per match
                 const matchedCount = document.querySelectorAll('.match-item.matched').length / 2;
                 updateMatchScore(matchedCount);
                 if(matchedCount === MATCH_COUNT) matchNextBtn.style.display = 'block';

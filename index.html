@@ -16,15 +16,20 @@
 
     <div class="container">
         <header>
-            <h1 id="mainTitle">1000 mots</h1>
-            <nav class="mode-selector">
-                <button id="flashcardModeBtn" class="active">Flashcards</button>
-                <button id="quizModeBtn">Quiz</button>
-                <button id="hangmanModeBtn">Hangman</button>
-                <button id="scrambleModeBtn">Scramble</button>
-                <button id="dictationModeBtn">Dictation</button>
-                <button id="matchModeBtn">Match</button>
-            </nav>
+            <div class="header-left">
+                <h1 id="mainTitle">1000 mots</h1>
+            </div>
+            <div class="header-right">
+                <nav class="mode-selector">
+                    <button id="flashcardModeBtn" class="active">Flashcards</button>
+                    <button id="quizModeBtn">Quiz</button>
+                    <button id="hangmanModeBtn">Hangman</button>
+                    <button id="scrambleModeBtn">Scramble</button>
+                    <button id="dictationModeBtn">Dictation</button>
+                    <button id="matchModeBtn">Match</button>
+                </nav>
+                <button id="statsBtn" class="icon-btn" title="Statistiques"><i class="fas fa-chart-line"></i></button>
+            </div>
         </header>
 
         <div class="selectors-container">
@@ -167,6 +172,39 @@
 
     </div>
 
+    <div id="statsModal" class="modal" style="display: none;">
+        <div class="modal-content stats-content">
+            <div class="stats-header">
+                <h3><i class="fas fa-terminal"></i> USER_STATS_LOG</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card main-stat">
+                    <span class="stat-label">MAÎTRISE GLOBALE</span>
+                    <span class="stat-value" id="statTotalMastered">0%</span>
+                    <div class="stat-bar-bg"><div class="stat-bar-fg" id="statTotalBar"></div></div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-label">TEMPS TOTAL</span>
+                    <span class="stat-value" id="statTime">00:00:00</span>
+                </div>
+            </div>
+
+            <div class="radar-container">
+                <svg id="radarChart" viewBox="0 0 200 200"></svg>
+            </div>
+
+            <div class="detailed-stats">
+                <div class="detail-row"><span>RETENTION SYNAPTIQUE (Mémoire)</span> <span id="lvlMemory" class="stat-lvl">Lvl 1</span></div>
+                <div class="detail-row"><span>VÉLOCITÉ COGNITIVE (Vitesse)</span> <span id="lvlSpeed" class="stat-lvl">Lvl 1</span></div>
+                <div class="detail-row"><span>PRÉCISION LEXICALE (Ortho)</span> <span id="lvlPrecision" class="stat-lvl">Lvl 1</span></div>
+                <div class="detail-row"><span>RECONNAISSANCE PATTERNS (Logique)</span> <span id="lvlLogic" class="stat-lvl">Lvl 1</span></div>
+            </div>
+        </div>
+    </div>
+    
     <script src="vocab_data.js"></script>
     <script src="app.js"></script>
 </body>
