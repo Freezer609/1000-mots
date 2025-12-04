@@ -29,10 +29,16 @@ document.addEventListener('DOMContentLoaded', () => {
         match: document.getElementById('matchGameContainer'),
     };
 
-    const chapterSelectorDiv = document.getElementById('chapterSelector');
-    const categoryModal = document.getElementById('categoryModal');
-    const modalTitle = document.getElementById('modalTitle');
-    const modalButtons = document.getElementById('modalButtons');
+    const nativeChapterSelect = document.getElementById('chapterSelect');
+    const nativeSubcategorySelect = document.getElementById('subcategorySelect');
+
+    const chapterSelectWrapper = document.getElementById('chapterSelectWrapper');
+    const customChapterTrigger = chapterSelectWrapper.querySelector('.custom-select-trigger');
+    const customChapterOptionsContainer = chapterSelectWrapper.querySelector('.custom-options');
+
+    const subcategorySelectWrapper = document.getElementById('subcategorySelectWrapper');
+    const customSubcategoryTrigger = subcategorySelectWrapper.querySelector('.custom-select-trigger');
+    const customSubcategoryOptionsContainer = subcategorySelectWrapper.querySelector('.custom-options');
 
     const prevCardBtn = document.getElementById('prevCardBtn');
     const nextCardBtn = document.getElementById('nextCardBtn');
@@ -115,48 +121,192 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // --- Chapter & Vocab Data ---
-    function generateChapterButtons() {
-        while (chapterSelectorDiv.firstChild) {
-            chapterSelectorDiv.removeChild(chapterSelectorDiv.firstChild);
-        }
+    function initSelectors() {
+        // Setup Chapter Select
+        setupCustomSelect(chapterSelectWrapper, customChapterTrigger, customChapterOptionsContainer, nativeChapterSelect);
+
+        // Setup Subcategory Select (initially disabled)
+        setupCustomSelect(subcategorySelectWrapper, customSubcategoryTrigger, customSubcategoryOptionsContainer, nativeSubcategorySelect);
+        subcategorySelectWrapper.classList.add('disabled');
+
         Object.entries(ALL_VOCAB_DATA).forEach(([key, chapter]) => {
-            const button = document.createElement('button');
-            button.id = chapter.selectorId;
-            button.textContent = chapter.title;
-            button.addEventListener('click', () => openCategoryModal(key, chapter));
-            chapterSelectorDiv.appendChild(button);
+            const option = document.createElement('option');
+            option.value = key;
+            option.textContent = chapter.title;
+            nativeChapterSelect.appendChild(option);
+        });
+        chapterSelectWrapper.updateCustomSelect(); // Update custom display
+
+        nativeChapterSelect.addEventListener('change', () => {
+            const chapterKey = nativeChapterSelect.value;
+            
+            // Clear and reset native subcategory select
+            nativeSubcategorySelect.innerHTML = '<option value="" disabled selected>Choisir une liste</option>';
+            nativeSubcategorySelect.disabled = true;
+            subcategorySelectWrapper.classList.add('disabled'); // Disable custom wrapper
+            
+            if (chapterKey && ALL_VOCAB_DATA[chapterKey]) {
+                const chapter = ALL_VOCAB_DATA[chapterKey];
+                Object.entries(chapter.subcategories).forEach(([subKey, sub]) => {
+                    const option = document.createElement('option');
+                    option.value = subKey;
+                    option.textContent = sub.name;
+                    nativeSubcategorySelect.appendChild(option);
+                });
+                nativeSubcategorySelect.disabled = false;
+                subcategorySelectWrapper.classList.remove('disabled'); // Enable custom wrapper
+            }
+            subcategorySelectWrapper.updateCustomSelect(); // Update custom display for subcategory
+        });
+
+        nativeSubcategorySelect.addEventListener('change', () => {
+            const chapterKey = nativeChapterSelect.value;
+            const subcategoryKey = nativeSubcategorySelect.value;
+            if (chapterKey && subcategoryKey) {
+                changeVocabulary(chapterKey, subcategoryKey);
+            }
         });
     }
 
-    function openCategoryModal(chapterKey, chapter) {
-        document.querySelectorAll('.chapter-selector button').forEach(btn => btn.classList.remove('active'));
-        document.getElementById(chapter.selectorId)?.classList.add('active');
-        modalTitle.textContent = `Choisir la section pour ${chapter.title}`;
-        while (modalButtons.firstChild) {
-            modalButtons.removeChild(modalButtons.firstChild);
-        }
-        Object.entries(chapter.subcategories).forEach(([subKey, sub]) => {
-            const button = document.createElement('button');
-            button.textContent = sub.name;
-            button.style.backgroundColor = sub.color;
-            button.onclick = () => { changeVocabulary(chapterKey, subKey); categoryModal.style.display = 'none'; };
-            modalButtons.appendChild(button);
+    // Generic function to set up custom select dropdowns
+    function setupCustomSelect(wrapper, trigger, optionsContainer, nativeSelect) {
+        // Initial setup for trigger text
+        trigger.textContent = nativeSelect.options[nativeSelect.selectedIndex]?.textContent || "Sélectionner...";
+
+        // Handle click on custom trigger to toggle options visibility
+        trigger.addEventListener('click', () => {
+            if (wrapper.classList.contains('disabled')) return; // Do nothing if disabled
+            wrapper.classList.toggle('open');
+            trigger.classList.toggle('active');
+            optionsContainer.classList.toggle('open');
         });
-        categoryModal.style.display = 'flex';
+
+        // Close when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!wrapper.contains(e.target)) {
+                wrapper.classList.remove('open');
+                trigger.classList.remove('active');
+                optionsContainer.classList.remove('open');
+            }
+        });
+
+        // Function to populate custom options from native select's options
+        function populateCustomOptions() {
+            optionsContainer.innerHTML = ''; // Clear previous options
+            Array.from(nativeSelect.options).forEach((option) => {
+                const customOption = document.createElement('div');
+                customOption.classList.add('custom-option');
+                customOption.textContent = option.textContent;
+                customOption.dataset.value = option.value;
+                if (option.disabled) {
+                    customOption.classList.add('disabled');
+                }
+                if (option.selected) {
+                    customOption.classList.add('selected');
+                }
+
+                // Handle click on custom option
+                customOption.addEventListener('click', () => {
+                    if (customOption.classList.contains('disabled')) return; // Do nothing if disabled
+
+                    nativeSelect.value = option.value; // Update native select's value
+                    trigger.textContent = option.textContent; // Update custom trigger text
+
+                    // Remove 'selected' from old option and add to new
+                    Array.from(optionsContainer.children).forEach(opt => opt.classList.remove('selected'));
+                    customOption.classList.add('selected');
+
+                    // Close the custom dropdown
+                    wrapper.classList.remove('open');
+                    trigger.classList.remove('active');
+                    optionsContainer.classList.remove('open');
+
+                    // Dispatch 'change' event on the native select
+                    const event = new Event('change', { bubbles: true });
+                    nativeSelect.dispatchEvent(event);
+                });
+                optionsContainer.appendChild(customOption);
+            });
+        }
+        
+        // Initial population
+        populateCustomOptions();
+
+        // Observer for changes in native select (childList for options added/removed, attributes for disabled)
+        const observer = new MutationObserver(() => {
+            populateCustomOptions();
+            updateDisabledState(); // Also update disabled state if native select's disabled attribute changes
+            // If the native select's value changed programmatically, update the custom display
+            const selectedOption = nativeSelect.options[nativeSelect.selectedIndex];
+            if (selectedOption) {
+                trigger.textContent = selectedOption.textContent;
+            }
+        });
+        observer.observe(nativeSelect, { childList: true, attributes: true, attributeFilter: ['disabled', 'value'] });
+
+        // Function to update the disabled state of the custom wrapper
+        const updateDisabledState = () => {
+            if (nativeSelect.disabled) {
+                wrapper.classList.add('disabled');
+            } else {
+                wrapper.classList.remove('disabled');
+            }
+        };
+
+        // Initial check and observe disabled attribute on the native select
+        updateDisabledState(); // Initial state
+    
+        // Method to call externally if native select's value or options are changed programmatically
+        wrapper.updateCustomSelect = () => {
+            populateCustomOptions();
+            updateDisabledState();
+            const selectedOption = nativeSelect.options[nativeSelect.selectedIndex];
+            if (selectedOption) {
+                trigger.textContent = selectedOption.textContent;
+                Array.from(optionsContainer.children).forEach(opt => opt.classList.remove('selected'));
+                const matchingCustomOption = Array.from(optionsContainer.children).find(
+                    opt => opt.dataset.value === selectedOption.value
+                );
+                if (matchingCustomOption) {
+                    matchingCustomOption.classList.add('selected');
+                }
+            } else {
+                // If no option is selected in native select, reset custom trigger to placeholder
+                trigger.textContent = nativeSelect.options[0]?.textContent || "Sélectionner...";
+                Array.from(optionsContainer.children).forEach(opt => opt.classList.remove('selected'));
+                optionsContainer.children[0]?.classList.add('selected');
+            }
+        };
+        wrapper.updateCustomSelect(); // Initial display update
     }
 
     function changeVocabulary(chapterKey, subcategoryKey) {
         const sub = ALL_VOCAB_DATA[chapterKey].subcategories[subcategoryKey];
         vocab = sub.data;
         listTitle.textContent = `${ALL_VOCAB_DATA[chapterKey].title} - ${sub.name}`;
+        
         while (fullVocabularyList.firstChild) {
             fullVocabularyList.removeChild(fullVocabularyList.firstChild);
         }
         vocab.forEach(v => {
             const li = document.createElement('li');
-            li.textContent = `${v[0]} - ${v[1]}`;
+            // Create a structured item for better copying/reading
+            const wordSpan = document.createElement('span');
+            wordSpan.className = 'vocab-word';
+            wordSpan.textContent = v[0];
+            
+            const separator = document.createTextNode(' : ');
+            
+            const defSpan = document.createElement('span');
+            defSpan.className = 'vocab-def';
+            defSpan.textContent = v[1];
+
+            li.appendChild(wordSpan);
+            li.appendChild(separator);
+            li.appendChild(defSpan);
             fullVocabularyList.appendChild(li);
         });
+
         sub.alert ? displayAlert(sub.alert.message, sub.alert.color) : hideAlert();
         startGame(currentMode);
     }
@@ -500,7 +650,7 @@ document.addEventListener('DOMContentLoaded', () => {
         modeButtons[mode].addEventListener('click', () => showGameContainer(mode));
     });
     
-    generateChapterButtons();
+    initSelectors();
     updateMasteredList(); // Initial population of the mastered list
     showGameContainer('flashcard');
 });

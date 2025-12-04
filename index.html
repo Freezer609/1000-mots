@@ -27,7 +27,23 @@
             </nav>
         </header>
 
-        <div id="chapterSelector" class="chapter-selector">
+        <div class="selectors-container">
+            <div class="custom-select-wrapper" id="chapterSelectWrapper">
+                <div class="custom-select-trigger">Choisir un chapitre</div>
+                <div class="custom-options" id="customChapterOptions">
+                    <select id="chapterSelect" class="styled-select hidden-select">
+                        <option value="" disabled selected>Choisir un chapitre</option>
+                    </select>
+                </div>
+            </div>
+            <div class="custom-select-wrapper" id="subcategorySelectWrapper">
+                <div class="custom-select-trigger">Choisir une liste</div>
+                <div class="custom-options" id="customSubcategoryOptions">
+                    <select id="subcategorySelect" class="styled-select hidden-select" disabled>
+                        <option value="" disabled selected>Choisir une liste</option>
+                    </select>
+                </div>
+            </div>
         </div>
         <div id="alertMessage" class="alert-message" style="display:none;"></div>
 
@@ -151,14 +167,6 @@
 
     </div>
 
-    <div id="categoryModal" class="modal">
-        <div class="modal-content">
-            <h3 id="modalTitle"></h3>
-            <div id="modalButtons" class="modal-buttons">
-            </div>
-        </div>
-    </div>
-    
     <script src="vocab_data.js"></script>
     <script src="app.js"></script>
 </body>
