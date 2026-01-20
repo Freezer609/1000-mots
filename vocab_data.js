@@ -17,7 +17,7 @@ const ALL_VOCAB_DATA = {
                     ["Animosité", "malveillance", "nom f"],
                     ["Bouffon(ne)", "comique par son ridicule", "adjectif"],
                     ["Commisération", "de la pitié, de la compassion pour des personnes malheureuses ou inférieures", "nom f"],
-                    ["Couroux", "une violente colère", "nom"],
+                    ["Courroux", "une violente colère", "nom"],
                     ["Des moments d'exaltation", "d'enthousiaste, de surexcitation", "nom f"],
                     ["Félicité", "un bonheur total et paisible généralement durable (terme littéraire et religieux)", "nom f"],
                     ["Être féru(e)", "être passionné(e) par qqch", "adjectif"],
