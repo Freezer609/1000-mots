@@ -282,6 +282,14 @@ document.addEventListener('DOMContentLoaded', () => {
         return s.toString().trim().toLowerCase().normalize('NFD').replace(/\p{Diacritic}/gu, '');
     }
 
+    // Words that should show a "Facultative" badge on flashcards (normalized)
+    const FACULTATIVE_WORDS = new Set([
+        'sensation',
+        'sensualite',
+        'inclinaison',
+        'desinteressement'
+    ]);
+
     // Simple Levenshtein distance
     function levenshtein(a, b) {
         a = a || '';
@@ -577,7 +585,12 @@ document.addEventListener('DOMContentLoaded', () => {
             backFaceP.style.fontWeight = '';
         }
         
-        wordTypeSpan.textContent = type || 'voc';
+        const isFacultative = FACULTATIVE_WORDS.has(normalizeText(word));
+        if (isFacultative) {
+            wordTypeSpan.innerHTML = `${type || 'voc'} <span class="facultative-badge">Facultative</span>`;
+        } else {
+            wordTypeSpan.textContent = type || 'voc';
+        }
         flashcard.classList.remove('flipped');
         updateFlashcardUI();
     }
