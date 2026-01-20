@@ -1,10 +1,10 @@
 const ALL_VOCAB_DATA = {
-    'chap17': {
-        title: 'Chapitre 17',
-        selectorId: 'chap17SelectBtn',
+    'chap18': {
+        title: 'Chapitre 18',
+        selectorId: 'chap18SelectBtn',
         subcategories: {
             'general': {
-                name: 'Chapitre 17',
+                name: 'Chapitre 18',
                 color: '#FFA500',
                 alert: {
                     message: "le voc est à jour ! utiliser le site afin d'étudier et de consolider vos connaissances ! des erreurs peuvent survenir donc dites moi si ça arrive...",
