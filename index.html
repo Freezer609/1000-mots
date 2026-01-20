@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>1000 mots</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="blurry-shapes">
+        <div class="shape-1"></div>
+        <div class="shape-2"></div>
+    </div>
+
+    <div class="container">
+        <header>
+            <div class="header-left">
+                <h1 id="mainTitle">1000 mots</h1>
+            </div>
+            <div class="header-right">
+                <nav class="mode-selector">
+                    <button id="flashcardModeBtn" class="active">Flashcards</button>
+                    <button id="reverseModeBtn">Reverse</button>
+                    <button id="quizModeBtn">Quiz</button>
+                    <button id="hangmanModeBtn">Hangman</button>
+                    <button id="scrambleModeBtn">Scramble</button>
+                    <button id="dictationModeBtn">Dictation</button>
+                    <button id="matchModeBtn">Match</button>
+                </nav>
+                <button id="statsBtn" class="icon-btn" title="Statistiques"><i class="fas fa-chart-line"></i></button>
+            </div>
+        </header>
+
+        <div class="selectors-container">
+            <div class="custom-select-wrapper" id="chapterSelectWrapper">
+                <div class="custom-select-trigger">Choisir un chapitre</div>
+                <div class="custom-options" id="customChapterOptions">
+                    <select id="chapterSelect" class="styled-select hidden-select">
+                        <option value="" disabled selected>Choisir un chapitre</option>
+                    </select>
+                </div>
+            </div>
+            <div class="custom-select-wrapper" id="subcategorySelectWrapper">
+                <div class="custom-select-trigger">Choisir une liste</div>
+                <div class="custom-options" id="customSubcategoryOptions">
+                    <select id="subcategorySelect" class="styled-select hidden-select" disabled>
+                        <option value="" disabled selected>Choisir une liste</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div id="alertMessage" class="alert-message" style="display:none;"></div>
+
+        <main id="game-zone">
+            <div id="flashcardGameContainer" class="game-container active-mode">
+                <button class="nav-arrow prev-arrow" id="prevCardBtn"><i class="fas fa-chevron-left"></i></button>
+
+                <div class="card-container">
+                    <div id="flashcard" class="card">
+                        <div id="front" class="card-face card-front">
+                            <span class="word-type">adjective</span>
+                            <h2 class="word">Epehernal</h2>
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div id="back" class="card-face card-back">
+                            <div class="card-content">
+                                <p>Fugace, de courte durée</p>
+                            </div>
+                            <div class="feedback-buttons">
+                                <button id="didntKnowBtn">Je ne l'avais pas</button>
+                                <button id="masteredBtn">Maîtriser</button>
+                                <button id="knewItBtn">Je l'avais</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <button class="nav-arrow next-arrow" id="nextCardBtn"><i class="fas fa-chevron-right"></i></button>
+
+                <div class="bottom-ui">
+                    <div class="progress-container">
+                        <span id="cardCounter">7/10</span>
+                        <div class="progress-bar-background">
+                            <div id="progressBar" class="progress-bar-foreground"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Other game containers remain the same -->
+            <div id="quizGameContainer" class="game-container">
+                <div id="quizScore" class="quiz-score">Score: 0 / 0</div>
+                <div id="quizQuestion" class="quiz-question"></div>
+                <div id="quizOptions" class="quiz-options"></div>
+            </div>
+
+            <div id="hangmanGameContainer" class="game-container">
+                <svg class="hangman-drawing" viewBox="0 0 200 200">
+                    <line x1="10" y1="190" x2="150" y2="190" class="hangman-svg-part" />
+                    <line x1="40" y1="190" x2="40" y2="20" class="hangman-svg-part" />
+                    <line x1="40" y1="20" x2="120" y2="20" class="hangman-svg-part" />
+                    <line x1="120" y1="20" x2="120" y2="40" class="hangman-svg-part" />
+                    <circle id="head" cx="120" cy="55" r="15" class="hangman-svg-part" />
+                    <line id="body" x1="120" y1="70" x2="120" y2="120" class="hangman-svg-part" />
+                    <line id="arm1" x1="120" y1="80" x2="100" y2="100" class="hangman-svg-part" />
+                    <line id="arm2" x1="120" y1="80" x2="140" y2="100" class="hangman-svg-part" />
+                    <line id="leg1" x1="120" y1="120" x2="100" y2="150" class="hangman-svg-part" />
+                    <line id="leg2" x1="120" y1="120" x2="140" y2="150" class="hangman-svg-part" />
+                </svg>
+                <div id="hangmanWord" class="hangman-word"></div>
+                <div id="hangmanLetters" class="hangman-letters"></div>
+            </div>
+
+            <div id="scrambleGameContainer" class="game-container">
+                <div id="scrambleWord" class="quiz-question"></div>
+                <div id="scrambleClue" class="scramble-clue"></div>
+                <input type="text" id="scrambleInput" placeholder="Écris le mot ici..." autocomplete="off">
+                <button id="scrambleCheckBtn">Vérifier</button>
+                <div id="scrambleFeedback" class="scramble-feedback"></div>
+                <button id="scrambleNextBtn" style="display:none;">Mot Suivant &rarr;</button>
+            </div>
+
+            <div id="dictationGameContainer" class="game-container">
+                <div id="dictationClue" class="dictation-clue"></div>
+                <input type="text" id="dictationInput" placeholder="Écris le mot exact ici..." autocomplete="off">
+                <button id="dictationCheckBtn">Vérifier</button>
+                <div id="dictationFeedback" class="dictation-feedback"></div>
+                <button id="dictationNextBtn" style="display:none;">Mot Suivant &rarr;</button>
+            </div>
+
+            <div id="matchGameContainer" class="game-container">
+                <div id="matchScore">Paires trouvées : 0 / 6</div>
+                <div id="matchGrid">
+                    <div id="wordsColumn" class="match-column"></div>
+                    <div id="definitionsColumn" class="match-column"></div>
+                </div>
+                <button id="matchNextBtn" style="display:none; margin-top: 30px;">Prochain Match &rarr;</button>
+            </div>
+        </main>
+
+        <div class="details-section">
+            <details id="masteredDetails">
+                <summary>Mots Maîtrisés</summary>
+                <div class="list-content">
+                    <ul id="masteredVocabularyList" class="vocabulary-list"></ul>
+                    <button id="resetMasteredBtn" class="reset-btn">Réinitialiser</button>
+                </div>
+            </details>
+            <details id="vocabDetails">
+                <summary id="listTitle">Liste Complète</summary>
+                <div class="list-content">
+                    <ul id="fullVocabularyList" class="vocabulary-list"></ul>
+                </div>
+            </details>
+
+            <details>
+                <summary>Comment Utiliser</summary>
+                <div class="instructions-content">
+                    <p>
+                        - **Sélecteur de Chapitre** : Choisis la catégorie de vocabulaire à réviser en haut de la page.
+                        - **Mode Cartes** : Clique sur la carte pour voir la définition, puis dis si tu l'avais ou non. Les mots non connus reviendront plus souvent.
+                        - **Mode Quiz** : Lis le mot ou la définition et choisis la bonne réponse.
+                        - **Mode Pendu** : Devine le mot en cliquant sur les lettres.
+                        - **Mots Mélangés** : Un mot est mélangé, retrouve le mot original avec l'aide de sa définition.
+                        - **Mode Dictée** : Écris le mot exact correspondant à la définition. (Attention aux accents et à l'orthographe exacte).
+                        - **Mode Association** : Associe les mots à leur définition en cliquant sur une paire.
+                    </p>
+                </div>
+            </details>
+        </div>
+
+    </div>
+
+    <div id="statsModal" class="modal" style="display: none;">
+        <div class="modal-content stats-content">
+            <div class="stats-header">
+                <h3><i class="fas fa-terminal"></i> USER_STATS_LOG</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card main-stat">
+                    <span class="stat-label">MAÎTRISE GLOBALE</span>
+                    <span class="stat-value" id="statTotalMastered">0%</span>
+                    <div class="stat-bar-bg"><div class="stat-bar-fg" id="statTotalBar"></div></div>
+                </div>
+
+                <div class="stat-card">
+                    <span class="stat-label">TEMPS TOTAL</span>
+                    <span class="stat-value" id="statTime">00:00:00</span>
+                </div>
+            </div>
+
+            <div class="radar-container">
+                <svg id="radarChart" viewBox="0 0 200 200"></svg>
+            </div>
+
+            <div class="detailed-stats">
+                <div class="detail-row"><span>RETENTION SYNAPTIQUE (Mémoire)</span> <span id="lvlMemory" class="stat-lvl">Lvl 1</span></div>
+                <div class="detail-row"><span>VÉLOCITÉ COGNITIVE (Vitesse)</span> <span id="lvlSpeed" class="stat-lvl">Lvl 1</span></div>
+                <div class="detail-row"><span>PRÉCISION LEXICALE (Ortho)</span> <span id="lvlPrecision" class="stat-lvl">Lvl 1</span></div>
+                <div class="detail-row"><span>RECONNAISSANCE PATTERNS (Logique)</span> <span id="lvlLogic" class="stat-lvl">Lvl 1</span></div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="vocab_data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
