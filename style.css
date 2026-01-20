@@ -691,3 +691,17 @@ details[open] .list-content, details[open] .instructions-content {
     .hangman-letters button { width: 35px; height: 35px; }
     #mainTitle { font-size: 1.5rem; }
 }
+
+/* Mobile fix: allow vocabulary lists inside details to scroll and avoid being clipped by other frames */
+@media (max-width: 768px) {
+    .details-section { position: relative; z-index: 30; }
+    details .list-content { max-height: none; }
+    details[open] .list-content {
+        max-height: 48vh; /* Limit height to viewport so it can scroll */
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        padding-bottom: 1rem;
+    }
+    /* Ensure the vocabulary list columns collapse nicely on mobile */
+    .vocabulary-list { columns: 1; }
+}
