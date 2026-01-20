@@ -29,7 +29,7 @@ const ALL_VOCAB_DATA = {
                     ["Réprobation", "sentiment résultant d'un jugement moral condamnant une action ou une conduite", "nom f"],
                     ["Quiétude", "état de tranquillité de l'âme, absence de soucis", "nom f"],
                     ["Pressentiment", "sentiment vague de ce qui va arriver, synonyme de prémonition", "nom m"],
-                    ["Grief", "sujets e plainte contre une personne (généralement aux pluriel)", "nom m"],
+                    ["Grief", "sujets de plainte contre une personne (généralement aux pluriel)", "nom m"],
                     ["Euphorie", "impression du bien-être proche du bonheur", "nom f"],
                     ["Gratitude", "sentiment de reconnaissance mêlé d'affection", "nom f"],
                     ["Effusion", "au singulier: action de verser du sang ; au pluriel: manifestation de tendresse, d'affection", "nom f"],
