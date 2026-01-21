@@ -169,6 +169,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const masteryThresholdInput = document.getElementById('masteryThreshold');
     const confettiEnabledInput = document.getElementById('confettiEnabled');
     const confettiDesktopOnlyInput = document.getElementById('confettiDesktopOnly');
+    const confettiIgnoreReducedMotionInput = document.getElementById('confettiIgnoreReducedMotion');
     const showConsecBadgeInput = document.getElementById('showConsecBadge');
     const saveSettingsBtn = document.getElementById('saveSettingsBtn');
     const resetSettingsBtn = document.getElementById('resetSettingsBtn');
@@ -213,7 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
         masteryThreshold: 5,
         confettiEnabled: true,
         confettiDesktopOnly: false,
-        showConsecBadge: true
+        showConsecBadge: true,
+        confettiIgnoreReducedMotion: false
     };
     let userSettings = JSON.parse(localStorage.getItem('userSettings') || '{}');
     function loadSettings() {
@@ -224,6 +226,7 @@ document.addEventListener('DOMContentLoaded', () => {
             confettiEnabledInput.checked = !!userSettings.confettiEnabled;
             confettiDesktopOnlyInput.checked = !!userSettings.confettiDesktopOnly;
             showConsecBadgeInput.checked = !!userSettings.showConsecBadge;
+            if (confettiIgnoreReducedMotionInput) confettiIgnoreReducedMotionInput.checked = !!userSettings.confettiIgnoreReducedMotion;
         } catch(e) {}
         // apply settings immediately where helpful
         // ensure userSettings exists for other logic
@@ -270,12 +273,14 @@ document.addEventListener('DOMContentLoaded', () => {
             userSettings.masteryThreshold = parseInt(masteryThresholdInput.value, 10) || defaultSettings.masteryThreshold;
             userSettings.confettiEnabled = !!confettiEnabledInput.checked;
             userSettings.confettiDesktopOnly = !!confettiDesktopOnlyInput.checked;
+            userSettings.confettiIgnoreReducedMotion = !!(confettiIgnoreReducedMotionInput && confettiIgnoreReducedMotionInput.checked);
             userSettings.showConsecBadge = !!showConsecBadgeInput.checked;
             saveSettings();
             // refresh current card UI to reflect badge visibility/threshold change
             if (shuffledVocab && shuffledVocab.length) displayCard();
         } catch(e) { /* ignore */ }
     };
+    confettiIgnoreReducedMotionInput?.addEventListener('change', liveApply);
     masteryThresholdInput?.addEventListener('input', liveApply);
     confettiEnabledInput?.addEventListener('change', liveApply);
     confettiDesktopOnlyInput?.addEventListener('change', liveApply);
@@ -569,8 +574,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Simple confetti: spawn colored pieces and animate then remove
     function launchConfetti() {
-        // Respect user preference for reduced motion
-        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        // Respect user preference for reduced motion unless user chose to ignore it
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            if (!(userSettings && userSettings.confettiIgnoreReducedMotion)) return;
+        }
         const colors = ['#FF4D4F','#FFB400','#36CFC9','#5C7CFA','#00C853','#FF6B6B'];
         const flashRect = flashcard.getBoundingClientRect();
         const centerX = flashRect.left + flashRect.width / 2;
