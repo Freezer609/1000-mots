@@ -1002,15 +1002,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 updateMatchScore(matchedCount);
                 if(matchedCount === MATCH_COUNT) matchNextBtn.style.display = 'block';
             } else {
-                selected.word.classList.add('error');
-                selected.def.classList.add('error');
+                // Capture references so the timeout can remove classes even after `selected` is reset
+                const wEl = selected.word;
+                const dEl = selected.def;
+                if (wEl) wEl.classList.add('error');
+                if (dEl) dEl.classList.add('error');
                 setTimeout(() => {
-                    selected.word.classList.remove('error');
-                    selected.def.classList.remove('error');
+                    if (wEl) wEl.classList.remove('error');
+                    if (dEl) dEl.classList.remove('error');
                 }, 500);
             }
-            selected.word.classList.remove('selected');
-            selected.def.classList.remove('selected');
+            if (selected.word) selected.word.classList.remove('selected');
+            if (selected.def) selected.def.classList.remove('selected');
             selected = {word: null, def: null};
         }
     });
