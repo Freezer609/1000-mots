@@ -148,6 +148,59 @@ header {
     overflow: hidden;
 }
 
+/* Settings modal specific */
+.settings-content { max-width: 520px; padding: 1rem; }
+.settings-grid { padding: 1rem; display: flex; flex-direction: column; gap: 0.8rem; }
+.setting-row { display:flex; justify-content: space-between; align-items: center; gap: 1rem; padding: 0.6rem; background: rgba(255,255,255,0.02); border-radius: 10px; }
+.setting-left { display:flex; gap: 0.8rem; align-items: center; flex:1; min-width:0; }
+.setting-icon { color: var(--primary-glow); font-size: 1.25rem; width:32px; text-align:center; }
+.setting-info { display:flex; flex-direction: column; overflow: hidden; }
+.setting-label { font-weight:700; color: white; font-size: 0.95rem; white-space:nowrap; text-overflow:ellipsis; overflow:hidden; }
+.setting-desc { font-size: 0.78rem; color: rgba(255,255,255,0.6); margin-top: 2px; white-space:normal; }
+.setting-right { width: 90px; display:flex; justify-content:flex-end; }
+.setting-row input[type="number"] { width: 80px; padding: 0.45rem; border-radius: 8px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.03); color: var(--text-color); }
+.setting-row input[type="checkbox"] { width: 20px; height: 20px; }
+.settings-actions { display:flex; gap:8px; margin-top:6px; justify-content:flex-end; }
+
+/* Modal responsiveness */
+.settings-content { max-width: 520px; padding: 0; }
+.modal .modal-content { max-height: 80vh; overflow-y: auto; }
+@media (max-width: 600px) {
+    .settings-grid { gap: 0.6rem; padding: 0.8rem; }
+    .setting-row { flex-direction: column; align-items: stretch; }
+    .setting-right { width: 100%; display:flex; justify-content:flex-end; margin-top:8px; }
+    .setting-desc { font-size: 0.82rem; }
+    .modal .modal-content { width: calc(100% - 2rem); margin: 0 1rem; }
+}
+
+/* Info tooltip button */
+.info-btn { background: rgba(255,255,255,0.03); color: rgba(255,255,255,0.8); border: none; width: 28px; height: 28px; border-radius: 50%; margin-left: 8px; cursor: pointer; }
+.info-btn:hover { background: rgba(255,255,255,0.06); }
+.info-btn[data-tooltip] { position: relative; }
+.info-btn[data-tooltip]:hover::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    right: 36px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0,0,0,0.85);
+    color: white;
+    padding: 6px 8px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    z-index: 2000;
+}
+
+/* Modal animations tweaks */
+.modal.show .modal-content { transform: translateY(0) scale(1); opacity: 1; }
+.modal .modal-content { transform: translateY(-8px) scale(0.98); opacity: 0; transition: transform 220ms cubic-bezier(.2,.8,.2,1), opacity 220ms ease; }
+
+/* Setting row micro-interaction */
+.setting-row { transition: background 160ms ease, transform 160ms ease; }
+.setting-row:hover { background: rgba(255,255,255,0.04); transform: translateY(-3px); }
+
 .stats-header {
     background: rgba(106, 75, 255, 0.1);
     padding: 1rem 1.5rem;

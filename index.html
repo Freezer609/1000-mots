@@ -30,6 +30,7 @@
                     <button id="matchModeBtn">Match</button>
                 </nav>
                 <button id="statsBtn" class="icon-btn" title="Statistiques"><i class="fas fa-chart-line"></i></button>
+                <button id="settingsBtn" class="icon-btn" title="Paramètres"><i class="fas fa-cog"></i></button>
             </div>
         </header>
 
@@ -175,12 +176,14 @@
 
     <div id="statsModal" class="modal" style="display: none;">
         <div class="modal-content stats-content">
-            <div class="stats-header">
+            <div class="stats-header" role="dialog" aria-modal="true" aria-labelledby="statsChapterTitle">
                 <h3><i class="fas fa-terminal"></i> <span id="statsChapterTitle">Statistiques — Global</span></h3>
                 <div class="stats-controls">
-                    <button id="exportChapterStatsBtn" class="icon-btn" title="Exporter">&#x1f4e4;</button>
-                    <button id="resetChapterStatsBtn" class="icon-btn" title="Réinitialiser">&#x21bb;</button>
-                    <button class="close-modal">&times;</button>
+                    <input id="importStatsFile" type="file" accept="text/csv" style="display:none" aria-hidden="true">
+                    <button id="importChapterStatsBtn" class="icon-btn" title="Importer" aria-label="Importer des statistiques">&#x1f4e5;</button>
+                    <button id="exportChapterStatsBtn" class="icon-btn" title="Exporter" aria-label="Exporter des statistiques">&#x1f4e4;</button>
+                    <button id="resetChapterStatsBtn" class="icon-btn" title="Réinitialiser" aria-label="Réinitialiser les statistiques">&#x21bb;</button>
+                    <button class="close-modal" aria-label="Fermer">&times;</button>
                 </div>
             </div>
             
@@ -206,6 +209,53 @@
                 <div class="detail-row"><span>VÉLOCITÉ COGNITIVE (Vitesse)</span> <span id="lvlSpeed" class="stat-lvl">Lvl 1</span></div>
                 <div class="detail-row"><span>PRÉCISION LEXICALE (Ortho)</span> <span id="lvlPrecision" class="stat-lvl">Lvl 1</span></div>
                 <div class="detail-row"><span>RECONNAISSANCE PATTERNS (Logique)</span> <span id="lvlLogic" class="stat-lvl">Lvl 1</span></div>
+            </div>
+        </div>
+    </div>
+    <!-- Settings Modal -->
+    <div id="settingsModal" class="modal" style="display: none;">
+        <div class="modal-content settings-content">
+            <div class="stats-header">
+                <h3><i class="fas fa-cog"></i> Paramètres</h3>
+                <button class="close-modal" id="closeSettings">&times;</button>
+            </div>
+            <div class="settings-grid">
+                <div class="setting-row">
+                        <div class="setting-left"><i class="fas fa-bullseye setting-icon"></i>
+                            <div class="setting-info"><div class="setting-label">Seuil maîtrise</div>
+                            <div class="setting-desc">Nombre de fois consécutives pour considérer un mot maîtrisé</div></div>
+                            <button class="info-btn" data-tooltip="Définit combien de fois tu dois cliquer 'Je l'avais' pour marquer un mot maîtrisé">?</button>
+                        </div>
+                    <div class="setting-right"><input id="masteryThreshold" type="number" min="1" max="20" value="5"></div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-left"><i class="fas fa-sparkles setting-icon"></i>
+                        <div class="setting-info"><div class="setting-label">Confetti</div>
+                        <div class="setting-desc">Effet visuel quand un mot est maîtrisé</div></div>
+                        <button class="info-btn" data-tooltip="Active ou désactive l'effet confetti lors de la maîtrise">?</button>
+                    </div>
+                    <div class="setting-right"><input id="confettiEnabled" type="checkbox" checked></div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-left"><i class="fas fa-desktop setting-icon"></i>
+                        <div class="setting-info"><div class="setting-label">Desktop seulement</div>
+                        <div class="setting-desc">Limiter le confetti aux ordinateurs (désactive sur mobile)</div></div>
+                        <button class="info-btn" data-tooltip="Désactive le confetti sur appareils mobiles tactiles">?</button>
+                    </div>
+                    <div class="setting-right"><input id="confettiDesktopOnly" type="checkbox"></div>
+                </div>
+                <div class="setting-row">
+                    <div class="setting-left"><i class="fas fa-eye setting-icon"></i>
+                        <div class="setting-info"><div class="setting-label">Afficher compteur</div>
+                        <div class="setting-desc">Montrer le compteur de répétitions sur la carte</div></div>
+                        <button class="info-btn" data-tooltip="Affiche un petit badge sur la carte indiquant le nombre de répétitions consécutives">?</button>
+                    </div>
+                    <div class="setting-right"><input id="showConsecBadge" type="checkbox" checked></div>
+                </div>
+                <div class="settings-actions">
+                    <button id="saveSettingsBtn" class="icon-btn">OK</button>
+                    <button id="resetSettingsBtn" class="icon-btn" title="Reset">R</button>
+                </div>
             </div>
         </div>
     </div>

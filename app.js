@@ -163,6 +163,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Stats UI & Radar Chart ---
     const statsBtn = document.getElementById('statsBtn');
+    const settingsBtn = document.getElementById('settingsBtn');
+    const settingsModal = document.getElementById('settingsModal');
+    const closeSettings = document.getElementById('closeSettings');
+    const masteryThresholdInput = document.getElementById('masteryThreshold');
+    const confettiEnabledInput = document.getElementById('confettiEnabled');
+    const confettiDesktopOnlyInput = document.getElementById('confettiDesktopOnly');
+    const showConsecBadgeInput = document.getElementById('showConsecBadge');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
+    const resetSettingsBtn = document.getElementById('resetSettingsBtn');
     const statsModal = document.getElementById('statsModal');
     const closeModal = statsModal.querySelector('.close-modal');
 
@@ -170,8 +179,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateStatsUI();
         statsModal.style.display = 'flex';
         // Slight delay to allow display:flex to apply before adding class for transition
+        // focus management: remember last focused element
+        lastFocus = document.activeElement;
         setTimeout(() => {
             statsModal.classList.add('show');
+            // focus first focusable element inside
+            const focusable = statsModal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            if (focusable) focusable.focus();
         }, 10);
     }
     
@@ -190,9 +204,96 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === statsModal) closeStats(); 
     });
 
+    // Settings management
+    const defaultSettings = {
+        masteryThreshold: 5,
+        confettiEnabled: true,
+        confettiDesktopOnly: false,
+        showConsecBadge: true
+    };
+    let userSettings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+    function loadSettings() {
+        userSettings = Object.assign({}, defaultSettings, userSettings || {});
+        // apply to UI inputs if present
+        try {
+            masteryThresholdInput.value = userSettings.masteryThreshold;
+            confettiEnabledInput.checked = !!userSettings.confettiEnabled;
+            confettiDesktopOnlyInput.checked = !!userSettings.confettiDesktopOnly;
+            showConsecBadgeInput.checked = !!userSettings.showConsecBadge;
+        } catch(e) {}
+        // apply settings immediately where helpful
+        // ensure userSettings exists for other logic
+    }
+    function saveSettings() {
+        localStorage.setItem('userSettings', JSON.stringify(userSettings));
+    }
+
+    function openSettings() {
+        loadSettings();
+        settingsModal.style.display = 'flex';
+        lastFocus = document.activeElement;
+        setTimeout(() => {
+            settingsModal.classList.add('show');
+            // focus first input in settings
+            const focusable = settingsModal.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
+            if (focusable) focusable.focus();
+        }, 10);
+    }
+    function closeSettingsModal() { settingsModal.classList.remove('show'); setTimeout(()=> settingsModal.style.display='none',300); }
+
+    settingsBtn?.addEventListener('click', openSettings);
+    closeSettings?.addEventListener('click', closeSettingsModal);
+    window.addEventListener('click', (e) => { if (e.target === settingsModal) closeSettingsModal(); });
+
+    saveSettingsBtn?.addEventListener('click', () => {
+        userSettings.masteryThreshold = parseInt(masteryThresholdInput.value, 10) || defaultSettings.masteryThreshold;
+        userSettings.confettiEnabled = !!confettiEnabledInput.checked;
+        userSettings.confettiDesktopOnly = !!confettiDesktopOnlyInput.checked;
+        userSettings.showConsecBadge = !!showConsecBadgeInput.checked;
+        saveSettings();
+        closeSettingsModal();
+    });
+    resetSettingsBtn?.addEventListener('click', () => {
+        userSettings = Object.assign({}, defaultSettings);
+        saveSettings();
+        loadSettings();
+    });
+
+    // Live apply: update settings immediately when inputs change
+    const liveApply = () => {
+        try {
+            userSettings.masteryThreshold = parseInt(masteryThresholdInput.value, 10) || defaultSettings.masteryThreshold;
+            userSettings.confettiEnabled = !!confettiEnabledInput.checked;
+            userSettings.confettiDesktopOnly = !!confettiDesktopOnlyInput.checked;
+            userSettings.showConsecBadge = !!showConsecBadgeInput.checked;
+            saveSettings();
+            // refresh current card UI to reflect badge visibility/threshold change
+            if (shuffledVocab && shuffledVocab.length) displayCard();
+        } catch(e) { /* ignore */ }
+    };
+    masteryThresholdInput?.addEventListener('input', liveApply);
+    confettiEnabledInput?.addEventListener('change', liveApply);
+    confettiDesktopOnlyInput?.addEventListener('change', liveApply);
+    showConsecBadgeInput?.addEventListener('change', liveApply);
+
+    // Keyboard shortcut: Ctrl+, to open settings
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === ',') {
+            // avoid when typing in inputs
+            const tag = document.activeElement?.tagName || '';
+            if (tag !== 'INPUT' && tag !== 'TEXTAREA') {
+                openSettings();
+                e.preventDefault();
+            }
+        }
+    });
+
     // Stats modal controls: reset + export
     const resetChapterStatsBtn = document.getElementById('resetChapterStatsBtn');
     const exportChapterStatsBtn = document.getElementById('exportChapterStatsBtn');
+    const importChapterStatsBtn = document.getElementById('importChapterStatsBtn');
+    const importStatsFile = document.getElementById('importStatsFile');
+    let lastFocus = null;
     if (resetChapterStatsBtn) {
         resetChapterStatsBtn.addEventListener('click', () => {
             if (!currentChapterKey) {
@@ -231,6 +332,42 @@ document.addEventListener('DOMContentLoaded', () => {
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
+        });
+    }
+    if (importChapterStatsBtn && importStatsFile) {
+        importChapterStatsBtn.addEventListener('click', () => importStatsFile.click());
+        importStatsFile.addEventListener('change', (e) => {
+            const f = e.target.files[0];
+            if (!f) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                const text = ev.target.result;
+                // parse CSV simple format produced by export
+                const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l);
+                const data = {};
+                lines.forEach((ln) => {
+                    const parts = ln.split(',');
+                    const k = parts[0].replace(/^"|"$/g, '');
+                    const v = parts[1] ? parts[1].replace(/^"|"$/g, '') : '';
+                    data[k] = v;
+                });
+                const chapterKey = data['chapter'] || '_imported';
+                const obj = JSON.parse(JSON.stringify(defaultStats));
+                obj.totalMastered = parseInt(data['totalMastered']) || 0;
+                obj.totalLearnedTime = parseInt(data['totalLearnedTime']) || 0;
+                obj.lastLogin = data['lastLogin'] || new Date().toDateString();
+                obj.streak = parseInt(data['streak']) || 0;
+                obj.skills.memory = parseInt(data['memory']) || 0;
+                obj.skills.speed = parseInt(data['speed']) || 0;
+                obj.skills.precision = parseInt(data['precision']) || 0;
+                obj.skills.logic = parseInt(data['logic']) || 0;
+                const all = JSON.parse(localStorage.getItem('userStatsByChapter') || '{}');
+                all[chapterKey] = obj;
+                localStorage.setItem('userStatsByChapter', JSON.stringify(all));
+                displayAlert('Statistiques importées pour ' + chapterKey, 'var(--correct-color)');
+                setTimeout(hideAlert, 1400);
+            };
+            reader.readAsText(f);
         });
     }
 
@@ -404,6 +541,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // animate using CSS; remove after duration
             setTimeout(() => { if (el && el.parentNode) el.remove(); }, 1400 + Math.random() * 400);
         }
+    }
+
+    function isTouchDevice() {
+        return (('ontouchstart' in window) || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
     }
 
     // --- Game Mode Management ---
@@ -677,7 +818,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const isFacultative = FACULTATIVE_WORDS.has(normalizeText(word));
         const consecKey = normalizeText(word);
         const consecCount = activeStats.consecutiveKnown?.[consecKey] || 0;
-        const consecHtml = consecCount > 0 ? ` <span class="consec-badge">${consecCount}/5</span>` : '';
+        const threshold = (userSettings && userSettings.masteryThreshold) || 5;
+        const showBadge = (userSettings && typeof userSettings.showConsecBadge !== 'undefined') ? userSettings.showConsecBadge : true;
+        const consecHtml = (consecCount > 0 && showBadge) ? ` <span class="consec-badge">${consecCount}/${threshold}</span>` : '';
         if (isFacultative) {
             wordTypeSpan.innerHTML = `${type || 'voc'} <span class="facultative-badge">Facultative</span>${consecHtml}`;
         } else {
@@ -723,7 +866,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const next = prev + 1;
         activeStats.consecutiveKnown[key] = next;
         saveStats();
-        if (next >= 5) {
+        const threshold = (userSettings && userSettings.masteryThreshold) || 5;
+        if (next >= threshold) {
             // mark mastered
             masteredWords.add(word);
             updateMasteredList();
@@ -731,7 +875,11 @@ document.addEventListener('DOMContentLoaded', () => {
             activeStats.consecutiveKnown[key] = 0; // reset counter
             saveStats();
             displayAlert(`${word} maîtrisé !`, 'var(--correct-color)');
-            try { launchConfetti(); } catch(e) {}
+            if (userSettings.confettiEnabled) {
+                if (!userSettings.confettiDesktopOnly || (userSettings.confettiDesktopOnly && !isTouchDevice())) {
+                    try { launchConfetti(); } catch(e) {}
+                }
+            }
             setTimeout(hideAlert, 1400);
             advanceAndNext(true);
         } else {
@@ -759,7 +907,11 @@ document.addEventListener('DOMContentLoaded', () => {
         updateMasteredList();
         updateSkill('memory', 10);
         displayAlert(`${word} maîtrisé !`, 'var(--correct-color)');
-        try { launchConfetti(); } catch(e) {}
+        if (userSettings.confettiEnabled) {
+            if (!userSettings.confettiDesktopOnly || (userSettings.confettiDesktopOnly && !isTouchDevice())) {
+                try { launchConfetti(); } catch(e) {}
+            }
+        }
         setTimeout(hideAlert, 1400);
         advanceAndNext(true);
     });
