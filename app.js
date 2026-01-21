@@ -847,11 +847,32 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const startScrambleGame = () => setupInputGame('scramble');
-    const startDictationGame = () => setupInputGame('dictation');
+    const startDictationGame = () => {
+        setupInputGame('dictation');
+        // Focus input for keyboard users on PC
+        try { dictationInput.focus(); dictationInput.select(); } catch(e) { /* ignore if element missing */ }
+    };
     scrambleCheckBtn.addEventListener('click', () => checkAnswer('scramble'));
     dictationCheckBtn.addEventListener('click', () => checkAnswer('dictation'));
     scrambleNextBtn.addEventListener('click', startScrambleGame);
     dictationNextBtn.addEventListener('click', startDictationGame);
+
+    // Keyboard support for dictation: Enter = check / next, Esc = skip (next)
+    dictationInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            // If next button is visible, go to next; otherwise check answer
+            if (dictationNextBtn.style.display && dictationNextBtn.style.display !== 'none') {
+                startDictationGame();
+            } else {
+                checkAnswer('dictation');
+            }
+        } else if (e.key === 'Escape') {
+            e.preventDefault();
+            // Skip to next word
+            startDictationGame();
+        }
+    });
 
     // --- Match Game ---
     function startMatchGame() {
