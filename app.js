@@ -385,6 +385,27 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const hideAlert = () => alertMessageDiv.style.display = 'none';
 
+    // Simple confetti: spawn colored pieces and animate then remove
+    function launchConfetti() {
+        const colors = ['#FF4D4F','#FFB400','#36CFC9','#5C7CFA','#00C853','#FF6B6B'];
+        const container = document.createDocumentFragment();
+        const flashRect = flashcard.getBoundingClientRect();
+        const centerX = flashRect.left + flashRect.width / 2;
+        const centerY = flashRect.top + flashRect.height / 2;
+        for (let i = 0; i < 18; i++) {
+            const el = document.createElement('div');
+            el.className = 'confetti-piece';
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            el.style.background = color;
+            el.style.left = `${centerX}px`;
+            el.style.top = `${centerY}px`;
+            el.style.transform = `translate(${(Math.random() - 0.5) * 80}px, ${-20 - Math.random() * 60}px) rotate(${Math.random() * 360}deg)`;
+            document.body.appendChild(el);
+            // animate using CSS; remove after duration
+            setTimeout(() => { if (el && el.parentNode) el.remove(); }, 1400 + Math.random() * 400);
+        }
+    }
+
     // --- Game Mode Management ---
     const showGameContainer = (mode) => {
         currentMode = mode;
@@ -654,10 +675,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const isFacultative = FACULTATIVE_WORDS.has(normalizeText(word));
+        const consecKey = normalizeText(word);
+        const consecCount = activeStats.consecutiveKnown?.[consecKey] || 0;
+        const consecHtml = consecCount > 0 ? ` <span class="consec-badge">${consecCount}/5</span>` : '';
         if (isFacultative) {
-            wordTypeSpan.innerHTML = `${type || 'voc'} <span class="facultative-badge">Facultative</span>`;
+            wordTypeSpan.innerHTML = `${type || 'voc'} <span class="facultative-badge">Facultative</span>${consecHtml}`;
         } else {
-            wordTypeSpan.textContent = type || 'voc';
+            wordTypeSpan.innerHTML = `${type || 'voc'}${consecHtml}`;
         }
         flashcard.classList.remove('flipped');
         updateFlashcardUI();
@@ -707,6 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
             activeStats.consecutiveKnown[key] = 0; // reset counter
             saveStats();
             displayAlert(`${word} maîtrisé !`, 'var(--correct-color)');
+            try { launchConfetti(); } catch(e) {}
             setTimeout(hideAlert, 1400);
             advanceAndNext(true);
         } else {
@@ -734,6 +759,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateMasteredList();
         updateSkill('memory', 10);
         displayAlert(`${word} maîtrisé !`, 'var(--correct-color)');
+        try { launchConfetti(); } catch(e) {}
         setTimeout(hideAlert, 1400);
         advanceAndNext(true);
     });
