@@ -176,8 +176,12 @@
     <div id="statsModal" class="modal" style="display: none;">
         <div class="modal-content stats-content">
             <div class="stats-header">
-                <h3><i class="fas fa-terminal"></i> USER_STATS_LOG</h3>
-                <button class="close-modal">&times;</button>
+                <h3><i class="fas fa-terminal"></i> <span id="statsChapterTitle">Statistiques — Global</span></h3>
+                <div class="stats-controls">
+                    <button id="exportChapterStatsBtn" class="icon-btn" title="Exporter">&#x1f4e4;</button>
+                    <button id="resetChapterStatsBtn" class="icon-btn" title="Réinitialiser">&#x21bb;</button>
+                    <button class="close-modal">&times;</button>
+                </div>
             </div>
             
             <div class="stats-grid">

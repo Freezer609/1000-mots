@@ -126,6 +126,9 @@ header {
     align-items: center;
 }
 
+.stats-controls { display: flex; gap: 0.5rem; align-items: center; }
+.stats-controls .icon-btn { width: 36px; height: 36px; padding: 0; border-radius: 8px; font-size: 0.95rem; }
+
 .stats-header h3 {
     margin: 0;
     font-family: 'Courier New', monospace;

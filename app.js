@@ -108,37 +108,51 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
     
-    let userStats = JSON.parse(localStorage.getItem('userStats')) || defaultStats;
-
-    // Check streak
-    const today = new Date().toDateString();
-    if (userStats.lastLogin !== today) {
-        const lastLoginDate = new Date(userStats.lastLogin);
-        const diffTime = Math.abs(new Date() - lastLoginDate);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-        
-        if (diffDays === 1) userStats.streak++;
-        else if (diffDays > 1) userStats.streak = 1; // Reset if missed a day
-        
-        userStats.lastLogin = today;
-        saveStats();
-    }
+    // Stats per chapter support
+    let currentChapterKey = null;
+    let activeStats = JSON.parse(JSON.stringify(defaultStats));
 
     function saveStats() {
-        localStorage.setItem('userStats', JSON.stringify(userStats));
+        const all = JSON.parse(localStorage.getItem('userStatsByChapter') || '{}');
+        if (currentChapterKey) all[currentChapterKey] = activeStats;
+        else all['_global'] = activeStats;
+        localStorage.setItem('userStatsByChapter', JSON.stringify(all));
+    }
+
+    function loadChapterStats(chapterKey) {
+        currentChapterKey = chapterKey || null;
+        const all = JSON.parse(localStorage.getItem('userStatsByChapter') || '{}');
+        if (currentChapterKey && all[currentChapterKey]) {
+            activeStats = all[currentChapterKey];
+        } else {
+            activeStats = JSON.parse(JSON.stringify(defaultStats));
+        }
+
+        // Check streak for this chapter
+        const today = new Date().toDateString();
+        if (activeStats.lastLogin !== today) {
+            const lastLoginDate = new Date(activeStats.lastLogin);
+            const diffTime = Math.abs(new Date() - lastLoginDate);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            if (diffDays === 1) activeStats.streak++;
+            else if (diffDays > 1) activeStats.streak = 1;
+            activeStats.lastLogin = today;
+            saveStats();
+        }
+        updateStatsUI();
     }
 
     function updateSkill(skill, amount) {
-        userStats.skills[skill] += amount;
-        userStats.totalMastered = masteredWords.size;
+        activeStats.skills[skill] += amount;
+        activeStats.totalMastered = masteredWords.size;
         saveStats();
     }
 
     // Timer for total time
     setInterval(() => {
         if (document.hasFocus()) {
-            userStats.totalLearnedTime++;
-            if (userStats.totalLearnedTime % 60 === 0) saveStats(); // Save every minute
+            activeStats.totalLearnedTime++;
+            if (activeStats.totalLearnedTime % 60 === 0) saveStats(); // Save every minute
         }
     }, 1000);
 
@@ -172,6 +186,50 @@ document.addEventListener('DOMContentLoaded', () => {
         if (e.target === statsModal) closeStats(); 
     });
 
+    // Stats modal controls: reset + export
+    const resetChapterStatsBtn = document.getElementById('resetChapterStatsBtn');
+    const exportChapterStatsBtn = document.getElementById('exportChapterStatsBtn');
+    if (resetChapterStatsBtn) {
+        resetChapterStatsBtn.addEventListener('click', () => {
+            if (!currentChapterKey) {
+                if (!confirm('Réinitialiser les statistiques globales ?')) return;
+            } else {
+                if (!confirm(`Réinitialiser les statistiques pour ${ALL_VOCAB_DATA[currentChapterKey]?.title || currentChapterKey} ?`)) return;
+            }
+            activeStats = JSON.parse(JSON.stringify(defaultStats));
+            saveStats();
+            updateStatsUI();
+            displayAlert('Statistiques réinitialisées.', 'var(--correct-color)');
+            setTimeout(hideAlert, 1400);
+        });
+    }
+    if (exportChapterStatsBtn) {
+        exportChapterStatsBtn.addEventListener('click', () => {
+            const rows = [
+                ['key','value'],
+                ['chapter', currentChapterKey || '_global'],
+                ['totalMastered', activeStats.totalMastered],
+                ['totalLearnedTime', activeStats.totalLearnedTime],
+                ['lastLogin', activeStats.lastLogin],
+                ['streak', activeStats.streak],
+                ['memory', activeStats.skills.memory],
+                ['speed', activeStats.skills.speed],
+                ['precision', activeStats.skills.precision],
+                ['logic', activeStats.skills.logic]
+            ];
+            const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g,'""')}"`).join(',')).join('\n');
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `stats_${currentChapterKey || 'global'}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        });
+    }
+
     function formatTime(seconds) {
         const h = Math.floor(seconds / 3600);
         const m = Math.floor((seconds % 3600) / 60);
@@ -183,14 +241,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateStatsUI() {
-        document.getElementById('statTotalMastered').textContent = userStats.totalMastered;
-        document.getElementById('statTotalBar').style.width = `${Math.min((userStats.totalMastered / 1000) * 100, 100)}%`;
-        document.getElementById('statTime').textContent = formatTime(userStats.totalLearnedTime);
+        document.getElementById('statTotalMastered').textContent = activeStats.totalMastered;
+        document.getElementById('statTotalBar').style.width = `${Math.min((activeStats.totalMastered / 1000) * 100, 100)}%`;
+        document.getElementById('statTime').textContent = formatTime(activeStats.totalLearnedTime);
 
-        document.getElementById('lvlMemory').textContent = `Lvl ${getLevel(userStats.skills.memory)}`;
-        document.getElementById('lvlSpeed').textContent = `Lvl ${getLevel(userStats.skills.speed)}`;
-        document.getElementById('lvlPrecision').textContent = `Lvl ${getLevel(userStats.skills.precision)}`;
-        document.getElementById('lvlLogic').textContent = `Lvl ${getLevel(userStats.skills.logic)}`;
+        document.getElementById('lvlMemory').textContent = `Lvl ${getLevel(activeStats.skills.memory)}`;
+        document.getElementById('lvlSpeed').textContent = `Lvl ${getLevel(activeStats.skills.speed)}`;
+        document.getElementById('lvlPrecision').textContent = `Lvl ${getLevel(activeStats.skills.precision)}`;
+        document.getElementById('lvlLogic').textContent = `Lvl ${getLevel(activeStats.skills.logic)}`;
+
+        // Update chapter title in modal header
+        const titleEl = document.getElementById('statsChapterTitle');
+        if (titleEl) titleEl.textContent = currentChapterKey ? (ALL_VOCAB_DATA[currentChapterKey]?.title || currentChapterKey) : 'Statistiques — Global';
 
         drawRadarChart();
     }
@@ -200,10 +262,10 @@ document.addEventListener('DOMContentLoaded', () => {
         svg.innerHTML = ''; // Clear
         
         const stats = [
-            { val: getLevel(userStats.skills.memory), label: "MÉMOIRE" },
-            { val: getLevel(userStats.skills.speed), label: "VITESSE" },
-            { val: getLevel(userStats.skills.precision), label: "PRÉCISION" },
-            { val: getLevel(userStats.skills.logic), label: "LOGIQUE" }
+            { val: getLevel(activeStats.skills.memory), label: "MÉMOIRE" },
+            { val: getLevel(activeStats.skills.speed), label: "VITESSE" },
+            { val: getLevel(activeStats.skills.precision), label: "PRÉCISION" },
+            { val: getLevel(activeStats.skills.logic), label: "LOGIQUE" }
         ];
 
         const maxLvl = Math.max(...stats.map(s => s.val), 10); // Scale based on max level
@@ -357,6 +419,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         nativeChapterSelect.addEventListener('change', () => {
             const chapterKey = nativeChapterSelect.value;
+            // Load stats for the selected chapter
+            loadChapterStats(chapterKey);
             
             // Clear and reset native subcategory select
             nativeSubcategorySelect.innerHTML = '<option value="" disabled selected>Choisir une liste</option>';
@@ -657,7 +721,7 @@ document.addEventListener('DOMContentLoaded', () => {
             masteredVocabularyList.appendChild(li);
         });
         localStorage.setItem('masteredWords', JSON.stringify(masteredArray));
-        userStats.totalMastered = masteredWords.size; // Sync count
+        activeStats.totalMastered = masteredWords.size; // Sync count
         saveStats();
     }
 
@@ -959,6 +1023,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     initSelectors();
+    // Initialize stats (global) until a chapter is selected
+    loadChapterStats(null);
     updateMasteredList(); // Initial population of the mastered list
     showGameContainer('flashcard');
 });
