@@ -106,6 +106,8 @@ document.addEventListener('DOMContentLoaded', () => {
             precision: 0, // Dictation/Hangman
             logic: 0 // Scramble/Match
         }
+        ,
+        consecutiveKnown: {}
     };
     
     // Stats per chapter support
@@ -127,6 +129,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } else {
             activeStats = JSON.parse(JSON.stringify(defaultStats));
         }
+        // Ensure consecutiveKnown exists
+        if (!activeStats.consecutiveKnown) activeStats.consecutiveKnown = {};
 
         // Check streak for this chapter
         const today = new Date().toDateString();
@@ -659,14 +663,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateFlashcardUI();
     }
 
-    function handleFeedback(known) {
-        const currentWord = shuffledVocab[currentCardIndex][0];
-        if (known) {
-            masteredWords.add(currentWord);
-            updateSkill('memory', 10); // XP for mastering
-        } else {
-            updateSkill('memory', 2); // Small XP just for practicing
-        }
+    function advanceAndNext(isMastered) {
         setTimeout(() => {
             currentCardIndex++;
             if (currentCardIndex >= shuffledVocab.length) {
@@ -676,6 +673,9 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             flashcard.classList.remove('flipped');
         }, 400);
+        if (isMastered) {
+            // small delay on alert already handled by caller
+        }
     }
 
     function updateFlashcardUI() {
@@ -690,13 +690,52 @@ document.addEventListener('DOMContentLoaded', () => {
     prevCardBtn.addEventListener('click', () => { if (currentCardIndex > 0) { currentCardIndex--; displayCard(); }});
     nextCardBtn.addEventListener('click', () => { if (currentCardIndex < shuffledVocab.length - 1) { currentCardIndex++; displayCard(); }});
     flashcard.addEventListener('click', () => flashcard.classList.toggle('flipped'));
-    knewItBtn.addEventListener('click', () => handleFeedback(false)); // Knew it is not mastering
-    didntKnowBtn.addEventListener('click', () => handleFeedback(false));
+
+    // Knew it handler: increment consecutive counter, master if reaches 5
+    knewItBtn.addEventListener('click', () => {
+        const word = shuffledVocab[currentCardIndex][0];
+        const key = normalizeText(word);
+        const prev = activeStats.consecutiveKnown[key] || 0;
+        const next = prev + 1;
+        activeStats.consecutiveKnown[key] = next;
+        saveStats();
+        if (next >= 5) {
+            // mark mastered
+            masteredWords.add(word);
+            updateMasteredList();
+            updateSkill('memory', 10); // bonus XP
+            activeStats.consecutiveKnown[key] = 0; // reset counter
+            saveStats();
+            displayAlert(`${word} maîtrisé !`, 'var(--correct-color)');
+            setTimeout(hideAlert, 1400);
+            advanceAndNext(true);
+        } else {
+            updateSkill('memory', 2);
+            advanceAndNext(false);
+        }
+    });
+
+    // Didn't know: reset consecutive counter
+    didntKnowBtn.addEventListener('click', () => {
+        const word = shuffledVocab[currentCardIndex][0];
+        const key = normalizeText(word);
+        activeStats.consecutiveKnown[key] = 0;
+        saveStats();
+        updateSkill('memory', 2);
+        advanceAndNext(false);
+    });
+
     masteredBtn.addEventListener('click', () => {
         const word = shuffledVocab[currentCardIndex][0];
+        const key = normalizeText(word);
         masteredWords.add(word);
+        activeStats.consecutiveKnown[key] = 0;
+        saveStats();
         updateMasteredList();
-        handleFeedback(true); // Move to next card, dont remove from current session
+        updateSkill('memory', 10);
+        displayAlert(`${word} maîtrisé !`, 'var(--correct-color)');
+        setTimeout(hideAlert, 1400);
+        advanceAndNext(true);
     });
 
     // --- Mastered Words Management ---
