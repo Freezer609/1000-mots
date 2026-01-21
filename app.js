@@ -186,10 +186,14 @@ document.addEventListener('DOMContentLoaded', () => {
             // focus first focusable element inside
             const focusable = statsModal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
             if (focusable) focusable.focus();
+            // trap focus inside modal for accessibility
+            try { trapFocus(statsModal); } catch(e) {}
         }, 10);
     }
     
     function closeStats() {
+        // release focus trap first
+        try { releaseFocus(statsModal); } catch(e) {}
         statsModal.classList.remove('show');
         // Wait for transition to finish before hiding
         setTimeout(() => {
@@ -237,9 +241,10 @@ document.addEventListener('DOMContentLoaded', () => {
             // focus first input in settings
             const focusable = settingsModal.querySelector('input, button, [tabindex]:not([tabindex="-1"])');
             if (focusable) focusable.focus();
+            try { trapFocus(settingsModal); } catch(e) {}
         }, 10);
     }
-    function closeSettingsModal() { settingsModal.classList.remove('show'); setTimeout(()=> settingsModal.style.display='none',300); }
+    function closeSettingsModal() { try { releaseFocus(settingsModal); } catch(e) {} settingsModal.classList.remove('show'); setTimeout(()=> settingsModal.style.display='none',300); }
 
     settingsBtn?.addEventListener('click', openSettings);
     closeSettings?.addEventListener('click', closeSettingsModal);
@@ -294,6 +299,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const importChapterStatsBtn = document.getElementById('importChapterStatsBtn');
     const importStatsFile = document.getElementById('importStatsFile');
     let lastFocus = null;
+
+    // Focus trap helpers for accessibility
+    function trapFocus(modal) {
+        if (!modal) return;
+        const focusable = Array.from(modal.querySelectorAll('a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])')).filter(el => !el.disabled && el.offsetParent !== null);
+        if (!focusable.length) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        function handler(e) {
+            if (e.key === 'Tab') {
+                if (e.shiftKey && document.activeElement === first) {
+                    e.preventDefault(); last.focus();
+                } else if (!e.shiftKey && document.activeElement === last) {
+                    e.preventDefault(); first.focus();
+                }
+            } else if (e.key === 'Escape') {
+                // Close appropriate modal
+                if (modal === settingsModal) closeSettingsModal();
+                else if (modal === statsModal) closeStats();
+            }
+        }
+        modal._focusHandler = handler;
+        document.addEventListener('keydown', handler);
+    }
+    function releaseFocus(modal) {
+        if (!modal || !modal._focusHandler) return;
+        document.removeEventListener('keydown', modal._focusHandler);
+        delete modal._focusHandler;
+        // restore previous focus if possible
+        try { if (lastFocus && lastFocus.focus) lastFocus.focus(); } catch(e) {}
+    }
     if (resetChapterStatsBtn) {
         resetChapterStatsBtn.addEventListener('click', () => {
             if (!currentChapterKey) {
@@ -346,11 +382,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 const lines = text.split(/\r?\n/).map(l => l.trim()).filter(l => l);
                 const data = {};
                 lines.forEach((ln) => {
-                    const parts = ln.split(',');
-                    const k = parts[0].replace(/^"|"$/g, '');
-                    const v = parts[1] ? parts[1].replace(/^"|"$/g, '') : '';
+                    // split only on the first comma to tolerate commas in values
+                    const idx = ln.indexOf(',');
+                    if (idx === -1) return;
+                    const k = ln.slice(0, idx).replace(/^"|"$/g, '').trim();
+                    const v = ln.slice(idx + 1).replace(/^"|"$/g, '').trim();
                     data[k] = v;
                 });
+                const requiredKeys = ['chapter','totalMastered','totalLearnedTime','lastLogin','streak','memory','speed','precision','logic'];
+                const hasAll = requiredKeys.every(k => typeof data[k] !== 'undefined');
+                if (!hasAll) {
+                    displayAlert('Format CSV invalide ou incomplet.', 'var(--incorrect-color)');
+                    setTimeout(hideAlert, 1800);
+                    return;
+                }
                 const chapterKey = data['chapter'] || '_imported';
                 const obj = JSON.parse(JSON.stringify(defaultStats));
                 obj.totalMastered = parseInt(data['totalMastered']) || 0;
@@ -524,22 +569,26 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Simple confetti: spawn colored pieces and animate then remove
     function launchConfetti() {
+        // Respect user preference for reduced motion
+        if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
         const colors = ['#FF4D4F','#FFB400','#36CFC9','#5C7CFA','#00C853','#FF6B6B'];
-        const container = document.createDocumentFragment();
         const flashRect = flashcard.getBoundingClientRect();
         const centerX = flashRect.left + flashRect.width / 2;
         const centerY = flashRect.top + flashRect.height / 2;
-        for (let i = 0; i < 18; i++) {
+        // Cap pieces for performance
+        const pieces = Math.min(12, Math.max(6, Math.floor((window.deviceMemory || 1) > 2 ? 12 : 8)));
+        for (let i = 0; i < pieces; i++) {
             const el = document.createElement('div');
             el.className = 'confetti-piece';
             const color = colors[Math.floor(Math.random() * colors.length)];
             el.style.background = color;
             el.style.left = `${centerX}px`;
             el.style.top = `${centerY}px`;
-            el.style.transform = `translate(${(Math.random() - 0.5) * 80}px, ${-20 - Math.random() * 60}px) rotate(${Math.random() * 360}deg)`;
+            el.style.transform = `translate(${(Math.random() - 0.5) * 60}px, ${-10 - Math.random() * 40}px) rotate(${Math.random() * 360}deg)`;
+            el.setAttribute('aria-hidden', 'true');
             document.body.appendChild(el);
             // animate using CSS; remove after duration
-            setTimeout(() => { if (el && el.parentNode) el.remove(); }, 1400 + Math.random() * 400);
+            setTimeout(() => { if (el && el.parentNode) el.remove(); }, 1200 + Math.random() * 600);
         }
     }
 
@@ -820,11 +869,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const consecCount = activeStats.consecutiveKnown?.[consecKey] || 0;
         const threshold = (userSettings && userSettings.masteryThreshold) || 5;
         const showBadge = (userSettings && typeof userSettings.showConsecBadge !== 'undefined') ? userSettings.showConsecBadge : true;
-        const consecHtml = (consecCount > 0 && showBadge) ? ` <span class="consec-badge">${consecCount}/${threshold}</span>` : '';
-        if (isFacultative) {
-            wordTypeSpan.innerHTML = `${type || 'voc'} <span class="facultative-badge">Facultative</span>${consecHtml}`;
-        } else {
-            wordTypeSpan.innerHTML = `${type || 'voc'}${consecHtml}`;
+        // Build the content safely using DOM methods (avoid innerHTML)
+        if (wordTypeSpan) {
+            // Clear previous content
+            while (wordTypeSpan.firstChild) wordTypeSpan.removeChild(wordTypeSpan.firstChild);
+            const typeNode = document.createTextNode((type || 'voc'));
+            wordTypeSpan.appendChild(typeNode);
+            if (isFacultative) {
+                const space = document.createTextNode(' ');
+                const badge = document.createElement('span');
+                badge.className = 'facultative-badge';
+                badge.textContent = 'Facultative';
+                wordTypeSpan.appendChild(space);
+                wordTypeSpan.appendChild(badge);
+            }
+            if (consecCount > 0 && showBadge) {
+                const cb = document.createElement('span');
+                cb.className = 'consec-badge';
+                cb.textContent = `${consecCount}/${threshold}`;
+                wordTypeSpan.appendChild(cb);
+            }
         }
         flashcard.classList.remove('flipped');
         updateFlashcardUI();

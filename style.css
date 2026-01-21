@@ -193,6 +193,10 @@ header {
     z-index: 2000;
 }
 
+@media (max-width: 520px) {
+    .info-btn[data-tooltip]:hover::after { right: auto; left: 36px; }
+}
+
 /* Modal animations tweaks */
 .modal.show .modal-content { transform: translateY(0) scale(1); opacity: 1; }
 .modal .modal-content { transform: translateY(-8px) scale(0.98); opacity: 0; transition: transform 220ms cubic-bezier(.2,.8,.2,1), opacity 220ms ease; }
@@ -565,6 +569,11 @@ header {
 .card.flipped { transform: rotateY(180deg); }
 .card-face { position: absolute; width: 100%; height: 100%; backface-visibility: hidden; border-radius: 20px; background: var(--card-background); border: 1px solid var(--border-color); backdrop-filter: blur(10px); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 2rem; box-sizing: border-box; text-align: center; }
 .card-back { transform: rotateY(180deg); justify-content: space-between; padding: 1.5rem; }
+
+/* Allow scrolling inside card faces on small screens when content overflows */
+@media (max-width: 768px) {
+    .card-face { overflow-y: auto; -webkit-overflow-scrolling: touch; }
+}
 .card-back .card-content { flex-grow: 1; display: flex; align-items: center; justify-content: center; }
 .card-back p { font-size: 1.5rem; margin-bottom: 1.5rem; }
 .feedback-buttons { display: flex; gap: 1rem; width: 100%; }
@@ -642,7 +651,7 @@ details[open] .list-content, details[open] .instructions-content {
 .modal {
     display: none;
     position: fixed;
-    z-index: 100;
+    z-index: 2000;
     left: 0;
     top: 0;
     width: 100%;
@@ -673,6 +682,8 @@ details[open] .list-content, details[open] .instructions-content {
     transform: scale(0.9);
     transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Bouncy effect */
 }
+/* smoother touch scrolling for modal content */
+.modal .modal-content { -webkit-overflow-scrolling: touch; }
 
 .modal.show .modal-content {
     opacity: 1;
@@ -705,7 +716,7 @@ details[open] .list-content, details[open] .instructions-content {
 
     /* Flashcard specific mobile layout */
     #flashcardGameContainer { background: none; padding: 0; flex-direction: column; justify-content: flex-start; align-items: center; }
-    .card-container { width: 100%; max-width: 400px; height: 300px; order: 2; }
+    .card-container { width: 100%; max-width: 400px; height: 300px; order: 2; max-height: 60vh; }
     .nav-arrow { order: 1; font-size: 2rem; position: static; transform: none; display: none; }
     .bottom-ui { position: static; transform: none; width: 100%; margin-top: 1.5rem; order: 3; }
     .word { font-size: 2rem; }
