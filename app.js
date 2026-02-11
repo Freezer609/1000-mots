@@ -34,6 +34,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const nativeChapterSelect = document.getElementById('chapterSelect');
     const nativeSubcategorySelect = document.getElementById('subcategorySelect');
 
+    // Search / Filters UI
+    const searchInput = document.getElementById('searchInput');
+    const filterMasteredChk = document.getElementById('filterMastered');
+    const filterUnmasteredChk = document.getElementById('filterUnmastered');
+    const playWordBtn = document.getElementById('playWordBtn');
+    const liveStatus = document.getElementById('liveStatus');
+
     const chapterSelectWrapper = document.getElementById('chapterSelectWrapper');
     const customChapterTrigger = chapterSelectWrapper.querySelector('.custom-select-trigger');
     const customChapterOptionsContainer = chapterSelectWrapper.querySelector('.custom-options');
@@ -93,6 +100,270 @@ document.addEventListener('DOMContentLoaded', () => {
     const MATCH_COUNT = 6;
     let matchPairs = [];
     let selected = {word: null, def: null};
+
+    // --- SRS (simplified SM-2) ---
+    const SRS_KEY = 'srsData_v1';
+    let srsData = JSON.parse(localStorage.getItem(SRS_KEY) || '{}');
+
+    function saveSRS() {
+        localStorage.setItem(SRS_KEY, JSON.stringify(srsData));
+    }
+
+    function nowDays() { return Math.floor(Date.now() / (1000 * 60 * 60 * 24)); }
+
+    function scheduleSM2(id, quality) {
+        if (!srsData[id]) srsData[id] = {ef: 2.5, interval: 0, repetitions: 0, next: nowDays()};
+        const item = srsData[id];
+        if (quality < 3) {
+            item.repetitions = 0;
+            item.interval = 1;
+        } else {
+            if (item.repetitions === 0) item.interval = 1;
+            else if (item.repetitions === 1) item.interval = 6;
+            else item.interval = Math.round((item.interval || 1) * item.ef);
+            item.repetitions = (item.repetitions || 0) + 1;
+        }
+        item.ef = Math.max(1.3, item.ef + (0.1 - (5 - quality) * (0.08 + (5 - quality) * 0.02)));
+        item.next = nowDays() + (item.interval || 1);
+        item.last = Date.now();
+        saveSRS();
+    }
+
+    function getIdForWord(wordText) {
+        const chapter = currentChapterKey || '_global';
+        return `${chapter}::${wordText}`;
+    }
+
+    function updateSRSForCurrent(result) {
+        try {
+            const wordText = wordH2?.textContent?.trim();
+            if (!wordText) return;
+            const id = getIdForWord(wordText);
+            if (result === 'mastered') {
+                scheduleSM2(id, 5);
+                masteredWords.add(wordText);
+                localStorage.setItem('masteredWords', JSON.stringify(Array.from(masteredWords)));
+            } else if (result === 'known') {
+                scheduleSM2(id, 5);
+            } else if (result === 'didntKnow') {
+                scheduleSM2(id, 2);
+            }
+            updateStatsUI();
+        } catch (e) { console.warn(e); }
+    }
+
+    function pickNextCardSRS() {
+        const today = nowDays();
+        const candidates = shuffledVocab.length ? shuffledVocab.slice() : vocab.slice();
+        const due = candidates.filter(it => {
+            const label = Array.isArray(it) ? it[0] : it.word;
+            const id = getIdForWord(label);
+            if (!srsData[id]) return true;
+            return (srsData[id].next || 0) <= today;
+        });
+        if (due.length) return due[Math.floor(Math.random() * due.length)];
+        if (candidates.length) return candidates[Math.floor(Math.random() * candidates.length)];
+        return null;
+    }
+
+    // --- Adaptive Session ---
+    const adaptiveSessionBtn = document.getElementById('adaptiveSessionBtn');
+    const adaptiveEndBtn = document.getElementById('adaptiveEndBtn');
+    const adaptiveDueCountSpan = document.getElementById('adaptiveDueCount');
+    let adaptiveQueue = [];
+    let adaptiveActive = false;
+
+    function countDueItems() {
+        const today = nowDays();
+        let count = 0;
+        Object.keys(ALL_VOCAB_DATA).forEach(ch => {
+            const chapter = ALL_VOCAB_DATA[ch];
+            Object.keys(chapter.subcategories || {}).forEach(sub => {
+                const list = chapter.subcategories[sub].data || [];
+                list.forEach(row => {
+                    const w = String(row[0] || '');
+                    if (masteredWords.has(w)) return; // skip mastered
+                    const id = getIdForWord(w);
+                    if (!srsData[id] || (srsData[id].next || 0) <= today) count++;
+                });
+            });
+        });
+        return count;
+    }
+
+    function buildAdaptiveQueue() {
+        const today = nowDays();
+        const queue = [];
+        Object.keys(ALL_VOCAB_DATA).forEach(ch => {
+            const chapter = ALL_VOCAB_DATA[ch];
+            Object.keys(chapter.subcategories || {}).forEach(sub => {
+                const list = chapter.subcategories[sub].data || [];
+                list.forEach(row => {
+                    const w = String(row[0] || '');
+                    if (masteredWords.has(w)) return;
+                    const id = getIdForWord(w);
+                    const item = srsData[id] || null;
+                    if (!item || (item.next || 0) <= today) {
+                        queue.push({ row, srs: item });
+                    }
+                });
+            });
+        });
+        // sort based on selected mode
+        const mode = adaptiveSortSelect?.value || 'due';
+        if (mode === 'due') {
+            queue.sort((a,b) => ( (a.srs?.next||0) - (b.srs?.next||0) ));
+        } else if (mode === 'ef') {
+            queue.sort((a,b) => ( (a.srs?.ef||2.5) - (b.srs?.ef||2.5) ));
+        } else if (mode === 'random') {
+            return shuffleArray(queue).map(x => x.row);
+        }
+        return queue.map(x => x.row);
+    }
+
+    function startAdaptiveSession() {
+        adaptiveQueue = buildAdaptiveQueue();
+        if (!adaptiveQueue.length) {
+            displayAlert('Aucun mot dû pour aujourd\'hui — bonne révision !', 'var(--correct-color)');
+            setTimeout(hideAlert, 1600);
+            return;
+        }
+        adaptiveActive = true;
+        shuffledVocab = adaptiveQueue.slice();
+        currentCardIndex = 0;
+        adaptiveSessionBtn.style.display = 'none';
+        adaptiveEndBtn.style.display = 'inline-flex';
+        updateAdaptiveUI();
+        showGameContainer('flashcard');
+        displayCard();
+    }
+
+    function endAdaptiveSession() {
+        adaptiveActive = false;
+        adaptiveQueue = [];
+        adaptiveSessionBtn.style.display = 'inline-flex';
+        adaptiveEndBtn.style.display = 'none';
+        displayAlert('Session terminée.', 'var(--primary-glow)');
+        setTimeout(hideAlert, 1200);
+        // restore normal flashcard set for current chapter
+        startGame('flashcard');
+    }
+
+    function updateAdaptiveUI() {
+        try { adaptiveDueCountSpan.textContent = `${shuffledVocab.length} mots dans la session`; } catch(e){}
+    }
+
+    adaptiveSessionBtn?.addEventListener('click', () => startAdaptiveSession());
+    adaptiveEndBtn?.addEventListener('click', () => endAdaptiveSession());
+
+    // refresh due count on load and when SRS changes
+    function refreshAdaptiveCount() {
+        try { adaptiveDueCountSpan.textContent = `${countDueItems()} mots dus`; } catch(e){}
+    }
+    refreshAdaptiveCount();
+
+    // --- Adaptive queue rendering and controls ---
+    const adaptiveQueueList = document.getElementById('adaptiveQueueList');
+    const adaptiveSkipBtn = document.getElementById('adaptiveSkipBtn');
+    const adaptiveRebuildBtn = document.getElementById('adaptiveRebuildBtn');
+
+    function renderAdaptiveQueue() {
+        if (!adaptiveQueueList) return;
+        adaptiveQueueList.innerHTML = '';
+        if (!adaptiveQueue || !adaptiveQueue.length) {
+            adaptiveQueueList.innerHTML = '<li>Aucune entrée</li>'; return;
+        }
+        adaptiveQueue.forEach((row, idx) => {
+            const li = document.createElement('li');
+            li.className = 'adaptive-item';
+            const w = row[0];
+            const title = document.createElement('div');
+            title.textContent = w;
+            const meta = document.createElement('div'); meta.className = 'meta';
+            // srs info
+            const id = getIdForWord(w);
+            const s = srsData[id] || { ef: 2.5, interval: 0, next: null };
+            const nextDisplay = (s.next && typeof s.next === 'number') ? formatNextDay(s.next) : 'Jamais';
+            meta.textContent = `${nextDisplay} · interval ${s.interval||0}j · EF ${Number((s.ef||2.5).toFixed(2))}`;
+            li.appendChild(title);
+            li.appendChild(meta);
+            li.tabIndex = 0;
+            const goBtn = document.createElement('button'); goBtn.textContent = 'Aller'; goBtn.className='icon-btn';
+            goBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                // make this entry the current shuffled list
+                shuffledVocab = adaptiveQueue.slice();
+                currentCardIndex = idx;
+                displayCard();
+                showGameContainer('flashcard');
+            });
+            const skipBtn = document.createElement('button'); skipBtn.textContent='Ignorer'; skipBtn.className='icon-btn';
+            skipBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                adaptiveQueue.splice(idx,1);
+                shuffledVocab = adaptiveQueue.slice();
+                if (currentCardIndex >= shuffledVocab.length) currentCardIndex = 0;
+                renderAdaptiveQueue(); updateAdaptiveUI(); displayCard();
+            });
+            const controls = document.createElement('div'); controls.style.marginLeft='8px'; controls.style.display='inline-flex'; controls.style.gap='6px';
+            controls.appendChild(goBtn); controls.appendChild(skipBtn);
+            li.appendChild(controls);
+            adaptiveQueueList.appendChild(li);
+        });
+    }
+
+    adaptiveSkipBtn?.addEventListener('click', () => {
+        // remove current
+        if (!shuffledVocab || !shuffledVocab.length) return;
+        const removed = shuffledVocab.splice(currentCardIndex,1);
+        adaptiveQueue = shuffledVocab.slice();
+        if (currentCardIndex >= shuffledVocab.length) currentCardIndex = 0;
+        renderAdaptiveQueue(); updateAdaptiveUI(); displayCard();
+    });
+    adaptiveRebuildBtn?.addEventListener('click', () => { adaptiveQueue = buildAdaptiveQueue(); shuffledVocab = adaptiveQueue.slice(); currentCardIndex = 0; renderAdaptiveQueue(); updateAdaptiveUI(); displayCard(); });
+
+    // initial render
+    renderAdaptiveQueue();
+
+    // helper: format next day (from days number)
+    function daysToDate(days) {
+        const ms = days * 24 * 60 * 60 * 1000;
+        return new Date(ms);
+    }
+    function formatNextDay(nextDays) {
+        const today = nowDays();
+        if (!nextDays) return 'Jamais';
+        const diff = nextDays - today;
+        if (diff <= 0) return 'Aujourd\'hui';
+        if (diff === 1) return 'Demain';
+        const dt = daysToDate(nextDays);
+        return dt.toLocaleDateString();
+    }
+
+    // update when sort mode changes
+    const adaptiveSortSelect = document.getElementById('adaptiveSortSelect');
+    adaptiveSortSelect?.addEventListener('change', () => { adaptiveQueue = buildAdaptiveQueue(); shuffledVocab = adaptiveQueue.slice(); renderAdaptiveQueue(); updateAdaptiveUI(); });
+
+    // --- Export adaptive session ---
+    const adaptiveExportBtn = document.getElementById('adaptiveExportBtn');
+    const adaptiveExportFormat = document.getElementById('adaptiveExportFormat');
+    function exportAdaptiveSession(format = 'csv') {
+        if (!adaptiveQueue || !adaptiveQueue.length) { displayAlert('Aucune entrée à exporter.', 'var(--incorrect-color)'); setTimeout(hideAlert,1200); return; }
+        const sep = (format === 'tsv') ? '\t' : ',';
+        const rows = adaptiveQueue.map(r => {
+            const word = String(r[0] || '').replace(/"/g, '""');
+            const def = String(r[1] || '').replace(/"/g, '""');
+            if (sep === '\t') return `${word}\t${def}`;
+            return `"${word}","${def}"`;
+        });
+        const header = (format === 'tsv') ? '' : ''; // no header for Anki/TSV; keep CSV without header for simplicity
+        const content = (header ? header + '\n' : '') + rows.join('\n');
+        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = `adaptive_session.${format === 'tsv' ? 'tsv' : 'csv'}`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        displayAlert('Export créé.', 'var(--correct-color)'); setTimeout(hideAlert,1200);
+    }
+    adaptiveExportBtn?.addEventListener('click', () => exportAdaptiveSession(adaptiveExportFormat?.value || 'csv'));
 
     // --- Statistics System ---
     const defaultStats = {
@@ -603,6 +874,165 @@ document.addEventListener('DOMContentLoaded', () => {
         return (('ontouchstart' in window) || navigator.maxTouchPoints > 0 || navigator.msMaxTouchPoints > 0);
     }
 
+    // --- UX helpers: search, keyboard, swipe, SRS hooks ---
+    // Attach SRS updates to feedback buttons
+    knewItBtn?.addEventListener('click', () => updateSRSForCurrent('known'));
+    didntKnowBtn?.addEventListener('click', () => updateSRSForCurrent('didntKnow'));
+    masteredBtn?.addEventListener('click', () => updateSRSForCurrent('mastered'));
+
+    // Search & filter implementation (lightweight)
+    function filterFullList() {
+        const q = normalizeText(searchInput?.value || '');
+        fullVocabularyList.innerHTML = '';
+        if (!q) return; // Keep default rendering when empty
+        const results = [];
+        Object.keys(ALL_VOCAB_DATA).forEach(ch => {
+            const cat = ALL_VOCAB_DATA[ch];
+            Object.keys(cat.subcategories || {}).forEach(sub => {
+                const list = cat.subcategories[sub].data || [];
+                list.forEach(row => {
+                    const w = String(row[0] || '');
+                    const d = String(row[1] || '');
+                    if (normalizeText(w).includes(q) || normalizeText(d).includes(q)) {
+                        const mastered = masteredWords.has(w);
+                        if (mastered && !filterMasteredChk?.checked) return;
+                        if (!mastered && !filterUnmasteredChk?.checked) return;
+                        results.push({word: w, def: d, chap: ch});
+                    }
+                });
+            });
+        });
+        if (!results.length) {
+            fullVocabularyList.innerHTML = `<li>No result</li>`;
+            return;
+        }
+        const frag = document.createDocumentFragment();
+        results.forEach(r => {
+            const li = document.createElement('li');
+            li.textContent = `${r.word} — ${r.def}`;
+            li.tabIndex = 0;
+            li.addEventListener('click', () => {
+                displayAlert(`Sélection : ${r.word}`, 'var(--primary-glow)');
+                setTimeout(hideAlert, 1300);
+            });
+            frag.appendChild(li);
+        });
+        fullVocabularyList.appendChild(frag);
+    }
+    searchInput?.addEventListener('input', filterFullList);
+    filterMasteredChk?.addEventListener('change', filterFullList);
+    filterUnmasteredChk?.addEventListener('change', filterFullList);
+
+    // Keyboard navigation and accessibility
+    document.addEventListener('keydown', (e) => {
+        const tag = document.activeElement?.tagName || '';
+        if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+        if (e.key === 'ArrowLeft') { prevCardBtn?.click(); }
+        else if (e.key === 'ArrowRight') { nextCardBtn?.click(); }
+        else if (e.key === ' ') { // space flips the card
+            e.preventDefault(); flashcard?.click();
+        } else if (e.key.toLowerCase() === 'p') {
+            // play pronunciation
+            e.preventDefault();
+            try { playCurrentWord(); } catch(e) {}
+        }
+    });
+
+    // Simple swipe detection on flashcard for mobile
+    (function attachSwipe() {
+        if (!flashcard) return;
+        let sx = 0, sy = 0;
+        flashcard.addEventListener('touchstart', (ev) => {
+            const t = ev.touches[0]; sx = t.clientX; sy = t.clientY;
+        }, {passive: true});
+        flashcard.addEventListener('touchend', (ev) => {
+            const t = ev.changedTouches[0]; const dx = t.clientX - sx; const dy = t.clientY - sy;
+            if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+                if (dx > 0) prevCardBtn?.click(); else nextCardBtn?.click();
+            }
+        });
+    })();
+
+    // --- Text-to-Speech (TTS) ---
+    function speakText(text, lang = 'fr-FR') {
+        if (!text) return;
+        if (!('speechSynthesis' in window)) {
+            displayAlert('Synthèse vocale non disponible dans ce navigateur.', 'var(--incorrect-color)');
+            setTimeout(hideAlert, 1400);
+            return;
+        }
+        try {
+            window.speechSynthesis.cancel();
+            const ut = new SpeechSynthesisUtterance(text);
+            ut.lang = lang;
+            ut.rate = 0.95;
+            ut.onstart = () => { if (liveStatus) liveStatus.textContent = `Lecture : ${text}`; };
+            ut.onend = () => { if (liveStatus) liveStatus.textContent = ''; };
+            window.speechSynthesis.speak(ut);
+        } catch (e) { console.warn('TTS error', e); }
+    }
+
+    function playCurrentWord() {
+        if (!flashcard) return;
+        const isBack = flashcard.classList.contains('flipped');
+        const frontText = wordH2?.textContent?.trim();
+        const backText = backFaceP?.textContent?.trim();
+        if (isBack && backText) speakText(backText);
+        else if (frontText) speakText(frontText);
+    }
+
+    playWordBtn?.addEventListener('click', (e) => { e.stopPropagation(); playCurrentWord(); });
+
+    // --- Export / Import SRS and Mastered ---
+    const importSRSFile = document.getElementById('importSRSFile');
+    const importMasteredFile = document.getElementById('importMasteredFile');
+    const importSRSBtn = document.getElementById('importSRSBtn');
+    const exportSRSBtn = document.getElementById('exportSRSBtn');
+    const importMasteredBtn = document.getElementById('importMasteredBtn');
+    const exportMasteredBtn = document.getElementById('exportMasteredBtn');
+
+    exportSRSBtn?.addEventListener('click', () => {
+        const blob = new Blob([JSON.stringify(srsData, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = 'srs_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+    importSRSBtn?.addEventListener('click', () => importSRSFile.click());
+    importSRSFile?.addEventListener('change', (e) => {
+        const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (ev) => {
+            try { const obj = JSON.parse(ev.target.result); if (confirm('Remplacer les données SRS existantes ? OK = remplacer, Annuler = fusionner')) {
+                srsData = obj || {}; saveSRS();
+            } else { Object.assign(srsData, obj || {}); saveSRS(); }
+            displayAlert('SRS importé.', 'var(--correct-color)'); setTimeout(hideAlert,1400); refreshAdaptiveCount(); renderAdaptiveQueue(); }
+            catch(err){ displayAlert('Erreur JSON SRS.', 'var(--incorrect-color)'); setTimeout(hideAlert,1400); }
+        }; r.readAsText(f);
+    });
+
+    exportMasteredBtn?.addEventListener('click', () => {
+        const arr = Array.from(masteredWords);
+        const blob = new Blob([JSON.stringify(arr, null, 2)], {type: 'application/json'});
+        const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'mastered_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    });
+    importMasteredBtn?.addEventListener('click', () => importMasteredFile.click());
+    importMasteredFile?.addEventListener('change', (e) => {
+        const f = e.target.files[0]; if(!f) return; const r = new FileReader(); r.onload = (ev) => {
+            try { const arr = JSON.parse(ev.target.result); if (!Array.isArray(arr)) throw new Error('Not array');
+                if (confirm('Remplacer la liste des mots maîtrisés ? OK = remplacer, Annuler = fusionner')) {
+                    masteredWords = new Set(arr || []);
+                } else { arr.forEach(w => masteredWords.add(w)); }
+                updateMasteredList(); displayAlert('Maîtrisés importés.', 'var(--correct-color)'); setTimeout(hideAlert,1400); refreshAdaptiveCount(); renderAdaptiveQueue();
+            } catch(err){ displayAlert('Erreur JSON Maîtrisés.', 'var(--incorrect-color)'); setTimeout(hideAlert,1400); }
+        }; r.readAsText(f);
+    });
+
+    // Register service worker for offline support (PWA)
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('service-worker.js').then(reg => {
+            console.log('ServiceWorker registered', reg.scope);
+        }).catch(err => {
+            console.warn('SW registration failed', err);
+        });
+    }
+
     // --- Game Mode Management ---
     const showGameContainer = (mode) => {
         currentMode = mode;
@@ -914,6 +1344,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (isMastered) {
             // small delay on alert already handled by caller
         }
+        // Refresh adaptive queue and UI if in adaptive session
+        try {
+            if (adaptiveActive) {
+                adaptiveQueue = buildAdaptiveQueue();
+                shuffledVocab = adaptiveQueue.slice();
+                if (currentCardIndex >= shuffledVocab.length) currentCardIndex = 0;
+                renderAdaptiveQueue();
+                updateAdaptiveUI();
+            }
+        } catch(e) {}
     }
 
     function updateFlashcardUI() {

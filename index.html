@@ -7,6 +7,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#0D0B1A">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 </head>
 <body>
     <div class="blurry-shapes">
@@ -51,20 +54,42 @@
                     </select>
                 </div>
             </div>
+            <div class="search-filter-wrapper">
+                <input id="searchInput" type="search" placeholder="Rechercher un mot, définition..." aria-label="Recherche de vocabulaire">
+                <div class="filter-controls">
+                    <label><input type="checkbox" id="filterMastered"> Montrés maîtrisés</label>
+                    <label><input type="checkbox" id="filterUnmastered" checked> Montrés non maîtrisés</label>
+                </div>
+            </div>
+            <div class="adaptive-session-controls">
+                <button id="adaptiveSessionBtn" class="icon-btn">Démarrer session adaptative</button>
+                <button id="adaptiveEndBtn" class="icon-btn" style="display:none;">Terminer session</button>
+                <label for="adaptiveSortSelect" style="margin-left:8px; color:rgba(255,255,255,0.8); font-size:0.9rem;">Trier:</label>
+                <select id="adaptiveSortSelect" style="margin-left:6px; background:rgba(255,255,255,0.03); color:var(--text-color); border:1px solid var(--border-color); padding:6px; border-radius:8px;">
+                    <option value="due">Par échéance</option>
+                    <option value="ef">Par difficulté (EF)</option>
+                    <option value="random">Aléatoire</option>
+                </select>
+                <span id="adaptiveDueCount" aria-live="polite" style="margin-left:8px;color:rgba(255,255,255,0.8)"></span>
+            </div>
         </div>
-        <div id="alertMessage" class="alert-message" style="display:none;"></div>
+        <div id="alertMessage" class="alert-message" style="display:none;" role="status" aria-live="polite"></div>
+        <div id="liveStatus" aria-live="polite" aria-atomic="true" style="position:fixed;left:-9999px;top:auto;width:1px;height:1px;overflow:hidden;"></div>
 
         <main id="game-zone">
             <div id="flashcardGameContainer" class="game-container active-mode">
-                <button class="nav-arrow prev-arrow" id="prevCardBtn"><i class="fas fa-chevron-left"></i></button>
+                <button class="nav-arrow prev-arrow" id="prevCardBtn" aria-label="Carte précédente" title="Carte précédente"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
 
                 <div class="card-container">
                     <div id="flashcard" class="card">
-                        <div id="front" class="card-face card-front">
-                            <span class="word-type">adjective</span>
-                            <h2 class="word">Epehernal</h2>
-                            <i class="fas fa-brain"></i>
-                        </div>
+                                <div id="front" class="card-face card-front" role="button" tabindex="0" aria-label="Carte: mot principal. Appuyez pour retourner la carte">
+                                    <span class="word-type" aria-hidden="true">adjective</span>
+                                    <h2 class="word">Epehernal</h2>
+                                    <div class="card-front-controls">
+                                        <button id="playWordBtn" class="icon-btn" title="Écouter" aria-label="Écouter le mot"><i class="fas fa-play" aria-hidden="true"></i></button>
+                                        <i class="fas fa-brain" aria-hidden="true"></i>
+                                    </div>
+                                </div>
                         <div id="back" class="card-face card-back">
                             <div class="card-content">
                                 <p>Fugace, de courte durée</p>
@@ -78,7 +103,7 @@
                     </div>
                 </div>
 
-                <button class="nav-arrow next-arrow" id="nextCardBtn"><i class="fas fa-chevron-right"></i></button>
+                <button class="nav-arrow next-arrow" id="nextCardBtn" aria-label="Carte suivante" title="Carte suivante"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
 
                 <div class="bottom-ui">
                     <div class="progress-container">
@@ -142,6 +167,21 @@
         </main>
 
         <div class="details-section">
+            <details id="adaptiveDetails">
+                <summary>Session adaptative (mots dus)</summary>
+                <div class="list-content">
+                    <ul id="adaptiveQueueList" class="vocabulary-list"></ul>
+                    <div style="margin-top:8px; display:flex; gap:8px;">
+                        <button id="adaptiveSkipBtn" class="icon-btn">Ignorer courant</button>
+                        <button id="adaptiveRebuildBtn" class="icon-btn">Recalculer file</button>
+                        <select id="adaptiveExportFormat" style="background:rgba(255,255,255,0.03); color:var(--text-color); border:1px solid var(--border-color); padding:6px; border-radius:8px;">
+                            <option value="csv">CSV (Excel)</option>
+                            <option value="tsv">TSV (Anki)</option>
+                        </select>
+                        <button id="adaptiveExportBtn" class="icon-btn">Exporter session</button>
+                    </div>
+                </div>
+            </details>
             <details id="masteredDetails">
                 <summary>Mots Maîtrisés</summary>
                 <div class="list-content">
@@ -183,7 +223,13 @@
                     <button id="importChapterStatsBtn" class="icon-btn" title="Importer" aria-label="Importer des statistiques">&#x1f4e5;</button>
                     <button id="exportChapterStatsBtn" class="icon-btn" title="Exporter" aria-label="Exporter des statistiques">&#x1f4e4;</button>
                     <button id="resetChapterStatsBtn" class="icon-btn" title="Réinitialiser" aria-label="Réinitialiser les statistiques">&#x21bb;</button>
-                    <button class="close-modal" aria-label="Fermer">&times;</button>
+                     <input id="importSRSFile" type="file" accept="application/json" style="display:none" aria-hidden="true">
+                     <input id="importMasteredFile" type="file" accept="application/json" style="display:none" aria-hidden="true">
+                     <button id="importSRSBtn" class="icon-btn" title="Importer SRS" aria-label="Importer SRS">S⇩</button>
+                     <button id="exportSRSBtn" class="icon-btn" title="Exporter SRS" aria-label="Exporter SRS">S⇧</button>
+                     <button id="importMasteredBtn" class="icon-btn" title="Importer maîtrisés" aria-label="Importer maîtrisés">M⇩</button>
+                     <button id="exportMasteredBtn" class="icon-btn" title="Exporter maîtrisés" aria-label="Exporter maîtrisés">M⇧</button>
+                     <button class="close-modal" aria-label="Fermer">&times;</button>
                 </div>
             </div>
             
