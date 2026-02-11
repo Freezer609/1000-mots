@@ -358,12 +358,22 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         const header = (format === 'tsv') ? '' : ''; // no header for Anki/TSV; keep CSV without header for simplicity
         const content = (header ? header + '\n' : '') + rows.join('\n');
-        const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = `adaptive_session.${format === 'tsv' ? 'tsv' : 'csv'}`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
-        displayAlert('Export créé.', 'var(--correct-color)'); setTimeout(hideAlert,1200);
+        try {
+            showGlobalSpinner(); adaptiveExportBtn.disabled = true;
+            const blob = new Blob([content], { type: 'text/plain;charset=utf-8' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = `adaptive_session.${format === 'tsv' ? 'tsv' : 'csv'}`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+            displayAlert('Export créé.', 'var(--correct-color)'); setTimeout(hideAlert,1200);
+        } finally {
+            setTimeout(() => { hideGlobalSpinner(); adaptiveExportBtn.disabled = false; }, 800);
+        }
     }
     adaptiveExportBtn?.addEventListener('click', () => exportAdaptiveSession(adaptiveExportFormat?.value || 'csv'));
+
+    // Global spinner helpers
+    const globalSpinner = document.getElementById('globalSpinner');
+    function showGlobalSpinner() { try { if (globalSpinner) globalSpinner.classList.add('show'); } catch(e){} }
+    function hideGlobalSpinner() { try { if (globalSpinner) globalSpinner.classList.remove('show'); } catch(e){} }
 
     // --- Statistics System ---
     const defaultStats = {
@@ -947,8 +957,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }, {passive: true});
         flashcard.addEventListener('touchend', (ev) => {
             const t = ev.changedTouches[0]; const dx = t.clientX - sx; const dy = t.clientY - sy;
+            // Horizontal swipe = prev/next
             if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
                 if (dx > 0) prevCardBtn?.click(); else nextCardBtn?.click();
+                return;
+            }
+            // Vertical swipe = flip
+            if (Math.abs(dy) > 30 && Math.abs(dy) > Math.abs(dx)) {
+                flashcard.classList.toggle('flipped');
             }
         });
     })();
@@ -992,9 +1008,15 @@ document.addEventListener('DOMContentLoaded', () => {
     const exportMasteredBtn = document.getElementById('exportMasteredBtn');
 
     exportSRSBtn?.addEventListener('click', () => {
-        const blob = new Blob([JSON.stringify(srsData, null, 2)], {type: 'application/json'});
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a'); a.href = url; a.download = 'srs_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        try {
+            showGlobalSpinner();
+            exportSRSBtn.disabled = true;
+            const blob = new Blob([JSON.stringify(srsData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a'); a.href = url; a.download = 'srs_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        } finally {
+            setTimeout(() => { hideGlobalSpinner(); exportSRSBtn.disabled = false; }, 700);
+        }
     });
     importSRSBtn?.addEventListener('click', () => importSRSFile.click());
     importSRSFile?.addEventListener('change', (e) => {
@@ -1008,9 +1030,15 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     exportMasteredBtn?.addEventListener('click', () => {
-        const arr = Array.from(masteredWords);
-        const blob = new Blob([JSON.stringify(arr, null, 2)], {type: 'application/json'});
-        const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'mastered_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        try {
+            showGlobalSpinner();
+            exportMasteredBtn.disabled = true;
+            const arr = Array.from(masteredWords);
+            const blob = new Blob([JSON.stringify(arr, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'mastered_export.json'; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+        } finally {
+            setTimeout(() => { hideGlobalSpinner(); exportMasteredBtn.disabled = false; }, 700);
+        }
     });
     importMasteredBtn?.addEventListener('click', () => importMasteredFile.click());
     importMasteredFile?.addEventListener('change', (e) => {
@@ -1060,6 +1088,26 @@ document.addEventListener('DOMContentLoaded', () => {
         // Setup Subcategory Select (initially disabled)
         setupCustomSelect(subcategorySelectWrapper, customSubcategoryTrigger, customSubcategoryOptionsContainer, nativeSubcategorySelect);
         subcategorySelectWrapper.classList.add('disabled');
+
+        // Setup adaptive export format custom select (if present)
+        const adaptiveExportFormatWrapper = document.getElementById('adaptiveExportFormatWrapper');
+        if (adaptiveExportFormatWrapper) {
+            const trigger = adaptiveExportFormatWrapper.querySelector('.custom-select-trigger');
+            const optionsContainer = adaptiveExportFormatWrapper.querySelector('.custom-options');
+            const native = document.getElementById('adaptiveExportFormat');
+            try { setupCustomSelect(adaptiveExportFormatWrapper, trigger, optionsContainer, native); }
+            catch(e) { /* ignore if not available */ }
+        }
+
+        // Setup export orientation custom select (if present)
+        const exportOrientationWrapper = document.getElementById('exportOrientationWrapper');
+        if (exportOrientationWrapper) {
+            const trigger = exportOrientationWrapper.querySelector('.custom-select-trigger');
+            const optionsContainer = exportOrientationWrapper.querySelector('.custom-options');
+            const native = document.getElementById('exportOrientationSelect');
+            try { setupCustomSelect(exportOrientationWrapper, trigger, optionsContainer, native); }
+            catch(e) { /* ignore if not available */ }
+        }
 
         Object.entries(ALL_VOCAB_DATA).forEach(([key, chapter]) => {
             const option = document.createElement('option');
@@ -1262,6 +1310,101 @@ document.addEventListener('DOMContentLoaded', () => {
         sub.alert ? displayAlert(sub.alert.message, sub.alert.color) : hideAlert();
         startGame(currentMode);
     }
+
+    // --- Export printable Excel (HTML) / CSV for current displayed list ---
+    const exportListExcelBtn = document.getElementById('exportListExcelBtn');
+    const exportListCsvBtn = document.getElementById('exportListCsvBtn');
+
+    function escapeHtml(s) {
+        return (s||'').toString().replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function buildPrintableHtml(title, rows, options = {}) {
+        const now = new Date();
+        const includeIndex = options.includeIndex !== false; // default true
+        const includeType = !!options.includeType;
+        const orientation = options.orientation === 'landscape' ? 'landscape' : 'portrait';
+
+        const header = `<!doctype html><!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><meta charset="utf-8"><title>${escapeHtml(title)}</title><style>
+            @page { size: A4 ${orientation}; margin: 10mm; }
+            body{font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;padding:6mm}
+            .sheet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+            h1{font-size:20px;margin:0}
+            table{border-collapse:collapse;width:100%;margin-top:12px;font-size:12px}
+            th,td{border:1px solid #ddd;padding:6px;text-align:left;vertical-align:top}
+            th{background:#f3f3f8}
+            .nowrap { white-space:nowrap }
+            @media print{ .no-print{display:none} table{page-break-inside:auto} tr{page-break-inside:avoid;page-break-after:auto} }
+            </style></head><body>`;
+
+        let body = `<div class="sheet-header"><h1>${escapeHtml(title)}</h1><div>${now.toLocaleString()}</div></div>`;
+        // Build table header dynamically
+        body += `<table><thead><tr>`;
+        if (includeIndex) body += `<th class="nowrap">#</th>`;
+        body += `<th>Mot</th><th>Définition</th>`;
+        if (includeType) body += `<th class="nowrap">Type</th>`;
+        body += `</tr></thead><tbody>`;
+
+        rows.forEach((r,i) => {
+            const w = escapeHtml(r[0]||'');
+            const d = escapeHtml(r[1]||'');
+            const t = escapeHtml(r[2]||'');
+            body += `<tr>`;
+            if (includeIndex) body += `<td class="nowrap">${i+1}</td>`;
+            body += `<td>${w}</td><td>${d}</td>`;
+            if (includeType) body += `<td class="nowrap">${t}</td>`;
+            body += `</tr>`;
+        });
+        body += `</tbody></table>`;
+        body += `</body></html>`;
+        // Wrap Excel-specific workbook options for better compatibility
+        const excelCfg = `<!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>${escapeHtml(title)}</x:Name><x:WorksheetOptions><x:Print><x:ValidPrinterInfo/></x:Print></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]-->`;
+        return header + excelCfg + body;
+    }
+
+    function downloadFile(filename, blob) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a'); a.href = url; a.download = filename; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    }
+
+    exportListExcelBtn?.addEventListener('click', () => {
+        if (!vocab || !vocab.length) { displayAlert('Aucune liste sélectionnée.', 'var(--incorrect-color)'); setTimeout(hideAlert,1400); return; }
+        const title = listTitle?.textContent || 'Liste de vocabulaire';
+        const includeIndex = !!document.getElementById('exportIncludeIndex')?.checked;
+        const includeType = !!document.getElementById('exportIncludeType')?.checked;
+        const orientation = document.getElementById('exportOrientationSelect')?.value || 'portrait';
+        const html = buildPrintableHtml(title, vocab, { includeIndex, includeType, orientation });
+        // Excel accepts HTML with .xls extension; add BOM for better detection
+        const bom = '\uFEFF';
+        const blob = new Blob([bom + html], { type: 'application/vnd.ms-excel;charset=utf-8' });
+        downloadFile(`${title.replace(/\s+/g,'_')}.xls`, blob);
+    });
+
+    exportListCsvBtn?.addEventListener('click', () => {
+        if (!vocab || !vocab.length) { displayAlert('Aucune liste sélectionnée.', 'var(--incorrect-color)'); setTimeout(hideAlert,1400); return; }
+        const includeIndex = !!document.getElementById('exportIncludeIndex')?.checked;
+        const includeType = !!document.getElementById('exportIncludeType')?.checked;
+        const title = listTitle?.textContent || 'liste';
+        // Build header
+        const headers = [];
+        if (includeIndex) headers.push('Index');
+        headers.push('Mot','Définition');
+        if (includeType) headers.push('Type');
+
+        const rows = vocab.map((r,i) => {
+            const cols = [];
+            if (includeIndex) cols.push(String(i+1));
+            cols.push(String(r[0]||''), String(r[1]||''));
+            if (includeType) cols.push(String(r[2]||''));
+            return cols.map(c => `"${c.replace(/"/g,'""')}"`).join(',');
+        });
+        const headerLine = headers.length ? headers.map(h => `"${h.replace(/"/g,'""')}"`).join(',') : '';
+        const content = (headerLine ? headerLine + '\n' : '') + rows.join('\n');
+        // Prepend UTF-8 BOM for Excel on Windows
+        const bom = '\uFEFF';
+        const blob = new Blob([bom + content], { type: 'text/csv;charset=utf-8;' });
+        downloadFile(`${title.replace(/\s+/g,'_')}.csv`, blob);
+    });
 
     // --- Flashcard Game ---
     function startFlashcardGame() {

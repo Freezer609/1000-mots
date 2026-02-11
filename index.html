@@ -174,10 +174,15 @@
                     <div style="margin-top:8px; display:flex; gap:8px;">
                         <button id="adaptiveSkipBtn" class="icon-btn">Ignorer courant</button>
                         <button id="adaptiveRebuildBtn" class="icon-btn">Recalculer file</button>
-                        <select id="adaptiveExportFormat" style="background:rgba(255,255,255,0.03); color:var(--text-color); border:1px solid var(--border-color); padding:6px; border-radius:8px;">
-                            <option value="csv">CSV (Excel)</option>
-                            <option value="tsv">TSV (Anki)</option>
-                        </select>
+                        <div class="custom-select-wrapper" id="adaptiveExportFormatWrapper" style="display:inline-block;">
+                            <div class="custom-select-trigger">Format</div>
+                            <div class="custom-options">
+                                <select id="adaptiveExportFormat" style="background:transparent; color:inherit; border:0; padding:6px;">
+                                    <option value="csv">CSV (Excel)</option>
+                                    <option value="tsv">TSV (Anki)</option>
+                                </select>
+                            </div>
+                        </div>
                         <button id="adaptiveExportBtn" class="icon-btn">Exporter session</button>
                     </div>
                 </div>
@@ -192,6 +197,27 @@
             <details id="vocabDetails">
                 <summary id="listTitle">Liste Complète</summary>
                 <div class="list-content">
+                    <div class="export-list-controls" style="display:flex;gap:8px;align-items:center;margin-bottom:8px;">
+                        <div style="display:flex;gap:8px;align-items:center;">
+                            <button id="exportListExcelBtn" class="icon-btn">Exporter imprimable (Excel)</button>
+                            <button id="exportListCsvBtn" class="icon-btn icon-only" title="Exporter CSV" aria-label="Exporter CSV"><i class="fas fa-file-csv" aria-hidden="true"></i></button>
+                        </div>
+                        <div style="display:flex;gap:8px;align-items:center;margin-top:6px;">
+                            <label style="font-size:0.9rem;color:rgba(255,255,255,0.8);">Options:</label>
+                            <label><input type="checkbox" id="exportIncludeIndex" checked> Numéro</label>
+                            <label><input type="checkbox" id="exportIncludeType" checked> Type</label>
+                            <label for="exportOrientationSelect">Orientation:</label>
+                            <div class="custom-select-wrapper" id="exportOrientationWrapper" style="display:inline-block;">
+                                <div class="custom-select-trigger">Portrait</div>
+                                <div class="custom-options">
+                                    <select id="exportOrientationSelect" style="background:transparent; color:inherit; border:0; padding:4px;">
+                                        <option value="portrait">Portrait (A4)</option>
+                                        <option value="landscape">Paysage (A4)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <ul id="fullVocabularyList" class="vocabulary-list"></ul>
                 </div>
             </details>
@@ -220,15 +246,15 @@
                 <h3><i class="fas fa-terminal"></i> <span id="statsChapterTitle">Statistiques — Global</span></h3>
                 <div class="stats-controls">
                     <input id="importStatsFile" type="file" accept="text/csv" style="display:none" aria-hidden="true">
-                    <button id="importChapterStatsBtn" class="icon-btn" title="Importer" aria-label="Importer des statistiques">&#x1f4e5;</button>
-                    <button id="exportChapterStatsBtn" class="icon-btn" title="Exporter" aria-label="Exporter des statistiques">&#x1f4e4;</button>
-                    <button id="resetChapterStatsBtn" class="icon-btn" title="Réinitialiser" aria-label="Réinitialiser les statistiques">&#x21bb;</button>
+                        <button id="importChapterStatsBtn" class="icon-btn icon-only" title="Importer" aria-label="Importer des statistiques"><i class="fas fa-file-import" aria-hidden="true"></i></button>
+                        <button id="exportChapterStatsBtn" class="icon-btn icon-only" title="Exporter" aria-label="Exporter des statistiques"><i class="fas fa-file-export" aria-hidden="true"></i></button>
+                        <button id="resetChapterStatsBtn" class="icon-btn" title="Réinitialiser" aria-label="Réinitialiser les statistiques"><i class="fas fa-redo" aria-hidden="true"></i></button>
                      <input id="importSRSFile" type="file" accept="application/json" style="display:none" aria-hidden="true">
                      <input id="importMasteredFile" type="file" accept="application/json" style="display:none" aria-hidden="true">
-                     <button id="importSRSBtn" class="icon-btn" title="Importer SRS" aria-label="Importer SRS">S⇩</button>
-                     <button id="exportSRSBtn" class="icon-btn" title="Exporter SRS" aria-label="Exporter SRS">S⇧</button>
-                     <button id="importMasteredBtn" class="icon-btn" title="Importer maîtrisés" aria-label="Importer maîtrisés">M⇩</button>
-                     <button id="exportMasteredBtn" class="icon-btn" title="Exporter maîtrisés" aria-label="Exporter maîtrisés">M⇧</button>
+                         <button id="importSRSBtn" class="icon-btn icon-only" title="Importer SRS" aria-label="Importer SRS"><i class="fas fa-cloud-arrow-down" aria-hidden="true"></i></button>
+                         <button id="exportSRSBtn" class="icon-btn icon-only" title="Exporter SRS" aria-label="Exporter SRS"><i class="fas fa-cloud-arrow-up" aria-hidden="true"></i></button>
+                         <button id="importMasteredBtn" class="icon-btn icon-only" title="Importer maîtrisés" aria-label="Importer maîtrisés"><i class="fas fa-users" aria-hidden="true"></i></button>
+                         <button id="exportMasteredBtn" class="icon-btn icon-only" title="Exporter maîtrisés" aria-label="Exporter maîtrisés"><i class="fas fa-users-cog" aria-hidden="true"></i></button>
                      <button class="close-modal" aria-label="Fermer">&times;</button>
                 </div>
             </div>
@@ -258,6 +284,7 @@
             </div>
         </div>
     </div>
+    <div id="globalSpinner" class="global-spinner" aria-hidden="true" role="status" aria-live="polite"></div>
     <!-- Settings Modal -->
     <div id="settingsModal" class="modal" style="display: none;">
         <div class="modal-content settings-content">

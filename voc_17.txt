@@ -1,0 +1,127 @@
+cupide = qui cherche constamment à obtenir le plus d'argent possible
+délation = dénonciation particulièrement méprisable 
+duper = tromper
+duplicité = avec hypocrisie, comme quelqu'un qui joue un double jeu
+par gloriole = par vanité, pour se faire remarquer 
+importun = qui dérange par leur présence
+impudence = l'audace, l'effronterie
+infamie = une action déshonorable, honteuse
+inique = qui fait preuve d'une injustice criante, évidente
+malversations =des opérations malhonnêtes portant sur des sommes d'argent 
+mercantile = ne pense qu'à faire du commerce par tout les moyens 
+parjure = la violation d'un serment
+pédante = quelqu'un qui fait l'étalage de son savoir
+pernicieuses = nuisible moralement 
+suffisance = sa prétention, sa vanité 
+vergogne = sans honte, sans pudeur 
+volage = n'est pas fidèle en amour 
+tare = au sens moral: infirmité mentale ou physique généralement congénitale
+dépravé = qui est corrompu moralement, qui se plaît dans le mal
+irascible = qui se met en colère pour tout et pour rien
+ignare = qui est ignorant, inculte
+machiavélique = par référence à l'oeuvre d'un célèbre écrivain italien de la Renaissance; qui n'hésite pas à tromper, à ruser pour parvenir à ses fins
+ignoble = sens propre: strictement opposé à ce qui est noble; sens moral: qualifie un acte d'une bassesse extrême inspirant le dégout 
+imposteur(trice) = qui se fait passer pour autre qu'il est en réalité 
+opportuniste = qui n'agit pas selon des principes, qui tire parti des circonstances pour servir son intérêt
+sectaire = qui a des opinions étroites, qui est intolérant à l'égard des autres
+abject = qui inspire la révolte et le mépris
+répréhensible = qui mérite d'être repris, d'être condamné par la morale
+irrévérencieux = qualifie une conduite ou des propos insolents, irrespectueux
+impénitent = qui ne regrette pas du tout sa conduite et n'est pas disposé à renoncer à sa façon de faire
+compromission = acte généralement répréhensible moralement, par lequel on expose sa réputation
+vindicatif = qui est porté à la vengeance
+hâbleur = qui se vante, qui exagère quand il raconte une histoire, qui promet plus qu'il ne peut tenir
+veule = qui n'a ni énergie, ni volonté, qui est lâche
+pleutre = qui n'a aucun courage physique, même face à des dangers minimes
+partisan = qui est inspiré par l'esprit de parti, qui n'a rien à voir avec l'intérêt général
+ladre = qui est d'une avarice sordide
+fatuité = satisfaction excessive de soi-même, prétention ridicule
+outrecuidance = effronterie, impertinence, audace
+scélérat = personne qui a commis ou qui est capable de commettre des crimes
+abuser = tromper quelqu'un par de belles paroles. Autre sens de ce verbe, user avec excès, exagérer
+avilissement = déchéance morale et progressive
+Chauvin(ne) = qualifie un parti pris excesif pour ce qui concerne son pays et qyui conduire à la violence
+Chauvin(ne) = qualifie un parti pris excessif pour ce qui concerne son pays et qui peut conduire à la violence
+cynisme = philosophie antique qui professe le mépris des conventions sociales, de l'opinion publique et de la morale; sens courant: état d'esprit qui pousse à s'exprimer avec brutalité
+léser = causer préjudice, désavantager
+lésiner = chercher à faire le minimum de dépenses, essayant toujours de faire de petites économies
+maléfique = qui possède un pouvoir caché malfaisant
+malignité = dérivé de "malin" au sens de méchant: caractère de ce qui cherche à faire mal, à nuire bassement
+outrage = injure, offense grave, spécialement à l'honneur de quelqu'un
+partial = qualifie un jugement injuste manifestant un parti pris
+perfidie = sens littéraire: manquement de sa parole; sens ancien: traîtrise, en particulieren amour
+perversion = fait corrompre, de rendre mauvais; débauche, dépravation
+pusillanisme = qui manque d'audace, de courage; qui est craintif, faible: qui fuit les responsabilités
+sadisme = par allusion aux œuvres du marquis de Sade, dépravation qui consiste à trouver du plaisir à faire souffrir les autres
+vénal = au sens étymologique, qui serait capable de se vendre pour obtenir ce qu'il désire
+vice = grave défaut moral
+
+------
+
+#liste de vocabulaire / tous les mots 
+
+Noms :
+
+avilissement
+compromission
+cynisme
+délation
+duplicité
+fatuité
+gloriole
+importun
+imposteur
+impudence
+infamie
+malignité
+malversations
+outrage 
+outrecuidance
+perfidie
+perversion 
+sadisme
+suffisance
+traîtrise
+vergogne
+tare 
+vergogne
+vice
+
+adjectif :
+    abject
+    Chauvin
+    cupide 
+    dépravé 
+    hâbleur 
+    ignare
+    ignoble 
+    impénitent
+    inique 
+    irascible 
+    irrévercieux 
+    ladre
+    machiavélique 
+    maléfique 
+    mercantile 
+    opportuniste 
+    parjure
+    partial 
+    partisan 
+    pédant 
+    pernicieux
+    pleutre 
+    pusillanisme 
+    répréhensible 
+    scélérat 
+    sectaire 
+    vénal 
+    veule 
+    vindicatif 
+    volage
+
+Verbe:
+    abuser
+    duper 
+    léser 
+    lésiner 
+    

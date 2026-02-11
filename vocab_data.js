@@ -1,4 +1,89 @@
 const ALL_VOCAB_DATA = {
+    'chap17': {
+        title: 'Chapitre 17',
+        selectorId: 'chap17SelectBtn',
+        subcategories: {
+            'noms': {
+                name: 'Noms',
+                color: '#FFA500',
+                alert: {
+                    message: "le voc est à jour ! utiliser le site afin d'étudier et de consolider vos connaissances !",
+                    color: '#4CAF50'
+                },
+                data: [
+                    ["délation", "dénonciation particulièrement méprisable", "nom"],
+                    ["duplicité", "comportement hypocrite, jeu double", "nom"],
+                    ["gloriole", "vanité, désir d'être admiré", "nom"],
+                    ["impudence", "l'audace, l'effronterie", "nom"],
+                    ["infamie", "action déshonorable, honteuse", "nom"],
+                    ["malversations", "opérations malhonnêtes portant sur des sommes d'argent", "nom"],
+                    ["parjure", "violation d'un serment", "nom"],
+                    ["suffisance", "prétention, vanité", "nom"],
+                    ["vergogne", "manque de pudeur ou de honte", "nom"],
+                    ["tare", "infirmité ou défaut souvent d'ordre moral ou physique", "nom"],
+                    ["infamie", "action honteuse", "nom"],
+                    ["compromission", "acte qui compromet la réputation", "nom"],
+                    ["malignité", "caractère méchant qui cherche à nuire", "nom"],
+                    ["malversations", "détournements ou fraudes financières", "nom"],
+                    ["outrage", "injure grave, offense à l'honneur de quelqu'un", "nom"],
+                    ["outrecuidance", "effronterie, audace excessive", "nom"],
+                    ["perfidie", "traîtrise, manquement à la parole donnée", "nom"],
+                    ["perversion", "dépravation, dévoiement moral", "nom"],
+                    ["sadisme", "plaisir à faire souffrir les autres", "nom"],
+                    ["avilissement", "dénaturation morale, déchéance progressive", "nom"],
+                    ["fatuité", "satisfaction excessive de soi-même", "nom"],
+                    ["scélérat", "personne criminelle ou très coupable", "nom"],
+                    ["vice", "grave défaut moral", "nom"],
+                    ["imposteur", "qui se fait passer pour quelqu'un d'autre", "nom"]
+                ]
+            },
+            'adjectifs': {
+                name: 'Adjectifs',
+                color: '#FFA500',
+                data: [
+                    ["cupide", "qui cherche constamment à obtenir le plus d'argent possible", "adjectif"],
+                    ["importun", "qui dérange par sa présence", "adjectif"],
+                    ["inique", "qui fait preuve d'injustice criante", "adjectif"],
+                    ["mercantile", "orienté uniquement vers le profit", "adjectif"],
+                    ["pédant", "qui fait l'étalage de son savoir", "adjectif"],
+                    ["pernicieux", "nuisible moralement", "adjectif"],
+                    ["volage", "qui n'est pas fidèle en amour", "adjectif"],
+                    ["dépravé", "corrompu moralement", "adjectif"],
+                    ["irascible", "qui se met en colère facilement", "adjectif"],
+                    ["ignare", "ignorant, inculte", "adjectif"],
+                    ["machiavélique", "rusé et prêt à tromper pour parvenir à ses fins", "adjectif"],
+                    ["ignoble", "d'une bassesse morale inspirant le dégoût", "adjectif"],
+                    ["opportuniste", "qui tire parti des circonstances sans principes", "adjectif"],
+                    ["sectaire", "intolérant, aux opinions étroites", "adjectif"],
+                    ["abject", "qui inspire la révolte et le mépris", "adjectif"],
+                    ["répréhensible", "qui mérite d'être blâmé moralement", "adjectif"],
+                    ["irrévérencieux", "insolent, qui manque de respect", "adjectif"],
+                    ["impénitent", "qui ne regrette pas ses fautes", "adjectif"],
+                    ["vindicatif", "qui cherche la vengeance", "adjectif"],
+                    ["hâbleur", "qui se vante de manière exagérée", "adjectif"],
+                    ["veule", "qui manque d'énergie et de volonté", "adjectif"],
+                    ["pleutre", "lâche, sans courage physique", "adjectif"],
+                    ["partisan", "inspiré par l'esprit de parti", "adjectif"],
+                    ["ladre", "d'une avarice sordide", "adjectif"],
+                    ["fatuité", "prétention ridicule", "nom"],
+                    ["outrecuidant", "effronté, impertinent", "adjectif"],
+                    ["scélérat", "criminel, infâme", "adjectif"],
+                    ["vénal", "susceptible d'être acheté", "adjectif"],
+                    ["maléfique", "qui exerce une influence mauvaise", "adjectif"]
+                ]
+            },
+            'verbes': {
+                name: 'Verbes',
+                color: '#FFA500',
+                data: [
+                    ["duper", "tromper", "verbe"],
+                    ["abuser", "tromper par de belles paroles; user avec excès", "verbe"],
+                    ["léser", "causer préjudice, désavantager", "verbe"],
+                    ["lésiner", "chercher à faire le minimum de dépenses", "verbe"]
+                ]
+            }
+        }
+    },
     'chap18': {
         title: 'Chapitre 18',
         selectorId: 'chap18SelectBtn',
@@ -7,8 +92,8 @@ const ALL_VOCAB_DATA = {
                 name: 'Chapitre 18',
                 color: '#FFA500',
                 alert: {
-                    message: "le voc est à jour ! utiliser le site afin d'étudier et de consolider vos connaissances ! des erreurs peuvent survenir donc dites moi si ça arrive...",
-                    color: '#4CAF50'
+                    message: "l'évaluation est déjà passée. Cette liste est obsolète.",
+                    color: '#FF8C00'
                 },
                 data: [
                     ["Austérité", "une politique qui impose des sacrifices", "nom f"],
