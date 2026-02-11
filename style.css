@@ -1,5 +1,10 @@
-:root {
+/* ===== THEME SYSTEM ===== */
+
+/* Theme 1: Midnight Aura (Default) — Deep purple/violet */
+:root,
+[data-theme="midnight-aura"] {
     --background-color: #0D0B1A;
+    color-scheme: dark;
     --card-background: rgba(26, 23, 52, 0.7);
     --text-color: #FFFFFF;
     --primary-glow: #6A4BFF;
@@ -10,7 +15,66 @@
     --font-family: 'Poppins', sans-serif;
     --correct-color: #28a745;
     --incorrect-color: #dc3545;
+    --shape-1-color: #6A4BFF;
+    --shape-2-color: #A84BFF;
+    --header-accent: rgba(106, 75, 255, 0.1);
+    --select-bg: rgba(26, 23, 52, 0.95);
 }
+
+/* Theme 2: Aurora Borealis — Teal/cyan northern lights */
+[data-theme="aurora-borealis"] {
+    --background-color: #0A1628;
+    color-scheme: dark;
+    --card-background: rgba(12, 30, 50, 0.75);
+    --text-color: #E8F4F8;
+    --primary-glow: #00D4AA;
+    --secondary-glow: #00B4D8;
+    --button-bg: rgba(255, 255, 255, 0.08);
+    --button-hover-bg: rgba(0, 212, 170, 0.2);
+    --border-color: rgba(0, 212, 170, 0.25);
+    --font-family: 'Poppins', sans-serif;
+    --correct-color: #00E676;
+    --incorrect-color: #FF5252;
+    --shape-1-color: #00D4AA;
+    --shape-2-color: #00B4D8;
+    --header-accent: rgba(0, 212, 170, 0.1);
+    --select-bg: rgba(12, 30, 50, 0.95);
+}
+
+/* Theme 3: Sunset Ember — Warm amber/coral gradient */
+[data-theme="sunset-ember"] {
+    --background-color: #1A0F0A;
+    color-scheme: dark;
+    --card-background: rgba(40, 22, 14, 0.75);
+    --text-color: #FFF5EB;
+    --primary-glow: #FF6B35;
+    --secondary-glow: #E8446D;
+    --button-bg: rgba(255, 255, 255, 0.08);
+    --button-hover-bg: rgba(255, 107, 53, 0.2);
+    --border-color: rgba(255, 107, 53, 0.25);
+    --font-family: 'Poppins', sans-serif;
+    --correct-color: #4ADE80;
+    --incorrect-color: #FB7185;
+    --shape-1-color: #FF6B35;
+    --shape-2-color: #E8446D;
+    --header-accent: rgba(255, 107, 53, 0.1);
+    --select-bg: rgba(40, 22, 14, 0.95);
+}
+
+/* Prevent browser forced-dark heuristics from inverting key UI parts */
+img, svg, .shape-1, .shape-2, .custom-select-trigger, .custom-options, .vocabulary-list li {
+    filter: none !important;
+    mix-blend-mode: normal !important;
+}
+
+/* Force explicit colors for custom selects to avoid inversion by extensions/browsers */
+.custom-select-trigger, .custom-options, .custom-option {
+    background-color: var(--select-bg, rgba(26, 23, 52, 0.95)) !important;
+    color: var(--text-color) !important;
+}
+
+/* Ensure dropdown arrow color remains consistent */
+.custom-select-trigger:after { color: var(--primary-glow) !important; }
 
 /* Badge for facultative words (dark green) */
 .facultative-badge {
@@ -58,8 +122,8 @@
 
 body {
     font-family: var(--font-family);
-        min-width: 44px;
-        min-height: 44px;
+    min-width: 44px;
+    min-height: 44px;
     margin: 0;
     padding: 2rem;
     display: flex;
@@ -68,6 +132,8 @@ body {
     min-height: 100vh;
     overflow-x: hidden;
     position: relative;
+    background-color: var(--background-color);
+    color: var(--text-color);
 }
 
 .blurry-shapes {
@@ -101,8 +167,8 @@ body {
     filter: blur(150px);
 }
 
-.shape-1 { width: 400px; height: 400px; background: var(--primary-glow); top: 10%; left: 15%; animation: move-around 20s infinite alternate; }
-.shape-2 { width: 300px; height: 300px; background: var(--secondary-glow); bottom: 10%; right: 15%; animation: move-around 25s infinite alternate-reverse; }
+.shape-1 { width: 400px; height: 400px; background: var(--shape-1-color, var(--primary-glow)); top: 10%; left: 15%; animation: move-around 20s infinite alternate; }
+.shape-2 { width: 300px; height: 300px; background: var(--shape-2-color, var(--secondary-glow)); bottom: 10%; right: 15%; animation: move-around 25s infinite alternate-reverse; }
 
 @keyframes move-around {
     0% { transform: translate(0, 0); }
@@ -134,7 +200,7 @@ header {
 #mainTitle { font-size: 1.5rem; font-weight: 600; letter-spacing: 2px; margin: 0; }
 
 .icon-btn {
-    background: rgba(26, 23, 52, 0.9);
+    background: var(--card-background);
     border: 1px solid var(--primary-glow);
     color: var(--primary-glow);
     width: 40px;
@@ -155,7 +221,7 @@ header {
 
 /* Stats Modal Styles */
 .stats-content {
-    background: rgba(15, 13, 30, 0.98);
+    background: var(--card-background);
     border: 1px solid var(--primary-glow);
     box-shadow: 0 0 30px rgba(106, 75, 255, 0.2);
     max-width: 600px;
@@ -221,8 +287,129 @@ header {
 .setting-row { transition: background 160ms ease, transform 160ms ease; }
 .setting-row:hover { background: rgba(255,255,255,0.04); transform: translateY(-3px); }
 
+/* ===== Theme Picker Styles ===== */
+.theme-picker { display: flex; gap: 12px; flex-wrap: wrap; }
+.theme-card {
+    flex: 1;
+    min-width: 120px;
+    padding: 14px 10px;
+    border-radius: 14px;
+    border: 2px solid rgba(255,255,255,0.08);
+    background: rgba(255,255,255,0.03);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.3s cubic-bezier(.2,.8,.2,1);
+    position: relative;
+    overflow: hidden;
+}
+.theme-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 14px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+.theme-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(255,255,255,0.2);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+}
+.theme-card.active {
+    border-color: var(--primary-glow);
+    box-shadow: 0 0 20px rgba(106,75,255,0.3), inset 0 0 20px rgba(106,75,255,0.05);
+}
+.theme-card.active .theme-check {
+    opacity: 1;
+    transform: scale(1);
+}
+.theme-check {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--primary-glow);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.7rem;
+    opacity: 0;
+    transform: scale(0.5);
+    transition: all 0.3s cubic-bezier(.2,.8,.2,1);
+}
+.theme-preview {
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+.theme-preview-dot {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(12px);
+}
+.theme-preview-dot:first-child {
+    width: 32px; height: 32px;
+    top: 4px; left: 12px;
+}
+.theme-preview-dot:last-child {
+    width: 24px; height: 24px;
+    bottom: 4px; right: 12px;
+}
+.theme-card-name {
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: var(--text-color);
+    letter-spacing: 0.3px;
+}
+.theme-card-label {
+    font-size: 0.68rem;
+    color: rgba(255,255,255,0.5);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.theme-default-btn {
+    margin-top: 2px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    color: rgba(255,255,255,0.6);
+    cursor: pointer;
+    font-size: 0.7rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+.theme-default-btn:hover {
+    background: rgba(255,255,255,0.1);
+    color: white;
+}
+.theme-default-btn.is-default {
+    background: var(--primary-glow);
+    border-color: var(--primary-glow);
+    color: white;
+    pointer-events: none;
+}
+@media (max-width: 500px) {
+    .theme-picker { flex-direction: column; }
+    .theme-card { min-width: 100%; }
+}
+
+/* Smooth theme transition */
+body, .shape-1, .shape-2, .card-face, .game-container, details, .icon-btn, .mode-selector button,
+.custom-select-trigger, .custom-options, .modal-content, .stats-header, .stat-card {
+    transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
+}
+
 .stats-header {
-    background: rgba(106, 75, 255, 0.1);
+    background: var(--header-accent, rgba(106, 75, 255, 0.1));
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border-color);
     display: flex;
@@ -416,7 +603,7 @@ header {
 }
 
 .custom-select-trigger {
-    background: rgba(26, 23, 52, 0.9);
+    background: var(--card-background);
     border: 2px solid var(--primary-glow);
     color: var(--text-color);
     padding: 0.8rem 2.5rem 0.8rem 1.2rem;
@@ -443,7 +630,7 @@ header {
 }
 
 .custom-select-trigger:hover {
-    background: rgba(40, 35, 80, 0.95);
+    background: var(--button-hover-bg);
     box-shadow: 0 0 20px rgba(106, 75, 255, 0.4);
     transform: translateY(-2px);
 }
@@ -454,7 +641,7 @@ header {
     top: 100%; /* Position below the trigger */
     left: 0;
     right: 0;
-    background: rgba(26, 23, 52, 0.95); /* Slightly darker for contrast */
+    background: var(--select-bg); /* Slightly darker for contrast */
     border: 1px solid var(--primary-glow);
     border-top: none; /* No top border, blends with trigger */
     border-radius: 0 0 12px 12px;
@@ -512,7 +699,7 @@ header {
 
 /* Styles for when the custom select is disabled */
 .custom-select-wrapper.disabled .custom-select-trigger {
-    background: rgba(26, 23, 52, 0.7);
+    background: var(--card-background);
     border-color: rgba(255, 255, 255, 0.1);
     color: rgba(255, 255, 255, 0.4);
     cursor: not-allowed;

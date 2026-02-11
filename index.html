@@ -293,6 +293,47 @@
                 <button class="close-modal" id="closeSettings">&times;</button>
             </div>
             <div class="settings-grid">
+                <div class="setting-row" style="flex-direction:column;align-items:stretch;">
+                    <div class="setting-left" style="margin-bottom:10px;">
+                        <i class="fas fa-palette setting-icon"></i>
+                        <div class="setting-info">
+                            <div class="setting-label">Thème</div>
+                            <div class="setting-desc">Choisis l'apparence du site. Clique sur l'étoile pour définir le thème par défaut.</div>
+                        </div>
+                    </div>
+                    <div class="theme-picker" id="themePicker">
+                        <div class="theme-card" data-theme="midnight-aura">
+                            <span class="theme-check"><i class="fas fa-check"></i></span>
+                            <div class="theme-preview" style="background:#0D0B1A;">
+                                <div class="theme-preview-dot" style="background:#6A4BFF;"></div>
+                                <div class="theme-preview-dot" style="background:#A84BFF;"></div>
+                            </div>
+                            <span class="theme-card-name">Midnight Aura</span>
+                            <span class="theme-card-label">Violet profond</span>
+                            <button class="theme-default-btn" data-theme="midnight-aura" title="Définir par défaut"><i class="fas fa-star"></i> Par défaut</button>
+                        </div>
+                        <div class="theme-card" data-theme="aurora-borealis">
+                            <span class="theme-check"><i class="fas fa-check"></i></span>
+                            <div class="theme-preview" style="background:#0A1628;">
+                                <div class="theme-preview-dot" style="background:#00D4AA;"></div>
+                                <div class="theme-preview-dot" style="background:#00B4D8;"></div>
+                            </div>
+                            <span class="theme-card-name">Aurora Borealis</span>
+                            <span class="theme-card-label">Aurore boréale</span>
+                            <button class="theme-default-btn" data-theme="aurora-borealis" title="Définir par défaut"><i class="fas fa-star"></i> Par défaut</button>
+                        </div>
+                        <div class="theme-card" data-theme="sunset-ember">
+                            <span class="theme-check"><i class="fas fa-check"></i></span>
+                            <div class="theme-preview" style="background:#1A0F0A;">
+                                <div class="theme-preview-dot" style="background:#FF6B35;"></div>
+                                <div class="theme-preview-dot" style="background:#E8446D;"></div>
+                            </div>
+                            <span class="theme-card-name">Sunset Ember</span>
+                            <span class="theme-card-label">Coucher de soleil</span>
+                            <button class="theme-default-btn" data-theme="sunset-ember" title="Définir par défaut"><i class="fas fa-star"></i> Par défaut</button>
+                        </div>
+                    </div>
+                </div>
                 <div class="setting-row">
                         <div class="setting-left"><i class="fas fa-bullseye setting-icon"></i>
                             <div class="setting-info"><div class="setting-label">Seuil maîtrise</div>

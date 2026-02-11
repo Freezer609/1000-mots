@@ -496,9 +496,84 @@ document.addEventListener('DOMContentLoaded', () => {
         confettiEnabled: true,
         confettiDesktopOnly: false,
         showConsecBadge: true,
-        confettiIgnoreReducedMotion: false
+        confettiIgnoreReducedMotion: false,
+        theme: 'midnight-aura',
+        defaultTheme: 'midnight-aura'
     };
     let userSettings = JSON.parse(localStorage.getItem('userSettings') || '{}');
+
+    // --- Theme System ---
+    const THEME_KEY = 'selectedTheme';
+    const DEFAULT_THEME_KEY = 'defaultTheme';
+    const themes = ['midnight-aura', 'aurora-borealis', 'sunset-ember'];
+    const themeMetaColor = {
+        'midnight-aura': '#0D0B1A',
+        'aurora-borealis': '#0A1628',
+        'sunset-ember': '#1A0F0A'
+    };
+
+    function applyTheme(themeName) {
+        if (!themes.includes(themeName)) themeName = 'midnight-aura';
+        document.documentElement.setAttribute('data-theme', themeName);
+        document.body.style.backgroundColor = '';  // let CSS handle it
+        // update meta theme-color
+        const metaTheme = document.querySelector('meta[name="theme-color"]');
+        if (metaTheme) metaTheme.setAttribute('content', themeMetaColor[themeName] || '#0D0B1A');
+        // persist current selection
+        localStorage.setItem(THEME_KEY, themeName);
+        userSettings.theme = themeName;
+        // update theme picker UI
+        updateThemePickerUI(themeName);
+    }
+
+    function updateThemePickerUI(activeTheme) {
+        const picker = document.getElementById('themePicker');
+        if (!picker) return;
+        const defaultTheme = localStorage.getItem(DEFAULT_THEME_KEY) || 'midnight-aura';
+        picker.querySelectorAll('.theme-card').forEach(card => {
+            const t = card.getAttribute('data-theme');
+            card.classList.toggle('active', t === activeTheme);
+        });
+        picker.querySelectorAll('.theme-default-btn').forEach(btn => {
+            const t = btn.getAttribute('data-theme');
+            btn.classList.toggle('is-default', t === defaultTheme);
+        });
+    }
+
+    function setDefaultTheme(themeName) {
+        if (!themes.includes(themeName)) themeName = 'midnight-aura';
+        localStorage.setItem(DEFAULT_THEME_KEY, themeName);
+        userSettings.defaultTheme = themeName;
+        saveSettings();
+        updateThemePickerUI(localStorage.getItem(THEME_KEY) || themeName);
+    }
+
+    // Apply saved or default theme immediately
+    (function initTheme() {
+        const saved = localStorage.getItem(THEME_KEY);
+        const defaultT = localStorage.getItem(DEFAULT_THEME_KEY) || 'midnight-aura';
+        applyTheme(saved || defaultT);
+    })();
+
+    // Wire up theme picker clicks
+    const themePicker = document.getElementById('themePicker');
+    if (themePicker) {
+        themePicker.addEventListener('click', (e) => {
+            // Handle theme card click
+            const card = e.target.closest('.theme-card');
+            const defaultBtn = e.target.closest('.theme-default-btn');
+            if (defaultBtn) {
+                e.stopPropagation();
+                const t = defaultBtn.getAttribute('data-theme');
+                setDefaultTheme(t);
+                return;
+            }
+            if (card) {
+                const t = card.getAttribute('data-theme');
+                applyTheme(t);
+            }
+        });
+    }
     function loadSettings() {
         userSettings = Object.assign({}, defaultSettings, userSettings || {});
         // apply to UI inputs if present
@@ -509,8 +584,9 @@ document.addEventListener('DOMContentLoaded', () => {
             showConsecBadgeInput.checked = !!userSettings.showConsecBadge;
             if (confettiIgnoreReducedMotionInput) confettiIgnoreReducedMotionInput.checked = !!userSettings.confettiIgnoreReducedMotion;
         } catch(e) {}
-        // apply settings immediately where helpful
-        // ensure userSettings exists for other logic
+        // apply theme
+        const savedTheme = localStorage.getItem(THEME_KEY) || localStorage.getItem(DEFAULT_THEME_KEY) || 'midnight-aura';
+        applyTheme(savedTheme);
     }
     function saveSettings() {
         localStorage.setItem('userSettings', JSON.stringify(userSettings));
@@ -545,6 +621,8 @@ document.addEventListener('DOMContentLoaded', () => {
     resetSettingsBtn?.addEventListener('click', () => {
         userSettings = Object.assign({}, defaultSettings);
         saveSettings();
+        localStorage.setItem(DEFAULT_THEME_KEY, 'midnight-aura');
+        applyTheme('midnight-aura');
         loadSettings();
     });
 
