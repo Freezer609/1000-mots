@@ -1,5 +1,12 @@
 const ALL_VOCAB_DATA = {
     'chap17': {
+        title: 'Chapitre 17',
+        selectorId: 'chap17SelectBtn',
+        subcategories: {
+            'tous': {
+                name: 'Tous les mots',
+                color: '#FFA500',
+                data: [
                     ["délation", "dénonciation particulièrement méprisable ", "nom"],
                     ["duplicité", "avec hypocrisie, comme quelqu'un qui joue un double jeu", "nom"],
                     ["gloriole", "par vanité, pour se faire remarquer ", "nom"],
@@ -49,44 +56,6 @@ const ALL_VOCAB_DATA = {
                     ["sadisme", "par allusion aux œuvres du marquis de Sade, dépravation qui consiste à trouver du plaisir à faire souffrir les autres", "nom"],
                     ["vénal", "au sens étymologique, qui serait capable de se vendre pour obtenir ce qu'il désire", "nom"],
                     ["vice", "grave défaut moral", "nom"]
-                    ["perversion", "dépravation, dévoiement moral", "nom"],
-                    ["sadisme", "plaisir à faire souffrir les autres", "nom"],
-                    ["avilissement", "dénaturation morale, déchéance progressive", "nom"],
-                    ["fatuité", "satisfaction excessive de soi-même", "nom"],
-                    ["scélérat", "personne criminelle ou très coupable", "nom"],
-                    ["vice", "grave défaut moral", "nom"],
-                    ["imposteur", "qui se fait passer pour quelqu'un d'autre", "nom"],
-                    ["cupide", "qui cherche constamment à obtenir le plus d'argent possible", "adjectif"],
-                    ["importun", "qui dérange par sa présence", "adjectif"],
-                    ["inique", "qui fait preuve d'injustice criante", "adjectif"],
-                    ["mercantile", "orienté uniquement vers le profit", "adjectif"],
-                    ["pédant", "qui fait l'étalage de son savoir", "adjectif"],
-                    ["pernicieux", "nuisible moralement", "adjectif"],
-                    ["volage", "qui n'est pas fidèle en amour", "adjectif"],
-                    ["dépravé", "corrompu moralement", "adjectif"],
-                    ["irascible", "qui se met en colère facilement", "adjectif"],
-                    ["ignare", "ignorant, inculte", "adjectif"],
-                    ["machiavélique", "rusé et prêt à tromper pour parvenir à ses fins", "adjectif"],
-                    ["ignoble", "d'une bassesse morale inspirant le dégoût", "adjectif"],
-                    ["opportuniste", "qui tire parti des circonstances sans principes", "adjectif"],
-                    ["sectaire", "intolérant, aux opinions étroites", "adjectif"],
-                    ["abject", "qui inspire la révolte et le mépris", "adjectif"],
-                    ["répréhensible", "qui mérite d'être blâmé moralement", "adjectif"],
-                    ["irrévérencieux", "insolent, qui manque de respect", "adjectif"],
-                    ["impénitent", "qui ne regrette pas ses fautes", "adjectif"],
-                    ["vindicatif", "qui cherche la vengeance", "adjectif"],
-                    ["hâbleur", "qui se vante de manière exagérée", "adjectif"],
-                    ["veule", "qui manque d'énergie et de volonté", "adjectif"],
-                    ["pleutre", "lâche, sans courage physique", "adjectif"],
-                    ["partisan", "inspiré par l'esprit de parti", "adjectif"],
-                    ["ladre", "d'une avarice sordide", "adjectif"],
-                    ["outrecuidant", "effronté, impertinent", "adjectif"],
-                    ["vénal", "susceptible d'être acheté", "adjectif"],
-                    ["maléfique", "qui exerce une influence mauvaise", "adjectif"],
-                    ["duper", "tromper", "verbe"],
-                    ["abuser", "tromper par de belles paroles; user avec excès", "verbe"],
-                    ["léser", "causer préjudice, désavantager", "verbe"],
-                    ["lésiner", "chercher à faire le minimum de dépenses", "verbe"]
                 ]
             },
             'noms': {
@@ -95,8 +64,83 @@ const ALL_VOCAB_DATA = {
                 alert: {
                     message: "le voc est à jour ! utiliser le site afin d'étudier et de consolider vos connaissances !",
                     color: '#4CAF50'
-                const ALL_VOCAB_DATA = {
-                    'chap17': {
+                },
+                data: [
+                    ["délation", "dénonciation particulièrement méprisable", "nom"],
+                    ["duplicité", "avec hypocrisie, comme quelqu'un qui joue un double jeu", "nom"],
+                    ["gloriole", "par vanité, pour se faire remarquer", "nom"],
+                    ["impudence", "l'audace, l'effronterie", "nom"],
+                    ["infamie", "une action déshonorable, honteuse", "nom"],
+                    ["malversations", "des opérations malhonnêtes portant sur des sommes d'argent", "nom"],
+                    ["parjure", "la violation d'un serment", "nom"],
+                    ["pédante", "quelqu'un qui fait l'étalage de son savoir", "nom"],
+                    ["pernicieuses", "nuisible moralement", "nom"],
+                    ["suffisance", "sa prétention, sa vanité", "nom"],
+                    ["vergogne", "sans honte, sans pudeur", "nom"],
+                    ["volage", "n'est pas fidèle en amour", "nom"],
+                    ["tare", "au sens moral: infirmité mentale ou physique généralement congénitable", "nom"],
+                    ["imposteur(trice)", "qui se fait passer pour autre qu'il est en réalité", "nom"],
+                    ["compromission", "acte généralement répréhensible moralement, par lequel on expose sa réputation", "nom"],
+                    ["malignité", "dérivé de \"malin\" au sens de méchant: caractère de ce qui cherche à faire mal, à nuire bassement", "nom"],
+                    ["outrage", "injure, offense grave, spécialement à l'honneur de quelqu'un", "nom"],
+                    ["outrecuidance", "effronterie, impertinence, audace", "nom"],
+                    ["perfidie", "sens littéraire: manquement de sa parole; sens ancien: traîtrise, en particulieren amour", "nom"],
+                    ["perversion", "fait corrompre, de rendre mauvais; débauche, dépravation", "nom"],
+                    ["sadisme", "par allusion aux œuvres du marquis de Sade, dépravation qui consiste à trouver du plaisir à faire souffrir les autres", "nom"],
+                    ["avilissement", "déchéance morale et progressive", "nom"],
+                    ["fatuité", "satisfaction excessive de soi-même, prétention ridicule", "nom"],
+                    ["scélérat", "personne qui a commis ou qui est capable de commettre des crimes", "nom"],
+                    ["vice", "grave défaut moral", "nom"]
+                ]
+            },
+            'adjectifs': {
+                name: 'Adjectifs',
+                color: '#FFA500',
+                data: [
+                    ["cupide", "qui cherche constamment à obtenir le plus d'argent possible", "adjectif"],
+                    ["importun", "qui dérange par leur présence", "adjectif"],
+                    ["inique", "qui fait preuve d'une injustice criante, évidente", "adjectif"],
+                    ["mercantile", "ne pense qu'à faire du commerce par tout les moyens ", "adjectif"],
+                    ["pédante", "quelqu'un qui fait l'étalage de son savoir", "adjectif"],
+                    ["pernicieuses", "nuisible moralement ", "adjectif"],
+                    ["volage", "n'est pas fidèle en amour ", "adjectif"],
+                    ["dépravé", "qui est corrompu moralement, qui se plaît dans le mal", "adjectif"],
+                    ["irascible", "qui se met en colère pour tout et pour rien", "adjectif"],
+                    ["ignare", "qui est ignorant, inculte", "adjectif"],
+                    ["machiavélique", "par référence à l'oeuvre d'un célèbre écrivain italien de la Renaissance; qui n'hésite pas à tromper, à ruser pour parvenir à ses fins", "adjectif"],
+                    ["ignoble", "sens propre: strictement opposé à ce qui est noble; sens moral: qualifie un acte d'une bassesse extrême inspirant le dégout ", "adjectif"],
+                    ["opportuniste", "qui n'agit pas selon des principes, qui tire parti des circonstances pour servir son intérêt", "adjectif"],
+                    ["sectaire", "qui a des opinions étroites, qui est intolérant à l'égard des autres", "adjectif"],
+                    ["abject", "qui inspire la révolte et le mépris", "adjectif"],
+                    ["répréhensible", "qui mérite d'être repris, d'être condamné par la morale", "adjectif"],
+                    ["irrévérencieux", "qualifie une conduite ou des propos insolents, irrespectueux", "adjectif"],
+                    ["impénitent", "qui ne regrette pas du tout sa conduite et n'est pas disposé à renoncer à sa façon de faire", "adjectif"],
+                    ["vindicatif", "qui est porté à la vengeance", "adjectif"],
+                    ["hâbleur", "qui se vante, qui exagère quand il raconte une histoire, qui promet plus qu'il ne peut tenir", "adjectif"],
+                    ["veule", "qui n'a ni énergie, ni volonté, qui est lâche", "adjectif"],
+                    ["pleutre", "qui n'a aucun courage physique, même face à des dangers minimes", "adjectif"],
+                    ["partisan", "qui est inspiré par l'esprit de parti, qui n'a rien à voir avec l'intérêt général", "adjectif"],
+                    ["ladre", "qui est d'une avarice sordide", "adjectif"],
+                    ["fatuité", "satisfaction excessive de soi-même, prétention ridicule", "adjectif"],
+                    ["outrecuidance", "effronterie, impertinence, audace", "adjectif"],
+                    ["scélérat", "personne qui a commis ou qui est capable de commettre des crimes", "adjectif"],
+                    ["vénal", "au sens étymologique, qui serait capable de se vendre pour obtenir ce qu'il désire", "adjectif"],
+                    ["maléfique", "qui possède un pouvoir caché malfaisant", "adjectif"]
+                ]
+            },
+            'verbes': {
+                name: 'Verbes',
+                color: '#FFA500',
+                data: [
+                    ["duper", "tromper", "verbe"],
+                    ["abuser", "tromper quelqu'un par de belles paroles. Autre sens de ce verbe, user avec excès, exagérer", "verbe"],
+                    ["léser", "causer préjudice, désavantager", "verbe"],
+                    ["lésiner", "chercher à faire le minimum de dépenses, essayant toujours de faire de petites économies", "verbe"]
+                ]
+            }
+        }
+    },
+    'chap18': {
                         title: 'Chapitre 17',
                         selectorId: 'chap17SelectBtn',
                         subcategories: {
