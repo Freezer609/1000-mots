@@ -1325,14 +1325,16 @@ document.addEventListener('DOMContentLoaded', () => {
         const includeType = !!options.includeType;
         const orientation = options.orientation === 'landscape' ? 'landscape' : 'portrait';
 
-        const header = `<!doctype html><!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><meta charset="utf-8"><title>${escapeHtml(title)}</title><style>
+        const header = `<!doctype html><!doctype html><html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><meta charset="utf-8"><meta name="color-scheme" content="light"><title>${escapeHtml(title)}</title><style>
+            /* Force light color-scheme to avoid browser/OS forced-dark inversion */
+            html { color-scheme: light; }
             @page { size: A4 ${orientation}; margin: 10mm; }
-            body{font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff;padding:6mm}
+            body{font-family:Arial,Helvetica,sans-serif;color:#111 !important;background:#ffffff !important;padding:6mm; -webkit-print-color-adjust: exact; print-color-adjust: exact;}
             .sheet-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
             h1{font-size:20px;margin:0}
-            table{border-collapse:collapse;width:100%;margin-top:12px;font-size:12px}
-            th,td{border:1px solid #ddd;padding:6px;text-align:left;vertical-align:top}
-            th{background:#f3f3f8}
+            table{border-collapse:collapse;width:100%;margin-top:12px;font-size:12px;background:transparent}
+            th,td{border:1px solid #ddd;padding:6px;text-align:left;vertical-align:top;color:#111 !important;background:transparent}
+            th{background:#f3f3f8 !important}
             .nowrap { white-space:nowrap }
             @media print{ .no-print{display:none} table{page-break-inside:auto} tr{page-break-inside:avoid;page-break-after:auto} }
             </style></head><body>`;

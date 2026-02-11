@@ -73,26 +73,27 @@ body {
 .blurry-shapes {
     position: fixed;
     width: 100%;
-    .icon-btn.icon-only { width:44px; padding:0; }
-    .icon-btn {
-        padding: 6px 10px;
-        display: inline-flex;
-        gap: 6px;
-        transition: all 0.22s cubic-bezier(.2,.8,.2,1);
-        font-weight: 600;
-    }
-    .icon-btn:hover {
-        box-shadow: 0 0 18px rgba(106, 75, 255, 0.45);
-        transform: translateY(-2px);
-    }
-    /* increase touch targets for accessibility */
-    button.icon-btn, .icon-btn { touch-action: manipulation; }
     height: 100%;
     top: 0;
-    .card { min-height: 200px; position: relative; perspective: 1200px; }
     left: 0;
     z-index: -1;
 }
+
+.blurry-shapes .icon-btn.icon-only { width:44px; padding:0; }
+.blurry-shapes .icon-btn {
+    padding: 6px 10px;
+    display: inline-flex;
+    gap: 6px;
+    transition: all 0.22s cubic-bezier(.2,.8,.2,1);
+    font-weight: 600;
+}
+.blurry-shapes .icon-btn:hover {
+    box-shadow: 0 0 18px rgba(106, 75, 255, 0.45);
+    transform: translateY(-2px);
+}
+/* increase touch targets for accessibility */
+.blurry-shapes button.icon-btn, .blurry-shapes .icon-btn { touch-action: manipulation; }
+.blurry-shapes .card { min-height: 200px; position: relative; perspective: 1200px; }
 
 .shape-1, .shape-2 {
     position: absolute;
