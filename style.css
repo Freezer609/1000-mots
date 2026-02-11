@@ -136,43 +136,136 @@ body {
     color: var(--text-color);
 }
 
-.blurry-shapes {
+/* ===== Premium Animated Mesh Background ===== */
+.bg-mesh {
     position: fixed;
     width: 100%;
     height: 100%;
     top: 0;
     left: 0;
     z-index: -1;
+    overflow: hidden;
+    background-color: var(--background-color);
 }
 
-.blurry-shapes .icon-btn.icon-only { width:44px; padding:0; }
-.blurry-shapes .icon-btn {
-    padding: 6px 10px;
-    display: inline-flex;
-    gap: 6px;
-    transition: all 0.22s cubic-bezier(.2,.8,.2,1);
-    font-weight: 600;
-}
-.blurry-shapes .icon-btn:hover {
-    box-shadow: 0 0 18px rgba(106, 75, 255, 0.45);
-    transform: translateY(-2px);
-}
-/* increase touch targets for accessibility */
-.blurry-shapes button.icon-btn, .blurry-shapes .icon-btn { touch-action: manipulation; }
-.blurry-shapes .card { min-height: 200px; position: relative; perspective: 1200px; }
-
-.shape-1, .shape-2 {
+/* Subtle grid overlay */
+.mesh-grid {
     position: absolute;
-    border-radius: 50%;
-    filter: blur(150px);
+    inset: 0;
+    background-image:
+        linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+    background-size: 60px 60px;
+    mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 70%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 50%, black 30%, transparent 70%);
 }
 
-.shape-1 { width: 400px; height: 400px; background: var(--shape-1-color, var(--primary-glow)); top: 10%; left: 15%; animation: move-around 20s infinite alternate; }
-.shape-2 { width: 300px; height: 300px; background: var(--shape-2-color, var(--secondary-glow)); bottom: 10%; right: 15%; animation: move-around 25s infinite alternate-reverse; }
+/* Organic blobs */
+.mesh-blob {
+    position: absolute;
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+    filter: blur(80px);
+    opacity: 0.5;
+    will-change: transform, border-radius;
+}
 
-@keyframes move-around {
-    0% { transform: translate(0, 0); }
-    100% { transform: translate(100px, 50px); }
+.mesh-blob-1 {
+    width: 45vw;
+    height: 45vw;
+    max-width: 600px;
+    max-height: 600px;
+    background: radial-gradient(circle at 30% 40%, var(--shape-1-color, var(--primary-glow)), transparent 70%);
+    top: -10%;
+    left: -5%;
+    animation: morph-1 18s ease-in-out infinite alternate, drift-1 22s ease-in-out infinite;
+}
+
+.mesh-blob-2 {
+    width: 35vw;
+    height: 35vw;
+    max-width: 500px;
+    max-height: 500px;
+    background: radial-gradient(circle at 60% 50%, var(--shape-2-color, var(--secondary-glow)), transparent 70%);
+    bottom: -8%;
+    right: -5%;
+    animation: morph-2 20s ease-in-out infinite alternate, drift-2 25s ease-in-out infinite;
+}
+
+.mesh-blob-3 {
+    width: 25vw;
+    height: 25vw;
+    max-width: 350px;
+    max-height: 350px;
+    background: radial-gradient(circle at 50% 50%, var(--shape-1-color, var(--primary-glow)), transparent 70%);
+    top: 50%;
+    right: 15%;
+    opacity: 0.3;
+    animation: morph-3 15s ease-in-out infinite alternate, drift-3 20s ease-in-out infinite;
+}
+
+.mesh-blob-4 {
+    width: 20vw;
+    height: 20vw;
+    max-width: 280px;
+    max-height: 280px;
+    background: radial-gradient(circle at 40% 60%, var(--shape-2-color, var(--secondary-glow)), transparent 70%);
+    top: 20%;
+    left: 40%;
+    opacity: 0.25;
+    animation: morph-4 22s ease-in-out infinite alternate, drift-4 28s ease-in-out infinite;
+}
+
+@keyframes morph-1 {
+    0%   { border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%; }
+    25%  { border-radius: 58% 42% 54% 46% / 67% 32% 68% 33%; }
+    50%  { border-radius: 40% 60% 34% 66% / 55% 65% 35% 45%; }
+    75%  { border-radius: 65% 35% 60% 40% / 40% 55% 45% 60%; }
+    100% { border-radius: 45% 55% 50% 50% / 60% 40% 60% 40%; }
+}
+
+@keyframes morph-2 {
+    0%   { border-radius: 50% 50% 40% 60% / 60% 40% 60% 40%; }
+    33%  { border-radius: 35% 65% 55% 45% / 45% 60% 40% 55%; }
+    66%  { border-radius: 60% 40% 45% 55% / 50% 50% 50% 50%; }
+    100% { border-radius: 42% 58% 60% 40% / 55% 35% 65% 45%; }
+}
+
+@keyframes morph-3 {
+    0%   { border-radius: 55% 45% 60% 40% / 45% 55% 45% 55%; }
+    50%  { border-radius: 40% 60% 35% 65% / 60% 40% 55% 45%; }
+    100% { border-radius: 65% 35% 50% 50% / 35% 65% 40% 60%; }
+}
+
+@keyframes morph-4 {
+    0%   { border-radius: 45% 55% 55% 45% / 50% 50% 50% 50%; }
+    50%  { border-radius: 60% 40% 40% 60% / 40% 60% 40% 60%; }
+    100% { border-radius: 35% 65% 60% 40% / 60% 35% 65% 40%; }
+}
+
+@keyframes drift-1 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(4vw, 3vh) rotate(5deg); }
+    50%  { transform: translate(-2vw, 6vh) rotate(-3deg); }
+    75%  { transform: translate(3vw, -2vh) rotate(2deg); }
+}
+
+@keyframes drift-2 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    25%  { transform: translate(-3vw, -4vh) rotate(-4deg); }
+    50%  { transform: translate(4vw, -2vh) rotate(6deg); }
+    75%  { transform: translate(-2vw, 3vh) rotate(-2deg); }
+}
+
+@keyframes drift-3 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33%  { transform: translate(-5vw, 2vh) rotate(3deg); }
+    66%  { transform: translate(3vw, -4vh) rotate(-5deg); }
+}
+
+@keyframes drift-4 {
+    0%, 100% { transform: translate(0, 0) rotate(0deg); }
+    33%  { transform: translate(3vw, 5vh) rotate(-3deg); }
+    66%  { transform: translate(-4vw, -3vh) rotate(4deg); }
 }
 
 .container {
@@ -403,7 +496,7 @@ header {
 }
 
 /* Smooth theme transition */
-body, .shape-1, .shape-2, .card-face, .game-container, details, .icon-btn, .mode-selector button,
+body, .bg-mesh, .mesh-blob, .card-face, .game-container, details, .icon-btn, .mode-selector button,
 .custom-select-trigger, .custom-options, .modal-content, .stats-header, .stat-card {
     transition: background-color 0.4s ease, border-color 0.4s ease, color 0.4s ease, box-shadow 0.4s ease;
 }

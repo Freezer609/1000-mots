@@ -1187,6 +1187,16 @@ document.addEventListener('DOMContentLoaded', () => {
             catch(e) { /* ignore if not available */ }
         }
 
+        // Setup adaptive sort custom select (if present)
+        const adaptiveSortWrapper = document.getElementById('adaptiveSortWrapper');
+        if (adaptiveSortWrapper) {
+            const trigger = adaptiveSortWrapper.querySelector('.custom-select-trigger');
+            const optionsContainer = adaptiveSortWrapper.querySelector('.custom-options');
+            const native = document.getElementById('adaptiveSortSelect');
+            try { setupCustomSelect(adaptiveSortWrapper, trigger, optionsContainer, native); }
+            catch(e) { /* ignore if not available */ }
+        }
+
         Object.entries(ALL_VOCAB_DATA).forEach(([key, chapter]) => {
             const option = document.createElement('option');
             option.value = key;
